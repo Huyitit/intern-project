@@ -6,7 +6,7 @@ interface User {
     email?: string;
 
 }
-
+// @ts-ignore
 const newUser: User = {
     name: "John",
     age: 30,

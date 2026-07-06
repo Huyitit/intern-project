@@ -1,6 +1,7 @@
-# Use cases 
+# Use cases
 
 ## Actors
+
 * Admin
 * User
 
@@ -8,54 +9,64 @@
 
 | Actors | Use cases | Description |
 | --- | --- | --- |
-| **Admin** 
+| **Admin**
 | | Login | Admin logs in with username and password |
 | | Logout | Admin logs out |
 | | Create user | Admin creates a new user |
 | | View users | Admin views all users |
 | | View user's detail | Admin views user's detail |
-| **User** 
+| **User**
+
 | | Register | User registers for an account |
 | | Login | User logs in with username and password |
 | | Logout | User logs out |
 | | View profile | User views their profile |
 | | Update information | User update their phone, email |
 
-
 ## Scenarios (interactions of actors with UI)
 
 ### A. User Login
+
 1. User open login page
 2. System displays login page including login form: username field, password field, login button
 3. User enters username and password and clicks login button
 4. System validates username and password and display a success message
 
 ### B. User Register
+
 1. User open register page
 2. System displays register page including register form: username field, password field, confirm password field, register button
 3. User enters username, password and confirm password and clicks register button
 4. System validates username, password and open home page based on role of user
 
 ### C. Admin view user table
+
 **Precondition**:
+
 * Admin has logged in
 
 **Steps**:
+
 1. Admin clicks view user table button in AdminHomePage
-2. System displays a screen including user table: user's id, username 
+2. System displays a screen including user table: user's id, username
 
 ### D. Admin view user's detail
+
 **Precondition**:
+
 * Admin has logged in
 
 **Steps**:
+
 1. Admin clicks view user table button in AdminHomePage
 2. System displays a screen including user table: user's id, username
 3. Admin clicks on a line of user table
 4. System displays a screen including user's detail: id, username, phone, email.
- 
+
 ### E. Admin create user
+
 **Precondition**:
+
 * Admin has logged in
 
 **Steps**:
@@ -66,18 +77,24 @@
 4. System validates username, password and creates user. Then, system displays a success message
 
 ### F. User view their detail
+
 **Precondition**:
+
 * User has logged in
 
 **Steps**:
+
 1. User clicks profile button in UserHomePage
 2. System displays a screen including user's form: username, phone, email
 
 ### G. User update their information
+
 **Precondition**:
+
 * User has logged in
 
 **Steps**:
+
 1. User clicks update information button in UserHomePage
 2. System displays a screen including user's form: username, phone, email
 3. User enters new information and clicks update button
@@ -99,36 +116,41 @@ flowchart TD
 ```
 
 ### Database Design
-## Entity 
+
+## Entity
+
 1. User: Store user's information and their role (Admin or User)
+
 ## Entity's attibutes
+
 1. User
-- id
-- full_name
-- username
-- password
-- hashed_password
-- role
-- phone
-- email
+
+* id
+* full_name
+* username
+* password
+* hashed_password
+* role
+* phone
+* email
 
 ## Schema
 
 1. users
 
-- id: primary key, auto increment
-- full_name: varchar(255), not null
-- username: varchar(255), unique, not null
-- password: varchar(255), not null
-- hashed_password: varchar(255), not null
-- role: varchar(255), not null
-- phone: varchar(255)
-- email: varchar(255)
-- created_at: timestamp
-- updated_at: timestamp 
-
+* id: primary key, auto increment
+* full_name: varchar(255), not null
+* username: varchar(255), unique, not null
+* password: varchar(255), not null
+* hashed_password: varchar(255), not null
+* role: varchar(255), not null
+* phone: varchar(255)
+* email: varchar(255)
+* created_at: timestamp
+* updated_at: timestamp
 
 ## ERD
+
 ```mermaid
 erDiagram
     users 
