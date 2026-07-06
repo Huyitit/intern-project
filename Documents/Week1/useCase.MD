@@ -9,13 +9,13 @@
 
 | Actors | Use cases | Description |
 | --- | --- | --- |
-| **Admin**
+| **Admin** | | |
 | | Login | Admin logs in with username and password |
 | | Logout | Admin logs out |
 | | Create user | Admin creates a new user |
 | | View users | Admin views all users |
 | | View user's detail | Admin views user's detail |
-| **User**
+| **User** | | |
 
 | | Register | User registers for an account |
 | | Login | User logs in with username and password |

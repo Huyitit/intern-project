@@ -1,5 +1,16 @@
 # REST API design
 
+## Summarise
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | /users?page={number}&limit={number} | Get users (pagination) |
+| GET | /users/{id} | Get user by id |
+| POST | /auth/register | Register |
+| POST | /auth/login | Login |
+| POST | /users | Create a new user |
+| PUT | /users/{id} | Update a user |
+
 ## Base URL
 
 localhost:3000/api
@@ -20,13 +31,13 @@ Content-Type: application/json
 
 | Actors | Use cases | Description |
 | --- | --- | --- |
-| **Admin**
+| **Admin** | | |
 | | Login | Admin logs in with username and password |
 | | Logout | Admin logs out |
 | | Create user | Admin creates a new user |
 | | View users | Admin views all users |
 | | View user's detail | Admin views user's detail |
-| **User** 
+| **User** | | |
 | | Register | User registers for an account |
 | | Login | User logs in with username and password |
 | | Logout | User logs out |
