@@ -94,33 +94,39 @@ export default class userController{
 
             if(existingUser)
             {
-                res.status(500).json({message: "Username already exists"});
+                return res.status(500).json({message: "Username already exists"});
             }
         }
 
-        // create new user
-        // hash password
-        const hashed_password = await hash(data.password, 4);
-        data.hashed_password = hashed_password;
+        try {
+            // create new user
+            // hash password
+            const hashed_password = await hash(data.password, 4);
+            data.hashed_password = hashed_password;
 
-        const newUser = await prisma.users.create({
-            data: data,
-            select:
-            {
-                id: true,
-                full_name: true,
-                username: true,
-                phone: true,
-                email: true,
-                role: true,
-                create_at: true
-            }
-        })
+            const newUser = await prisma.users.create({
+                data: data,
+                select:
+                {
+                    id: true,
+                    full_name: true,
+                    username: true,
+                    phone: true,
+                    email: true,
+                    role: true,
+                    create_at: true
+                }
+            })
 
-        res.status(200).json({
-            success: true,
-            data: newUser
-        })
+            return res.status(200).json({
+                success: true,
+                data: newUser
+            })
+        } catch (error) {
+            console.log(error);
+            return res.status(500).json({message: error});
+
+        }
     }
 
     // update a user
@@ -131,7 +137,7 @@ export default class userController{
 
         if(!data)
         {
-            res.status(400).json({message: "Please provide data to update"});
+            return res.status(400).json({message: "Please provide data to update"});
         }
 
         // check if user is exists
@@ -141,7 +147,7 @@ export default class userController{
 
         if(!user)
         {
-            res.status(500).json({message: "Cannot find user"});
+            return res.status(500).json({message: "Cannot find user"});
         }
 
         // update user
@@ -161,11 +167,12 @@ export default class userController{
                 }
             })
 
-            res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 data: updatedUser
             })
         } catch (error) {
+            console.log(error);
             return res.status(500).json({message: error});
         }
     }

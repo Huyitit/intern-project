@@ -5,7 +5,7 @@ CREATE TABLE `users` (
     `username` VARCHAR(191) NOT NULL,
     `password` VARCHAR(191) NOT NULL,
     `hashed_password` VARCHAR(191) NOT NULL,
-    `role` VARCHAR(191) NOT NULL,
+    `role` VARCHAR(191) NOT NULL, -- values: "admin", "user"
     `phone` VARCHAR(191) NULL,
     `email` VARCHAR(191) NULL,
     `create_at` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
