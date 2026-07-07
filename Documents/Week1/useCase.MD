@@ -13,10 +13,10 @@
 | | Login | Admin logs in with username and password |
 | | Logout | Admin logs out |
 | | Create user | Admin creates a new user |
+| | Delete user | Admin deletes a user |
 | | View users | Admin views all users |
 | | View user's detail | Admin views user's detail |
 | **User** | | |
-
 | | Register | User registers for an account |
 | | Login | User logs in with username and password |
 | | Logout | User logs out |
@@ -76,7 +76,22 @@
 3. Admin enters username, password and confirm password and clicks create button
 4. System validates username, password and creates user. Then, system displays a success message
 
-### F. User view their detail
+### F. Admin delete a user
+
+**Precondition**:
+
+* Admin has logged in
+
+**Steps**:
+
+1. Admin clicks view user table button in AdminHomePage
+2. System displays a screen including user table: user's id, username
+3. Admin clicks on a line of user table
+4. System displays a screen including user's detail: id, username, phone, email
+5. Admin clicks delete button
+6. System validates information and deletes user. Then, system displays a success message
+
+### G. User view their detail
 
 **Precondition**:
 
@@ -87,7 +102,7 @@
 1. User clicks profile button in UserHomePage
 2. System displays a screen including user's form: username, phone, email
 
-### G. User update their information
+### H. User update their information
 
 **Precondition**:
 
@@ -146,8 +161,8 @@ flowchart TD
 * role: varchar(255), not null
 * phone: varchar(255)
 * email: varchar(255)
-* created_at: timestamp
-* updated_at: timestamp
+* create_at: timestamp
+* update_at: timestamp
 
 ## ERD
 
@@ -163,8 +178,8 @@ erDiagram
         role varchar(255)
         phone varchar(255)
         email varchar(255)
-        created_at timestamp
-        updated_at timestamp
+        create_at timestamp
+        update_at timestamp
     }
 ```
 
@@ -180,5 +195,5 @@ erDiagram
 | role | varchar(255) | Storing user's role |
 | phone | varchar(255) | Storing user's phone |
 | email | varchar(255) | Storing user's email |
-| created_at | timestamp | Storing user's created at |
-| updated_at | timestamp | Storing user's updated at |
+| create_at | timestamp | Storing user's created at |
+| update_at | timestamp | Storing user's updated at |

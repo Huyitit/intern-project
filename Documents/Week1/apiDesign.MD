@@ -10,6 +10,7 @@
 | POST | /auth/login | Login |
 | POST | /users | Create a new user |
 | PUT | /users/{id} | Update a user |
+| DELETE | /users/{id} | Delete a user |
 
 ## Base URL
 
@@ -52,11 +53,15 @@ Content-Type: application/json
 
 Endpoint: GET /users?page={number}&limit={number}
 
-Request's body:
+<!-- Request's body: -->
+
+<!-- ```typescript
 {
     page: number,
     limit: number
 }
+``` -->
+
 Response's body:
 
 ```typescript
@@ -64,12 +69,12 @@ Response's body:
     data: [
         {
             id: number,
+            full_name: string,
             username: string,
             phone: string,
             email: string,
             role: string,
-            created_at: timestamp,
-            updated_at: timestamp
+            create_at: timestamp
         }
     ]
 }
@@ -85,12 +90,11 @@ Response's body:
 {
     data: {
         id: number,
+        full_name: string,
         username: string,
         phone: string,
         email: string,
-        role: string,
-        created_at: timestamp,
-        updated_at: timestamp
+        role: string
     }
 }
 ```
@@ -105,11 +109,14 @@ Request's body:
 
 ```typescript
 {
-    username: string,
-    password: string,
-    phone: string,
-    email: string,
-    role: string
+    data: {
+        full_name: string,
+        username: string,
+        password: string,
+        phone: string,
+        email: string,
+        role: string
+    }
 }
 ```
 
@@ -120,6 +127,7 @@ Response's body:
     success: boolean,
     data: {
         id: number,
+        full_name: string,
         username: string,
         phone: string,
         email: string,
@@ -136,8 +144,10 @@ Request's body:
 
 ```typescript
 {
-    username: string,
-    password: string
+    data: {
+        username: string,
+        password: string
+    }
 }
 ```
 
@@ -148,6 +158,7 @@ Response's body:
     success: boolean,
     data: {
         id: number,
+        full_name: string,
         username: string,
         phone: string,
         email: string,
@@ -164,13 +175,16 @@ Endpoint: POST /users
 Request's body:
 
 ```typescript
-{
-    username: string,
-    password: string,
-    phone: string,
-    email: string,
-    role: string
-}
+    {
+        data:{
+            full_name: string,
+            username: string,
+            password: string,
+            phone?: string,
+            email?: string,
+            role: string
+        }
+    }
 ```
 
 Response's body:
@@ -180,11 +194,12 @@ Response's body:
     success: boolean,
     data: {
         id: number,
+        full_name: string,
         username: string,
         phone: string,
         email: string,
         role: string,
-        created_at: timestamp
+        create_at: timestamp
     }
 }
 ```
@@ -199,10 +214,15 @@ Request's body:
 
 ```typescript
 {
+    data:{
+    id: number,
+    full_name: string,
     username: string,
-    phone: string,
-    email: string,
+    password?: string,
+    phone?: string,
+    email?: string,
     role: string
+    }
 }
 ```
 
@@ -213,12 +233,26 @@ Response's body:
     success: boolean,
     data: {
         id: number,
+        full_name: string,
         username: string,
         phone: string,
         email: string,
-        role: string,
-        created_at: timestamp,
-        updated_at: timestamp
+        role: string
     }
+}
+```
+
+## DELETE
+
+### 1. Delete a user
+
+Endpoint: DELETE /users/{id}
+
+Response's body:
+
+```typescript
+{
+    success: boolean,
+    message: string
 }
 ```
