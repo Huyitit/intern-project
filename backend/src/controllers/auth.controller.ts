@@ -66,6 +66,16 @@ export default class authController{
         // find user
         const currentUser = await prisma.users.findUnique({
             where: {username},
+            select:
+            {
+                id: true,
+                full_name: true,
+                username: true,
+                phone: true,
+                email: true,
+                role: true, 
+                hashed_password: true
+            }
         })
 
         if(currentUser  === null)
@@ -82,6 +92,8 @@ export default class authController{
         }
         
         // token saves user information (id, role, username, email, phone, name)
+        currentUser.hashed_password = "";
+        console.log("data", currentUser);
         const token = generateToken(currentUser);
 
         res.status(200).json({

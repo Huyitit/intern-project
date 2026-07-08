@@ -3,7 +3,7 @@ import { config } from './env'
 
 export const generateToken = (payload: object) => {
     return jwt.sign(payload, config.secretKey, 
-        {expiresIn: config.expiredTime});
+        {expiresIn: config.expiredTime, algorithm: "HS256"});
 };
 
 export const verifyToken = (token:string|undefined) => {
