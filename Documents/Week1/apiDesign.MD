@@ -53,20 +53,14 @@ Content-Type: application/json
 
 Endpoint: GET /users?page={number}&limit={number}
 
-<!-- Request's body: -->
-
-<!-- ```typescript
-{
-    page: number,
-    limit: number
-}
-``` -->
-
 Response's body:
+
++ status: 200 OK
 
 ```typescript
 {
-    data: [
+    success: true,
+    users: [
         {
             id: number,
             full_name: string,
@@ -80,15 +74,36 @@ Response's body:
 }
 ```
 
++ status: 403
+
+```typescript
+{
+    success: false,
+    message: "No more users"
+}
+```
+
++ status: 501
+
+```typescript
+{
+    success: false,
+    message: "Internal Server Error"
+}
+```
+
 ### 2. Get user by id
 
 Endpoint: /users/{id}
 
 Response's body:
 
++ status: 201
+
 ```typescript
 {
-    data: {
+    success: true,
+    user: {
         id: number,
         full_name: string,
         username: string,
@@ -96,6 +111,24 @@ Response's body:
         email: string,
         role: string
     }
+}
+```
+
++ status: 404
+
+```typescript
+{
+    success: false,
+    message: "Cannot find user"
+}
+```
+
++ status: 501
+
+```typescript
+{
+    success: false,
+    message: "Internal Server Error"
 }
 ```
 
@@ -109,7 +142,7 @@ Request's body:
 
 ```typescript
 {
-    data: {
+    user: {
         full_name: string,
         username: string,
         password: string,
@@ -122,10 +155,12 @@ Request's body:
 
 Response's body:
 
++ status: 201
+
 ```typescript
 {
-    success: boolean,
-    data: {
+    success: true,
+    user: {
         id: number,
         full_name: string,
         username: string,
@@ -133,6 +168,24 @@ Response's body:
         email: string,
         role: string
     }
+}
+```
+
++ status: 403
+
+```typescript
+{
+    success: false,
+    message: "Cannot create user"
+}
+```
+
++ status: 501
+
+```typescript
+{
+    success: false,
+    message: "Internal Server Error"
 }
 ```
 
@@ -153,10 +206,12 @@ Request's body:
 
 Response's body:
 
++ status: 200
+
 ```typescript
 {
-    success: boolean,
-    data: {
+    success: true,
+    user: {
         id: number,
         full_name: string,
         username: string,
@@ -168,6 +223,33 @@ Response's body:
 }
 ```
 
++ status: 404
+
+```typescript
+{
+    success: false,
+    message: "Cannot find user"
+}
+```
+
++ status: 403
+
+```typescript
+{
+    success: false,
+    message: "Invalid password"
+}
+```
+
++ status: 501
+
+```typescript
+{
+    success: false,
+    message: "Internal Server Error"
+}
+```
+
 ### 3. Post a user
 
 Endpoint: POST /users
@@ -176,7 +258,7 @@ Request's body:
 
 ```typescript
     {
-        data:{
+        user:{
             full_name: string,
             username: string,
             password: string,
@@ -189,10 +271,12 @@ Request's body:
 
 Response's body:
 
++ status: 200
+
 ```typescript
 {
-    success: boolean,
-    data: {
+    success: true,
+    user: {
         id: number,
         full_name: string,
         username: string,
@@ -201,6 +285,24 @@ Response's body:
         role: string,
         create_at: timestamp
     }
+}
+```
+
++ status: 400
+
+```typescript
+{
+    success: false,
+    message: "Username already exists"
+}
+```
+
++ status: 501
+
+```typescript
+{
+    success: false,
+    message: "Internal Server Error"
 }
 ```
 
@@ -214,7 +316,7 @@ Request's body:
 
 ```typescript
 {
-    data:{
+    user:{
     id: number,
     full_name: string,
     username: string,
@@ -228,10 +330,12 @@ Request's body:
 
 Response's body:
 
++ status: 200
+
 ```typescript
 {
-    success: boolean,
-    data: {
+    success: true,
+    user: {
         id: number,
         full_name: string,
         username: string,
@@ -239,6 +343,24 @@ Response's body:
         email: string,
         role: string
     }
+}
+```
+
++ status: 404
+
+```typescript
+{
+    success: false,
+    message: "Cannot find user"
+}
+```
+
++ status: 501
+
+```typescript
+{
+    success: false,
+    message: "Internal Server Error"
 }
 ```
 
@@ -250,9 +372,20 @@ Endpoint: DELETE /users/{id}
 
 Response's body:
 
++ status: 200
+
 ```typescript
 {
-    success: boolean,
-    message: string
+    success: true,
+    message: "User deleted successfully"
+}
+```
+
++ status: 501
+
+```typescript
+{
+    success: false,
+    message: "Internal Server Error"
 }
 ```
