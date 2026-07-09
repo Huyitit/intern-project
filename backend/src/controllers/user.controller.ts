@@ -11,8 +11,11 @@ export default class userController{
         
         const page = Number(req.query.page);
         const limit = Number(req.query.limit);  
-
+        const keyword = String(req.query.keyword);
+        const sortBy = String(req.params.sortBy);
+        const order = String(req.params.order);
         try {
+
             const result = await prisma.users.findMany({
                 select:{
                     id: true,
@@ -25,25 +28,39 @@ export default class userController{
                 },
 
                 where:{
-                    role: "user"
+                    role: "user",
+                    username:{
+                        contains: keyword
+                    }
+                },
+
+                orderBy:{
+                    [sortBy]: order
                 },
 
                 take: limit,
                 skip: (page-1)*limit
             })
-
-            if(!result)
+            
+            if(result.length === 0)
             {
-                res.status(500).json({message:"Cannot find any user"});
+                return res.status(403).json({
+                    success: false,
+                    message: "No more users"
+                });
             }
-
-            res.status(202).json({
+            
+            return res.status(201).json({
                 success: true,
-                data: result
+                users: result
             })
         } catch (error) {
-            return res.status(500).json({message: error});
+            return res.status(501).json({
+                success: false,
+                message: "Internal Server Error"
+            });
         }
+        
     }
 
     // get a user by id
@@ -70,42 +87,51 @@ export default class userController{
 
             if(!result)
             {
-                res.status(500).json({message:"Cannot find user"});
+                res.status(404).json({
+                    success: false,
+                    message: "Cannot find user"
+                });
             }
 
-            res.status(202).json({
+            return res.status(201).json({
                 success: true,
-                data: result
+                user: result
             })
         } catch (error) {
-            return res.status(500).json({message: error});
+            return res.status(501).json({
+                success: false,
+                message: "Internal Server Error"
+            });
         }
     }
 
     // create a user
     static createUser = async (req: Request, res: Response) => {
         
-        const {data} = req.body;
+        const {user} = req.body;
 
         // check if username already exists
-        if(data.username)
+        if(user.username)
         {
-            const existingUser = await prisma.users.findUnique({where: {username: data.username}});
+            const existingUser = await prisma.users.findUnique({where: {username: user.username}});
 
             if(existingUser)
             {
-                return res.status(500).json({message: "Username already exists"});
+                return res.status(400).json({
+                    success: false,
+                    message: "Username already exists"
+                });
             }
         }
 
         try {
             // create new user
             // hash password
-            const hashed_password = await hash(data.password, 4);
-            data.hashed_password = hashed_password;
+            const hashed_password = await hash(user.password, 4);
+            user.hashed_password = hashed_password;
 
             const newUser = await prisma.users.create({
-                data: data,
+                data: user,
                 select:
                 {
                     id: true,
@@ -120,11 +146,14 @@ export default class userController{
 
             return res.status(200).json({
                 success: true,
-                data: newUser
+                user: newUser
             })
         } catch (error) {
             console.log(error);
-            return res.status(500).json({message: error});
+            return res.status(501).json({
+                success: false,
+                message: "Internal Server Error"
+            });
 
         }
     }
@@ -132,30 +161,32 @@ export default class userController{
     // update a user
     static updateUserById = async (req: Request, res: Response) => {
 
-        const {id} = req.params;
-        const {data} = req.body;
+        const {user} = req.body;
 
-        if(!data)
+        if(!user)
         {
             return res.status(400).json({message: "Please provide data to update"});
         }
 
         // check if user is exists
-        const user = await prisma.users.findUnique({
-            where: {id: Number(id)}
+        const currentUser = await prisma.users.findUnique({
+            where: {id: Number(user.id)}
         });
 
-        if(!user)
+        if(!currentUser)
         {
-            return res.status(500).json({message: "Cannot find user"});
+            return res.status(404).json({
+                success: false,
+                message: "Cannot find user"
+            });
         }
 
         // update user
         try {
 
             const updatedUser = await prisma.users.update({
-                where: {id: Number(id)},
-                data: data,
+                where: {id: Number(user.id)},
+                data: user,
                 select:
                 {
                     id: true,
@@ -169,11 +200,14 @@ export default class userController{
 
             return res.status(200).json({
                 success: true,
-                data: updatedUser
+                user: updatedUser
             })
         } catch (error) {
             console.log(error);
-            return res.status(500).json({message: error});
+            return res.status(501).json({
+                success: false,
+                message: "Internal Server Error"
+            });
         }
     }
     
@@ -194,7 +228,10 @@ export default class userController{
             })
 
         } catch (error) {
-            res.status(500).json({message: error});
+            res.status(501).json({
+                success: false,
+                message: "Internal Server Error"
+            });
         }
     }
 }

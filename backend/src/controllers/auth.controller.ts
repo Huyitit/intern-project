@@ -11,11 +11,11 @@ export default class authController{
     static register = async (req: Request, res: Response) => {
         
         console.log("req comes");
-        let {data} = req.body;
+        let {user} = req.body;
 
         //find existed user
         const existedUser = await prisma.users.findUnique({
-            where: {username: data.username},
+            where: {username: user.username},
         });
 
         if(existedUser)
@@ -24,20 +24,20 @@ export default class authController{
         }
         
         // add new user
-        try {   
+            try {
 
             // hash password
-            const hashed_password = await hash(data.password, 4);
-            data.hashed_password = hashed_password;
+            const hashed_password = await hash(user.password, 4);
+            user.hashed_password = hashed_password;
             
-            const newUser = await prisma.users.create({data:data});
+            const newUser = await prisma.users.create({data:user});
 
             if(newUser)
             {
-                res.status(201).json(
+                return res.status(201).json(
                     {
                         success: true,
-                        data: {
+                        user: {
                             id: newUser.id,
                             full_name: newUser.full_name,
                             username: newUser.username,
@@ -48,66 +48,83 @@ export default class authController{
                     }
                 )
             }
+
+            return res.status(403).json({
+                success: false,
+                message: "Cannot create user"
+            });
         } catch (error) {
-            res.status(500).json({
-                message: "error in register",
-                error: error});
-            console.log(error);
+            return res.status(501).json({
+                success: false,
+                message: "Internal Server Error"
+            });
         }
     }
 
     // login with username and password
     static login = async (req: Request, res: Response) => {
 
-        let {data} = req.body;
-        const username = data.username;
-        const password = data.password;
+        let {user} = req.body;
+        const username = user.username;
+        const password = user.password;
 
         // find user
-        const currentUser = await prisma.users.findUnique({
-            where: {username},
-            select:
-            {
-                id: true,
-                full_name: true,
-                username: true,
-                phone: true,
-                email: true,
-                role: true, 
-                hashed_password: true
+        try {
+            const currentUser = await prisma.users.findUnique({
+                where: {username},
+                select:
+                {
+                    id: true,
+                    full_name: true,
+                    username: true,
+                    phone: true,
+                    email: true,
+                    role: true, 
+                    hashed_password: true
+                }
+            })
+
+            if(currentUser  === null)
+            {   
+                return res.status(404).json({
+                    success: false,
+                    message: "Cannot find user"
+                });
             }
-        })
 
-        if(currentUser  === null)
-        {   
-            return res.status(404).json({message: "Cannot find user"});
+            // check password
+            const validPassword = await compare(password, currentUser.hashed_password);
+            
+            if(!validPassword)
+            {
+                return res.status(403).json({
+                    success: false,
+                    message: "Invalid password"
+                });
+            }
+
+            // token saves user information (id, role, username, email, phone, name)
+            currentUser.hashed_password = "";
+
+            const token = generateToken(currentUser);
+
+            return res.status(200).json({
+                success: true,
+                user: {
+                    id: currentUser.id,
+                    full_name: currentUser.full_name,
+                    username: currentUser.username,
+                    phone: currentUser.phone,
+                    email: currentUser.email,
+                    role: currentUser.role
+                },
+                token: token
+            })
+        } catch (error) {
+            return res.status(501).json({
+                success: false,
+                message: "Internal Server Error"
+            });
         }
-
-        // check password
-        const validPassword = await compare(password, currentUser.hashed_password);
-        
-        if(!validPassword)
-        {
-            return res.status(404).json({message: "Invalid password"});
-        }
-        
-        // token saves user information (id, role, username, email, phone, name)
-        currentUser.hashed_password = "";
-        console.log("data", currentUser);
-        const token = generateToken(currentUser);
-
-        res.status(200).json({
-            success: true,
-            data: {
-                id: currentUser.id,
-                full_name: currentUser.full_name,
-                username: currentUser.username,
-                phone: currentUser.phone,
-                email: currentUser.email,
-                role: currentUser.role
-            },
-            token: token
-        })
-        
     } 
 }

@@ -5,7 +5,10 @@ export const checkAdminRole = (req: Request, res: Response, next: NextFunction) 
     
     if(!req.body.role)
     {
-        return res.status(401).json({message: "role is required"});
+        return res.status(401).json({
+            success: false,
+            message: "Role is required"
+        });
     }
 
     const role = req.body.role;
@@ -14,7 +17,10 @@ export const checkAdminRole = (req: Request, res: Response, next: NextFunction) 
         return next();
     }
 
-    return res.status(403).json({message: "Only admin has permission"});
+    return res.status(403).json({
+        success: false,
+        message: "Only admin has permission"
+    });
 
 }
 
@@ -29,5 +35,8 @@ export const checkOwner = (req: Request, res: Response, next: NextFunction) => {
         return next();
     }
 
-    res.status(403).json({messave: "You do not have permission to update this profile"});
+    return res.status(403).json({
+        success: false,
+        message: "You do not have permission to update this profile"
+    });
 }

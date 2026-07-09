@@ -8,7 +8,10 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 
     if(!token)
     {
-        return res.status(400).json({message:"token is required"});
+        return res.status(400).json({
+            success: false,
+            message:"Token is required"
+        });
     }
 
     try {
@@ -23,7 +26,9 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 
     } catch (error) {
         
-        console.log("error: ", error);
-        return res.status(403).json({error: error});
+        return res.status(403).json({
+            success: false,
+            message: "Token is expired or invalid"
+        });
     }
 }
