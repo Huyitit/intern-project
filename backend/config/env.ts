@@ -7,7 +7,7 @@ export const config = {
   
   //jwt
   secretKey: process.env.SECRET_KEY || "default value",
-  expiredTime: Number(process.env.KEY_EXPIRED_TIME) || 3600,
+  expiredTime: Number(process.env.KEY_EXPIRED_TIME) || 60,
   // database 
   dbUrl: process.env.dbUrl || "",
   dbUser: process.env.DATABASE_USER || "",

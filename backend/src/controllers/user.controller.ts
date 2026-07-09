@@ -12,8 +12,9 @@ export default class userController{
         const page = Number(req.query.page);
         const limit = Number(req.query.limit);  
         const keyword = String(req.query.keyword);
-        const sortBy = String(req.params.sortBy);
+        const sort = String(req.params.sortBy);
         const order = String(req.params.order);
+        console.log(sort, "and", order);
         try {
 
             const result = await prisma.users.findMany({
@@ -34,9 +35,9 @@ export default class userController{
                     }
                 },
 
-                orderBy:{
-                    [sortBy]: order
-                },
+                // orderBy:{
+                //     [sort]: order
+                // },
 
                 take: limit,
                 skip: (page-1)*limit
