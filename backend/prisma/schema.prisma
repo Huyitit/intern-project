@@ -21,6 +21,7 @@ model users {
   role      String
   phone     String?
   email     String? @unique
+  avatar_url String?
   create_at DateTime @default(now())
   update_at DateTime?
 }

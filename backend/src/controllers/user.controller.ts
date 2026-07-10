@@ -12,8 +12,9 @@ export default class userController{
         const page = Number(req.query.page);
         const limit = Number(req.query.limit);  
         const keyword = String(req.query.keyword);
-        const sortBy = String(req.params.sortBy);
-        const order = String(req.params.order);
+        const sort = String(req.query.sortBy);
+        const order = String(req.query.order);
+        console.log(sort, "and", order);
         try {
 
             const result = await prisma.users.findMany({
@@ -35,7 +36,7 @@ export default class userController{
                 },
 
                 orderBy:{
-                    [sortBy]: order
+                    [sort]: order
                 },
 
                 take: limit,
@@ -87,7 +88,7 @@ export default class userController{
 
             if(!result)
             {
-                res.status(404).json({
+                return res.status(404).json({
                     success: false,
                     message: "Cannot find user"
                 });
@@ -222,13 +223,47 @@ export default class userController{
                 where: {id: Number(id)},
             })
 
-            res.status(200).json({
+            return res.status(200).json({
                 success: true,
                 message: "User deleted successfully",
             })
 
         } catch (error) {
-            res.status(501).json({
+            return res.status(501).json({
+                success: false,
+                message: "Internal Server Error"
+            });
+        }
+    }
+
+    // upload avatar
+    static uploadAvatar = async (req: Request, res: Response) => {
+
+        const id = Number(req.params.id); 
+        
+        if (!req.file) {
+            return res.status(400).json({
+                success: false,
+                message: "No image provided"
+            });
+        }
+
+        const avatar_url = `/uploads/avatars/${req.file.filename}`;
+
+        try {
+            await prisma.users.update({
+                where: { id: id },
+                data: { avatar_url }
+            });
+
+            return res.status(200).json({
+                success: true,
+                message: "Avatar uploaded successfully",
+                avatar_url
+            });
+        } catch (error) {
+            console.log(error);
+            return res.status(501).json({
                 success: false,
                 message: "Internal Server Error"
             });

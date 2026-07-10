@@ -5,8 +5,11 @@ import { checkAdminRole, checkOwner } from "../middlewares/role.middlewares";
 import { registerUserSchema, loginUserSchema, userSchema } from "../utils/zod.schemas";
 import express from 'express';
 
+import { uploadAvatarMiddleware } from "../middlewares/upload.middleware";
+
 const userRoutes = express.Router();
 
+userRoutes.post('/:id/avatar', authenticate, checkOwner,uploadAvatarMiddleware.single('avatar'), userController.uploadAvatar);
 userRoutes.get('/', authenticate, checkAdminRole, userController.getUsers);
 userRoutes.get('/:id', authenticate, userController.getUserById);
 userRoutes.post('/', authenticate, checkAdminRole, validate(registerUserSchema), userController.createUser);

@@ -5,7 +5,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 
     const header = req.headers.authorization;
     const token = header?.split(" ")[1];
-
+    
     if(!token)
     {
         return res.status(400).json({
@@ -15,13 +15,13 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
     }
 
     try {
-
+        
         const decoded = verifyToken(token) as {role: string, id: number};
         
-        req.body = req.body || {};
+        req.body= req.body || {};
         req.body.role = decoded.role;
         req.body.id = decoded.id;
-        
+        // console.log("request's body", req.body);
         next();
 
     } catch (error) {

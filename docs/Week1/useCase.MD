@@ -34,10 +34,12 @@
 
 ### B. User Register
 
-1. User open register page
-2. System displays register page including register form: username field, password field, confirm password field, register button
-3. User enters username, password and confirm password and clicks register button
-4. System validates username, password and open home page based on role of user
+1. User open login page
+2. System displays login page including link to register page
+3. User clicks on link to the register page
+4. System displays register page including register form: username field, password field, confirm password field, register button
+5. User enters username, password and confirm password and clicks register button
+6. System validates username, password and open home page based on role of user
 
 ### C. Admin view user table
 
@@ -195,5 +197,6 @@ erDiagram
 | role | varchar(255) | Storing user's role |
 | phone | varchar(255) | Storing user's phone |
 | email | varchar(255) | Storing user's email |
+| avatar_url | varchar(255) | Storing user's avatar url in local storage |
 | create_at | timestamp | Storing user's created at |
 | update_at | timestamp | Storing user's updated at |
