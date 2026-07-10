@@ -150,6 +150,7 @@ flowchart TD
 * role
 * phone
 * email
+* avatar_url
 
 ## Schema
 
@@ -163,6 +164,7 @@ flowchart TD
 * role: varchar(255), not null
 * phone: varchar(255)
 * email: varchar(255)
+* avatar_url: varchar(255)
 * create_at: timestamp
 * update_at: timestamp
 
@@ -180,6 +182,7 @@ erDiagram
         role varchar(255)
         phone varchar(255)
         email varchar(255)
+        avatar_url varchar(255)
         create_at timestamp
         update_at timestamp
     }
