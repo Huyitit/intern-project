@@ -20,11 +20,7 @@ export const Login = () => {
         setUser(response.user);
         toast.success("Login successful!");
         
-        if (response.user.role === "admin") {
-          navigate("/admin");
-        } else {
-          navigate("/user");
-        }
+        navigate("/dashboard");
       } else {
         toast.error(response.message || "Login failed");
       }

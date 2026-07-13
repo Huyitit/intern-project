@@ -40,7 +40,7 @@ export const UserCreate = () => {
   return (
     <div data-testid="user-create">
       <h2>Create New User</h2>
-      <Link to="/admin/users">Back to User List</Link>
+      <Link to="/dashboard">Back to Dashboard</Link>
       <form onSubmit={handleSubmit}>
         <div>
           <label>Full Name:</label>
@@ -54,13 +54,13 @@ export const UserCreate = () => {
           <label>Password:</label>
           <input name="password" type="password" onChange={handleChange} required />
         </div>
-        <div>
+        {/* <div>
           <label>Role:</label>
           <select name="role" value={formData.role} onChange={handleChange}>
             <option value="user">User</option>
             <option value="admin">Admin</option>
           </select>
-        </div>
+        </div> */}
         <div>
           <label>Phone:</label>
           <input name="phone" type="text" onChange={handleChange} />

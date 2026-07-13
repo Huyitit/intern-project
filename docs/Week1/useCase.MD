@@ -6,23 +6,23 @@
 * User
 
 ## Use cases of User Management App
-add role
 
 | Actors | Use cases | Description |
 | --- | --- | --- |
-| **Admin** | | |
-| | Login | Admin logs in with username and password |
-| | Logout | Admin logs out |
-| | Create user | Admin creates a new user |
-| | Delete user | Admin deletes a user |
-| | View users | Admin views all users |
-| | View user's detail | Admin views user's detail |
 | **User** | | |
 | | Register | User registers for an account |
 | | Login | User logs in with username and password |
 | | Logout | User logs out |
 | | View profile | User views their profile |
 | | Update information | User update their phone, email |
+| | Upload avatar | User uploads avatar |
+| **Admin** | | |
+| (admin is provided all permissions of user) | | |
+| | Create user | Admin creates a new user |
+| | Delete user | Admin deletes a user |
+| | View users | Admin views all users |
+| | View user's detail | Admin views user's detail |
+| | Export users list's file | Admin exports users table as CSV file |
 
 ## Scenarios (interactions of actors with UI)
 
@@ -50,7 +50,7 @@ add role
 
 **Steps**:
 
-1. Admin clicks view user table button in AdminHomePage
+1. Admin clicks view user table button in Dashboard
 2. System displays a screen including user table: user's id, username
 
 ### D. Admin view user's detail
@@ -61,7 +61,7 @@ add role
 
 **Steps**:
 
-1. Admin clicks view user table button in AdminHomePage
+1. Admin clicks view user table button in Dashboard
 2. System displays a screen including user table: user's id, username
 3. Admin clicks on a line of user table
 4. System displays a screen including user's detail: id, username, phone, email.
@@ -74,7 +74,7 @@ add role
 
 **Steps**:
 
-1. Admin clicks create user button in AdminHomePage
+1. Admin clicks create user button in Dashboard
 2. System displays a screen including user's form: username field, password field, create button
 3. Admin enters username, password and confirm password and clicks create button
 4. System validates username, password and creates user. Then, system displays a success message
@@ -87,7 +87,7 @@ add role
 
 **Steps**:
 
-1. Admin clicks view user table button in AdminHomePage
+1. Admin clicks view user table button in Dashboard
 2. System displays a screen including user table: user's id, username
 3. Admin clicks on a line of user table
 4. System displays a screen including user's detail: id, username, phone, email
@@ -102,7 +102,7 @@ add role
 
 **Steps**:
 
-1. User clicks profile button in UserHomePage
+1. User clicks profile button in Dashboard
 2. System displays a screen including user's form: username, phone, email
 
 ### H. User update their information
@@ -113,10 +113,38 @@ add role
 
 **Steps**:
 
-1. User clicks update information button in UserHomePage
+1. User clicks update information button in Dashboard
 2. System displays a screen including user's form: username, phone, email
 3. User enters new information and clicks update button
 4. System validates information and updates it. Then, system displays a success message
+
+### I. User upload avatar
+
+**Precondition**:
+
+* User has logged in
+
+**Steps**:
+
+1. User clicks upload avatar button/link in Dashboard (or profile)
+2. System displays a screen with a file upload form for the avatar
+3. User selects an image file and clicks upload button
+4. System processes the upload, saves the avatar, and displays a success message
+5. System displays the newly uploaded avatar in the UI
+
+### J. Admin export users table as CSV file
+
+**Precondition**:
+
+* Admin has logged in
+
+**Steps**:
+
+1. Admin clicks view user table button in Dashboard
+2. System displays a screen including user table
+3. Admin clicks the 'Export to CSV' button
+4. System prepares the CSV file containing user data (with a simulated delay)
+5. System prompts the admin to download the generated CSV file
 
 ## Flowcharts
 
@@ -151,6 +179,7 @@ flowchart TD
 * role
 * phone
 * email
+* avatar_url
 
 ## Schema
 
@@ -164,6 +193,7 @@ flowchart TD
 * role: varchar(255), not null
 * phone: varchar(255)
 * email: varchar(255)
+* avatar_url: varchar(255)
 * create_at: timestamp
 * update_at: timestamp
 
@@ -181,6 +211,7 @@ erDiagram
         role varchar(255)
         phone varchar(255)
         email varchar(255)
+        avatar_url varchar(255)
         create_at timestamp
         update_at timestamp
     }

@@ -63,6 +63,40 @@ export default class userController{
         }
         
     }
+    // Intentionally slow endpoint for dev testing
+    static exportUsersSlow = async (req: Request, res: Response) => {
+        // Simulate 3 seconds delay
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+
+        try {
+            const result = await prisma.users.findMany({
+                select: {
+                    id: true,
+                    full_name: true,
+                    username: true,
+                    phone: true,
+                    email: true,
+                    role: true,
+                    create_at: true
+                },
+                where: {
+                    role: "user"
+                },
+                // Use a high limit or just fetch all
+                take: 10000
+            });
+
+            return res.status(200).json({
+                success: true,
+                users: result
+            });
+        } catch (error) {
+            return res.status(501).json({
+                success: false,
+                message: "Internal Server Error"
+            });
+        }
+    }
 
     // get a user by id
     static getUserById = async (req: Request, res: Response) => {
@@ -72,8 +106,7 @@ export default class userController{
         try {
             const result = await prisma.users.findUnique({
                 where: {
-                    id: Number(id),
-                    role: "user"
+                    id: Number(id)
                 },
 
                 select:{

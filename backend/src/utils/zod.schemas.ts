@@ -9,7 +9,7 @@ export const registerUserSchema = z.object(
             password: z.string().min(6, "password must be at least 6 characters long").max(20, "password must be at most 20 characters long"),
             phone: z.string().min(10, "phone must be at least 10 digits long").max(15, "phone must be at most 15 digits long").optional(),
             email: z.email().nullish(),
-            role: z.enum(['user', 'admin'])
+            role: z.enum(['user'])
             })
         })
     }

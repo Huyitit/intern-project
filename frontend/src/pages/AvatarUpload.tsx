@@ -49,7 +49,7 @@ export const AvatarUpload = () => {
   return (
     <div data-testid="avatar-upload">
       <h2>Upload Avatar</h2>
-      <Link to="/user">Back to Dashboard</Link>
+      <Link to="/dashboard">Back to Dashboard</Link>
       <div>
         <input type="file" onChange={handleFileChange} />
       </div>

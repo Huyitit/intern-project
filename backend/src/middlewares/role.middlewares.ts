@@ -24,7 +24,7 @@ export const checkAdminRole = (req: Request, res: Response, next: NextFunction) 
 
 }
 
-export const checkOwner = (req: Request, res: Response, next: NextFunction) => {
+export const checkOwnerOrAdmin = (req: Request, res: Response, next: NextFunction) => {
 
     const {id} = req.params;
 

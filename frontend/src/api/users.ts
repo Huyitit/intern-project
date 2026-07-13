@@ -55,11 +55,7 @@ export const deleteUser = async (id: number): Promise<{ success: boolean; messag
 
 // Intentionally slow endpoint for dev testing as per R8 requirement
 export const exportUsersSlow = async (): Promise<UsersResponse> => {
-  // Simulate 3 seconds delay
-  await new Promise((resolve) => setTimeout(resolve, 3000));
-  
-  // Return a large limit to get all users for export
-  const response = await apiClient(`/users?page=1&limit=10000`, {
+  const response = await apiClient(`/users/export`, {
     method: "GET",
   });
   return response.json();

@@ -175,3 +175,22 @@ Use React Router
     }
   ]
 }
+
+---
+
+# RBAC Architecture Reorganization Plan
+
+Based on the Use Case specification where **Admin inherits all User permissions**, the following structural reorganization must be implemented:
+
+## 1. Backend Security & Middleware (`user.routes.ts`)
+- **Shared Self-Service Routes**: Endpoints like viewing a user (`GET /:id`), updating a user (`PUT /:id`), and uploading an avatar (`PUT /:id/avatar`) must use a combined `checkOwnerOrAdmin` middleware. This allows Admins to manage their own profiles as well as others, while restricting standard Users to only their own data.
+- **Admin-Exclusive Routes**: Ensure strict `checkAdminRole` enforcement on endpoints that affect system-wide state, such as fetching all users (`GET /`), exporting data (`GET /export`), creating users (`POST /`), and deleting users (`DELETE /:id`).
+
+## 2. Frontend Routing Consolidation (`App.tsx`)
+- **Shared Routes (`allowedRoles={["admin", "user"]}`)**: Routes for self-service operations (e.g., `/dashboard`, `/profile`, `/avatar`) should be grouped together so both roles can access them natively.
+- **Admin Routes (`allowedRoles={["admin"]}`)**: Administrative operations (e.g., `/admin/users`, `/admin/users/create`, `/admin/users/:id`) remain strictly protected for the Admin role.
+
+## 3. UI Unification (`Dashboard.tsx`)
+- Combine the disjointed `AdminDashboard.tsx` and `UserDashboard.tsx` into a single, unified `Dashboard.tsx`.
+- **Conditional Rendering**: Inside the unified dashboard, read the user's role. If `role === 'admin'`, render the administrative tool buttons (Manage Users, Export CSV) alongside the standard self-service buttons (Edit Profile, Upload Avatar). If `role === 'user'`, render only the self-service buttons.
+- Update the login redirect logic in `Login.tsx` to route all successful authentications to the single `/dashboard` path.

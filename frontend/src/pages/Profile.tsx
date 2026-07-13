@@ -3,6 +3,7 @@ import { getUserById, updateUser } from "../api/users";
 import { getUser, setUser as saveUserToLocal } from "../utils/auth";
 import { type User } from "../types";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 export const Profile = () => {
   const localUser = getUser();
@@ -16,6 +17,7 @@ export const Profile = () => {
       try {
         const response = await getUserById(localUser.id);
         if (response.success && response.user) {
+          console.log("🚀 ~ Profile ~ fetchProfile ~ response.user:", response.user);
           setProfile(response.user);
         }
       } catch (err) {
@@ -65,6 +67,7 @@ export const Profile = () => {
   return (
     <div>
       <h2>My Profile</h2>
+      <Link to="/dashboard">Back to Dashboard</Link>
       <form onSubmit={handleUpdate}>
         <div>
           <label>Full Name:</label>

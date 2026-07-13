@@ -94,7 +94,7 @@ export const UserList = () => {
   return (
     <div data-testid="user-list">
       <h2>User Management</h2>
-      <Link to="/admin">Back to Dashboard</Link>
+      <Link to="/dashboard">Back to Dashboard</Link>
 
       <form onSubmit={handleSearch}>
         <label>Search Username:</label>
