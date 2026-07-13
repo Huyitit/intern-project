@@ -19,7 +19,7 @@ This project consists of a Node.js backend using Express and Prisma, and a React
    ```bash
    npm install
    ```
-3. Set up your environment variables by creating a `.env` file in the `backend` directory based on `.env.example`.
+3. A .env file is provided to setup environment variables.
 4. Run database migrations:
    ```bash
    npx prisma db push
