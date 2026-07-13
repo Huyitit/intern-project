@@ -20,7 +20,7 @@ export default class authController{
 
         if(existedUser)
         {
-            return res.status(400).json({message: "User existed"});
+            return res.status(409).json({message: "User existed"});
         }
         
         // add new user
@@ -49,12 +49,12 @@ export default class authController{
                 )
             }
 
-            return res.status(403).json({
+            return res.status(500).json({
                 success: false,
-                message: "Cannot create user"
+                message: "Internal Server Error"
             });
         } catch (error) {
-            return res.status(501).json({
+            return res.status(500).json({
                 success: false,
                 message: "Internal Server Error"
             });
@@ -86,7 +86,7 @@ export default class authController{
 
             if(currentUser  === null)
             {   
-                return res.status(404).json({
+                return res.status(409).json({
                     success: false,
                     message: "Cannot find user"
                 });
@@ -97,7 +97,7 @@ export default class authController{
             
             if(!validPassword)
             {
-                return res.status(403).json({
+                return res.status(401).json({
                     success: false,
                     message: "Invalid password"
                 });
@@ -121,7 +121,7 @@ export default class authController{
                 token: token
             })
         } catch (error) {
-            return res.status(501).json({
+            return res.status(500).json({
                 success: false,
                 message: "Internal Server Error"
             });

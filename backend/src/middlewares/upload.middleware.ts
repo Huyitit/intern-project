@@ -81,7 +81,7 @@ export const uploadCsvMiddleware = multer({
 
 export const parseCsvMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   if (!req.file) {
-    return res.status(400).json({ success: false, message: "No CSV file uploaded." });
+    return res.status(406).json({ success: false, message: "No CSV file uploaded." });
   }
 
   try {
@@ -89,7 +89,7 @@ export const parseCsvMiddleware = async (req: Request, res: Response, next: Next
     const lines = fileContent.split(/\r?\n/).filter(line => line.trim() !== "");
     
     if (lines.length < 2) {
-      return res.status(400).json({ success: false, message: "CSV file must contain a header row and at least one data row." });
+      return res.status(406).json({ success: false, message: "CSV file must contain a header row and at least one data row." });
     }
 
     const headers = lines[0].split(',').map(h => h.trim());
@@ -99,7 +99,7 @@ export const parseCsvMiddleware = async (req: Request, res: Response, next: Next
     const missingHeaders = expectedHeaders.filter(h => !headers.includes(h));
     
     if (missingHeaders.length > 0) {
-      return res.status(400).json({ 
+      return res.status(406).json({ 
         success: false, 
         message: `CSV is missing required headers: ${missingHeaders.join(', ')}. Expected headers: full_name,username,phone,email` 
       });
@@ -143,6 +143,6 @@ export const parseCsvMiddleware = async (req: Request, res: Response, next: Next
     
     next();
   } catch (error: any) {
-    return res.status(500).json({ success: false, message: "Failed to parse CSV file: " + error.message });
+    return res.status(500).json({ success: false, message: "Internal Server Error" });
   }
 };

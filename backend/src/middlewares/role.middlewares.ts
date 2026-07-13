@@ -2,12 +2,11 @@ import {Request, Response, NextFunction} from 'express';
 import { NetConnectOpts } from 'node:net';
 
 export const checkAdminRole = (req: Request, res: Response, next: NextFunction) =>{
-    
     if(!req.body.role)
     {
-        return res.status(401).json({
+        return res.status(500).json({
             success: false,
-            message: "Role is required"
+            message: "Internal Server Error"
         });
     }
 
@@ -19,7 +18,7 @@ export const checkAdminRole = (req: Request, res: Response, next: NextFunction) 
 
     return res.status(403).json({
         success: false,
-        message: "Only admin has permission"
+        message: "You do not have permission to perform this action"
     });
 
 }

@@ -5,10 +5,10 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
 
     const header = req.headers.authorization;
     const token = header?.split(" ")[1];
-    
+    console.log("req.body", req.body);
     if(!token)
     {
-        return res.status(400).json({
+        return res.status(406).json({
             success: false,
             message:"Token is required"
         });
@@ -25,7 +25,7 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
         next();
 
     } catch (error) {
-        
+        console.log(error);
         return res.status(403).json({
             success: false,
             message: "Token is expired or invalid"
