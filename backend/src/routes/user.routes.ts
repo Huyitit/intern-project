@@ -9,11 +9,11 @@ import { uploadAvatarMiddleware } from "../middlewares/upload.middleware";
 
 const userRoutes = express.Router();
 
-userRoutes.post('/:id/avatar', authenticate, checkOwner,uploadAvatarMiddleware.single('avatar'), userController.uploadAvatar);
 userRoutes.get('/', authenticate, checkAdminRole, userController.getUsers);
 userRoutes.get('/:id', authenticate, userController.getUserById);
 userRoutes.post('/', authenticate, checkAdminRole, validate(registerUserSchema), userController.createUser);
 userRoutes.put('/:id', authenticate, checkOwner, validate(userSchema), userController.updateUserById);
+userRoutes.put('/:id/avatar', authenticate, checkOwner, uploadAvatarMiddleware.single('avatar'), userController.uploadAvatar);
 userRoutes.delete('/:id', authenticate, checkAdminRole, userController.deleteUserById);
 
 export default userRoutes;

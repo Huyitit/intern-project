@@ -12,14 +12,14 @@ export const AdminDashboard = () => {
       <nav>
         <ul>
           <li>
-            <Link to="/admin/users">View Users Table</Link>
+            <Link to="/admin/users" data-testid="view-users-link">View Users Table</Link>
           </li>
           <li>
-            <Link to="/admin/users/create">Create New User</Link>
+            <Link to="/admin/users/create" data-testid="create-user-link">Create New User</Link>
           </li>
         </ul>
       </nav>
-      <button onClick={logout}>Logout</button>
+      <button data-testid="admin-logout" onClick={logout}>Logout</button>
     </div>
   );
 };

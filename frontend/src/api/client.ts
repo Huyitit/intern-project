@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 import { getToken, logout } from "../utils/auth";
 
-const BASE_URL = "http://localhost:3006/api";
+const BASE_URL = "http://localhost:3000/api";
 
 export async function apiClient(endpoint: string, options: RequestInit = {}): Promise<Response> {
   const token = getToken();

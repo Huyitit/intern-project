@@ -4,12 +4,13 @@
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| GET | /users?page={number}&limit={number} | Get users (pagination) |
+| GET | /users?page=1&limit=10&keyword=a&sortBy=id&order=asc | Get users (pagination) |
 | GET | /users/{id} | Get user by id |
 | POST | /auth/register | Register |
 | POST | /auth/login | Login |
 | POST | /users | Create a new user |
 | PUT | /users/{id} | Update a user |
+| PUT | /users/{id}/avatar | Upload avatar |
 | DELETE | /users/{id} | Delete a user |
 
 ## Base URL
@@ -51,7 +52,7 @@ Content-Type: application/json
 
 ### 1. Get users (pagination)
 
-Endpoint: GET /users?page={number}&limit={number}
+Endpoint: GET /users?page=1&limit=10&keyword=&sortBy=id&order=asc
 
 Response's body:
 

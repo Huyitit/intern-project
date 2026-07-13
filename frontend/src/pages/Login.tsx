@@ -65,7 +65,7 @@ export const Login = () => {
         </button>
       </form>
       <p>
-        Don't have an account? <a href="/register">Register here</a>
+        Don't have an account? <a data-testid="register-link" href="/register">Register here</a>
       </p>
     </div>
   );

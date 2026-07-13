@@ -1,29 +1,19 @@
 # User Login flow
 
-## General
 
 ```mermaid
 flowchart TD
-    A[Start] --> B[InputCredentials]
+    A@{shape: circle, label: "Start"} --> B[Enter username, password]
     B --> B1[Click Login button]
-    B1 --> C{Information true?}
-    C -->|Yes| D[Success]
+    B1 --> C{Is Information valid?}
+    C -->|Yes| D{Does the user exist in database?}
     C -->|No| E[Failure]
-    D --> F[End]
-    E --> F[End]
-```
-
-## Detail
-
-```mermaid
-flowchart TD
-    A[Start] --> B[InputCredentials]
-    B --> B1[Click Login button]
-    B1 --> C{Information true?}
-    C -->|Yes| D[Success]
-    C -->|No| E[Failure]
-    D --> G[Server provides token]
-    G --> H[Redirect to home page based on role]
-    E --> F[End]
-    H --> F[End]
+    D -->|Yes| F1{Is password correct?}
+    D -->|No| E[Failure]
+    E --> G@{shape: circle, label: "End"}
+    F1 -->|Yes| H[Provide token]
+    F1 -->|No| I[Failure]
+    H --> J[Redirect to home page based on role]
+    I --> G
+    J --> G
 ```

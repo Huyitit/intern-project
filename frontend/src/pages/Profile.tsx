@@ -4,7 +4,6 @@ import { getUser, setUser as saveUserToLocal } from "../utils/auth";
 import { type User } from "../types";
 import { toast } from "react-toastify";
 
-// REQUIREMENT R1: This screen MUST NOT have any data-testid attributes anywhere.
 export const Profile = () => {
   const localUser = getUser();
   const [profile, setProfile] = useState<User | null>(null);

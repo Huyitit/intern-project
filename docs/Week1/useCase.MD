@@ -6,6 +6,7 @@
 * User
 
 ## Use cases of User Management App
+add role
 
 | Actors | Use cases | Description |
 | --- | --- | --- |

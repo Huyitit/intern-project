@@ -13,10 +13,10 @@ export const getUsers = async (
     page: page.toString(),
     limit: limit.toString(),
     keyword,
-    sortBy: sort, // API doc might use sortBy or sort depending on backend
+    sortBy: sort, 
     order,
   }).toString();
-
+  console.log(query);
   const response = await apiClient(`/users?${query}`, {
     method: "GET",
   });
@@ -71,9 +71,9 @@ export const uploadAvatar = async (file: File): Promise<{ success: boolean; mess
   
   const formData = new FormData();
   formData.append("avatar", file);
-  console.log(formData.get('avatar'));
+  
   const response = await apiClient(`/users/${id}/avatar`, {
-    method: "POST",
+    method: "PUT",
     body: formData,
   });
   
