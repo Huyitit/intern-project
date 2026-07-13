@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { getUserById, updateUser } from "../api/users";
+import { getUserById, updateUser, updateProfileByCSV } from "../api/users";
 import { getUser, setUser as saveUserToLocal } from "../utils/auth";
 import { type User } from "../types";
 import { toast } from "react-toastify";
@@ -10,6 +10,9 @@ export const Profile = () => {
   const [profile, setProfile] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  
+  const [csvFile, setCsvFile] = useState<File | null>(null);
+  const [uploadingCsv, setUploadingCsv] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -61,6 +64,33 @@ export const Profile = () => {
     }
   };
 
+  const handleCsvChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setCsvFile(e.target.files[0]);
+    }
+  };
+
+  const handleCsvUpload = async () => {
+    if (!csvFile || !profile) return;
+    setUploadingCsv(true);
+    toast.info("Uploading CSV...");
+    try {
+      const response = await updateProfileByCSV(profile.id, csvFile);
+      if (response.success && response.user) {
+        toast.success("Profile updated via CSV successfully");
+        setProfile(response.user);
+        saveUserToLocal(response.user);
+        setCsvFile(null); // Reset file input implicitly by clearing state
+      } else {
+        toast.error(response.message || "Failed to update profile via CSV");
+      }
+    } catch (err) {
+      toast.error("Error uploading CSV");
+    } finally {
+      setUploadingCsv(false);
+    }
+  };
+
   if (loading) return <div>Loading profile...</div>;
   if (!profile) return <div>Could not load profile</div>;
 
@@ -68,6 +98,15 @@ export const Profile = () => {
     <div>
       <h2>My Profile</h2>
       <Link to="/dashboard">Back to Dashboard</Link>
+      
+      <div style={{ marginTop: '20px', marginBottom: '20px', padding: '10px', border: '1px solid #ccc' }}>
+        <h3>Update by CSV</h3>
+        <input type="file" accept=".csv" onChange={handleCsvChange} />
+        <button onClick={handleCsvUpload} disabled={!csvFile || uploadingCsv}>
+          {uploadingCsv ? "Uploading..." : "Upload CSV"}
+        </button>
+      </div>
+
       <form onSubmit={handleUpdate}>
         <div>
           <label>Full Name:</label>

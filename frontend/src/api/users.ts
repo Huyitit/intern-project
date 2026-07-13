@@ -75,3 +75,15 @@ export const uploadAvatar = async (file: File): Promise<{ success: boolean; mess
   
   return response.json();
 };
+
+export const updateProfileByCSV = async (id: number, file: File): Promise<UserResponse> => {
+  const formData = new FormData();
+  formData.append("csv", file);
+  
+  const response = await apiClient(`/users/${id}/csv`, {
+    method: "POST",
+    body: formData,
+  });
+  
+  return response.json();
+};
