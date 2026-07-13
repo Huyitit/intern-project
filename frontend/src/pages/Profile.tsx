@@ -4,6 +4,7 @@ import { getUser, setUser as saveUserToLocal } from "../utils/auth";
 import { type User } from "../types";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
+import styles from "./Profile.module.css";
 
 export const Profile = () => {
   const localUser = getUser();
@@ -95,39 +96,45 @@ export const Profile = () => {
   if (!profile) return <div>Could not load profile</div>;
 
   return (
-    <div>
-      <h2>My Profile</h2>
-      <Link to="/dashboard">Back to Dashboard</Link>
-      
-      <div style={{ marginTop: '20px', marginBottom: '20px', padding: '10px', border: '1px solid #ccc' }}>
+    <div className={styles.container}>
+      <div className={styles.glassCard}>
+        <h2>My Profile</h2>
+        
+        <div className={styles.divider}></div>
+        
         <h3>Update by CSV</h3>
-        <input type="file" accept=".csv" onChange={handleCsvChange} />
-        <button onClick={handleCsvUpload} disabled={!csvFile || uploadingCsv}>
+        <div className={styles.formGroup}>
+          <input className={styles.fileInput} type="file" accept=".csv" onChange={handleCsvChange} />
+        </div>
+        <button className={styles.submitBtn} onClick={handleCsvUpload} disabled={!csvFile || uploadingCsv}>
           {uploadingCsv ? "Uploading..." : "Upload CSV"}
         </button>
-      </div>
 
-      <form onSubmit={handleUpdate}>
-        <div>
-          <label>Full Name:</label>
-          <input name="full_name" value={profile.full_name || ""} onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Username:</label>
-          <input name="username" value={profile.username || ""} disabled />
-        </div>
-        <div>
-          <label>Phone:</label>
-          <input name="phone" value={profile.phone || ""} onChange={handleChange} />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input name="email" value={profile.email || ""} onChange={handleChange} />
-        </div>
-        <button type="submit" disabled={saving}>
-          {saving ? "Saving..." : "Update Profile"}
-        </button>
-      </form>
+        <div className={styles.divider}></div>
+
+        <h3>Manual Update</h3>
+        <form onSubmit={handleUpdate}>
+          <div className={styles.formGroup}>
+            <label>Full Name:</label>
+            <input className={styles.inputField} name="full_name" value={profile.full_name || ""} onChange={handleChange} required />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Username:</label>
+            <input className={styles.inputField} name="username" value={profile.username || ""} disabled style={{opacity: 0.7}} />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Phone:</label>
+            <input className={styles.inputField} name="phone" value={profile.phone || ""} onChange={handleChange} />
+          </div>
+          <div className={styles.formGroup}>
+            <label>Email:</label>
+            <input className={styles.inputField} name="email" value={profile.email || ""} onChange={handleChange} />
+          </div>
+          <button className={styles.submitBtn} type="submit" disabled={saving}>
+            {saving ? "Saving..." : "Update Profile"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

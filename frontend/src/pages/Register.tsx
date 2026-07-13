@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { registerUser } from "../api/auth";
-import { setToken, setUser } from "../utils/auth"; // Assume backend could return token on register, or they must login after. API doc says register returns 201 with user. Wait, apiDesign says register just returns user. It does not return token. So we navigate to login.
+import { setToken, setUser } from "../utils/auth";
+import styles from "./Register.module.css";
 
 export const Register = () => {
   const [formData, setFormData] = useState({
@@ -39,36 +40,40 @@ export const Register = () => {
   };
 
   return (
-    <div data-testid="register-page">
-      <h2>Register</h2>
-      <form onSubmit={handleRegister}>
-        <div>
-          <label>Full Name:</label>
-          <input name="full_name" type="text" onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Username:</label>
-          <input name="username" type="text" onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input name="password" type="password" onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Phone:</label>
-          <input name="phone" type="text" onChange={handleChange} />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input name="email" type="email" onChange={handleChange} />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? "Loading..." : "Register"}
-        </button>
-      </form>
-      <p>
-        Already have an account? <a href="/login">Login here</a>
-      </p>
+    <div className={styles.container} data-testid="register-page">
+      <div className={styles.glassCard}>
+        <h2 data-testid="register-heading">Register</h2>
+        <form data-testid="register-form" onSubmit={handleRegister}>
+          <div className={styles.formGrid}>
+            <div className={`${styles.formGroup} ${styles.fullWidth}`} data-testid="register-full_name-group">
+              <label data-testid="register-full_name-label">Full Name:</label>
+              <input className={styles.inputField} data-testid="register-full_name-input" name="full_name" type="text" onChange={handleChange} required />
+            </div>
+            <div className={styles.formGroup} data-testid="register-username-group">
+              <label data-testid="register-username-label">Username:</label>
+              <input className={styles.inputField} data-testid="register-username-input" name="username" type="text" onChange={handleChange} required />
+            </div>
+            <div className={styles.formGroup} data-testid="register-password-group">
+              <label data-testid="register-password-label">Password:</label>
+              <input className={styles.inputField} data-testid="register-password-input" name="password" type="password" onChange={handleChange} required />
+            </div>
+            <div className={styles.formGroup} data-testid="register-phone-group">
+              <label data-testid="register-phone-label">Phone:</label>
+              <input className={styles.inputField} data-testid="register-phone-input" name="phone" type="text" onChange={handleChange} />
+            </div>
+            <div className={styles.formGroup} data-testid="register-email-group">
+              <label data-testid="register-email-label">Email:</label>
+              <input className={styles.inputField} data-testid="register-email-input" name="email" type="email" onChange={handleChange} />
+            </div>
+          </div>
+          <button className={styles.submitBtn} data-testid="register-submit-btn" type="submit" disabled={loading}>
+            {loading ? "Loading..." : "Register"}
+          </button>
+        </form>
+        <p className={styles.loginText} data-testid="register-login-text">
+          Already have an account? <a className={styles.loginLink} data-testid="register-login-link" href="/login">Login here</a>
+        </p>
+      </div>
     </div>
   );
 };

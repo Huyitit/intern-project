@@ -12,6 +12,7 @@ import { UserList } from "./pages/UserList";
 import { UserCreate } from "./pages/UserCreate";
 import { UserDetail } from "./pages/UserDetail";
 import { AvatarUpload } from "./pages/AvatarUpload";
+import { Layout } from "./components/Layout/Layout";
 
 function App() {
   return (
@@ -21,18 +22,21 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Admin only routes */}
-        <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
-          <Route path="/admin/users" element={<UserList />} />
-          <Route path="/admin/users/create" element={<UserCreate />} />
-          <Route path="/admin/users/:id" element={<UserDetail />} />
-        </Route>
+        {/* Protected Routes Wrapped in Layout */}
+        <Route element={<Layout />}>
+          {/* Admin only routes */}
+          <Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+            <Route path="/admin/users" element={<UserList />} />
+            <Route path="/admin/users/create" element={<UserCreate />} />
+            <Route path="/admin/users/:id" element={<UserDetail />} />
+          </Route>
 
-        {/* Shared routes for both admin and user */}
-        <Route element={<ProtectedRoute allowedRoles={["admin", "user"]} />}>
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/avatar" element={<AvatarUpload />} />
+          {/* Shared routes for both admin and user */}
+          <Route element={<ProtectedRoute allowedRoles={["admin", "user"]} />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/avatar" element={<AvatarUpload />} />
+          </Route>
         </Route>
 
         <Route path="*" element={<div>Page not found</div>} />

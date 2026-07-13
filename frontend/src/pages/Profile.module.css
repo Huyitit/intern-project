@@ -1,0 +1,99 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.glassCard {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  padding: 32px;
+  box-shadow: var(--glass-shadow);
+  max-width: 600px;
+}
+
+.glassCard h2, .glassCard h3 {
+  color: var(--ocean-900);
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.glassCard h3 {
+  font-size: 20px;
+  margin-top: 32px;
+}
+
+.profileInfo p {
+  color: var(--text-primary);
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.formGroup label {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ocean-900);
+  margin-bottom: 8px;
+}
+
+.inputField {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  background: var(--glass-bg-solid);
+  color: var(--ocean-900);
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.inputField:focus {
+  outline: none;
+  border-color: var(--ocean-500);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2);
+}
+
+.fileInput {
+  background: transparent;
+  padding: 0;
+  border: none;
+  font-size: 14px;
+  color: var(--text-primary);
+}
+
+.submitBtn {
+  width: auto;
+  padding: 12px 24px;
+  background: var(--ocean-600);
+  color: white;
+  border: none;
+  border-radius: var(--radius-md);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.submitBtn:hover {
+  background: var(--ocean-700);
+  box-shadow: 0 4px 12px rgba(14, 165, 233, 0.4);
+}
+
+.submitBtn:disabled {
+  background: var(--ocean-300);
+  cursor: not-allowed;
+}
+
+.divider {
+  border-top: 1px solid var(--glass-border);
+  margin: 32px 0;
+}

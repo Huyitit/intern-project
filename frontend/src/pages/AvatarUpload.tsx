@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { toast } from "react-toastify";
 import { uploadAvatar } from "../api/users";
 import { getUser, setUser } from "../utils/auth";
-import { Link } from "react-router-dom";
+import styles from "./AvatarUpload.module.css";
 
 export const AvatarUpload = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -47,20 +47,21 @@ export const AvatarUpload = () => {
   };
 
   return (
-    <div data-testid="avatar-upload">
-      <h2>Upload Avatar</h2>
-      <Link to="/dashboard">Back to Dashboard</Link>
-      <div>
-        <input type="file" onChange={handleFileChange} />
-      </div>
-      {previewUrl && (
-        <div>
-          <img src={previewUrl} alt="Preview" style={{ width: 150, height: 150, objectFit: "cover", marginTop: 10 }} />
+    <div className={styles.container} data-testid="avatar-upload-page">
+      <div className={styles.glassCard}>
+        <h2 data-testid="avatar-heading">Upload Avatar</h2>
+        <div className={styles.uploadGroup} data-testid="avatar-input-group">
+          <input className={styles.fileInput} data-testid="avatar-file-input" type="file" onChange={handleFileChange} />
         </div>
-      )}
-      <button onClick={handleUpload} disabled={!selectedFile}>
-        Upload
-      </button>
+        {previewUrl && (
+          <div className={styles.previewContainer} data-testid="avatar-preview-group">
+            <img className={styles.previewImg} data-testid="avatar-preview-img" src={previewUrl} alt="Preview" />
+          </div>
+        )}
+        <button className={styles.submitBtn} data-testid="avatar-upload-btn" onClick={handleUpload} disabled={!selectedFile || uploading}>
+          {uploading ? "Uploading..." : "Upload"}
+        </button>
+      </div>
     </div>
   );
 };

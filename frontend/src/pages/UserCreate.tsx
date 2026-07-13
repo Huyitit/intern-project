@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { createUser } from "../api/users";
+import styles from "./UserCreate.module.css";
 
 export const UserCreate = () => {
   const [formData, setFormData] = useState({
@@ -38,41 +39,37 @@ export const UserCreate = () => {
   };
 
   return (
-    <div data-testid="user-create">
-      <h2>Create New User</h2>
-      <Link to="/dashboard">Back to Dashboard</Link>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>Full Name:</label>
-          <input name="full_name" type="text" onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Username:</label>
-          <input name="username" type="text" onChange={handleChange} required />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input name="password" type="password" onChange={handleChange} required />
-        </div>
-        {/* <div>
-          <label>Role:</label>
-          <select name="role" value={formData.role} onChange={handleChange}>
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-          </select>
-        </div> */}
-        <div>
-          <label>Phone:</label>
-          <input name="phone" type="text" onChange={handleChange} />
-        </div>
-        <div>
-          <label>Email:</label>
-          <input name="email" type="email" onChange={handleChange} />
-        </div>
-        <button type="submit" disabled={loading}>
-          {loading ? "Saving..." : "Create User"}
-        </button>
-      </form>
+    <div className={styles.container} data-testid="user-create-page">
+      <div className={styles.glassCard}>
+        <h2 data-testid="user-create-heading">Create New User</h2>
+        <form data-testid="user-create-form" onSubmit={handleSubmit}>
+          <div className={styles.formGrid}>
+            <div className={`${styles.formGroup} ${styles.fullWidth}`} data-testid="user-create-full_name-group">
+              <label data-testid="user-create-full_name-label">Full Name:</label>
+              <input className={styles.inputField} data-testid="user-create-full_name-input" name="full_name" type="text" onChange={handleChange} required />
+            </div>
+            <div className={styles.formGroup} data-testid="user-create-username-group">
+              <label data-testid="user-create-username-label">Username:</label>
+              <input className={styles.inputField} data-testid="user-create-username-input" name="username" type="text" onChange={handleChange} required />
+            </div>
+            <div className={styles.formGroup} data-testid="user-create-password-group">
+              <label data-testid="user-create-password-label">Password:</label>
+              <input className={styles.inputField} data-testid="user-create-password-input" name="password" type="password" onChange={handleChange} required />
+            </div>
+            <div className={styles.formGroup} data-testid="user-create-phone-group">
+              <label data-testid="user-create-phone-label">Phone:</label>
+              <input className={styles.inputField} data-testid="user-create-phone-input" name="phone" type="text" onChange={handleChange} />
+            </div>
+            <div className={styles.formGroup} data-testid="user-create-email-group">
+              <label data-testid="user-create-email-label">Email:</label>
+              <input className={styles.inputField} data-testid="user-create-email-input" name="email" type="email" onChange={handleChange} />
+            </div>
+          </div>
+          <button className={styles.submitBtn} data-testid="user-create-submit-btn" type="submit" disabled={loading}>
+            {loading ? "Saving..." : "Create User"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

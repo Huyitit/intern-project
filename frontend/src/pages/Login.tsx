@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { login } from "../api/auth";
 import { setToken, setUser } from "../utils/auth";
+import styles from "./Login.module.css";
 
 export const Login = () => {
   const [username, setUsername] = useState("");
@@ -25,7 +26,6 @@ export const Login = () => {
         toast.error(response.message || "Login failed");
       }
     } catch (error: any) {
-      // The API client already shows a generic toast, but we can catch specific errors here if needed
       toast.error(error.message || "Invalid credentials");
     } finally {
       setLoading(false);
@@ -33,36 +33,40 @@ export const Login = () => {
   };
 
   return (
-    <div data-testid="login-page">
-      <h2>Login</h2>
-      <form onSubmit={handleLogin}>
-        <div>
-          <label>Username:</label>
-          <input
-            data-testid="login-username"
-            type="text"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            required
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            data-testid="login-password"
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button data-testid="login-submit" type="submit" disabled={loading}>
-          {loading ? "Loading..." : "Login"}
-        </button>
-      </form>
-      <p>
-        Don't have an account? <a data-testid="register-link" href="/register">Register here</a>
-      </p>
+    <div className={styles.container} data-testid="login-page">
+      <div className={styles.glassCard}>
+        <h2 data-testid="login-heading">Login</h2>
+        <form data-testid="login-form" onSubmit={handleLogin}>
+          <div className={styles.formGroup} data-testid="login-username-group">
+            <label data-testid="login-username-label">Username:</label>
+            <input
+              className={styles.inputField}
+              data-testid="login-username-input"
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          </div>
+          <div className={styles.formGroup} data-testid="login-password-group">
+            <label data-testid="login-password-label">Password:</label>
+            <input
+              className={styles.inputField}
+              data-testid="login-password-input"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+          </div>
+          <button className={styles.submitBtn} data-testid="login-submit-btn" type="submit" disabled={loading}>
+            {loading ? "Loading..." : "Login"}
+          </button>
+        </form>
+        <p className={styles.registerText} data-testid="login-register-text">
+          Don't have an account? <a className={styles.registerLink} data-testid="login-register-link" href="/register">Register here</a>
+        </p>
+      </div>
     </div>
   );
 };
