@@ -8,7 +8,8 @@
 # lerna-debug.log*
 
 node_modules
-# dist
+dist
+.env
 # dist-ssr
 # *.local
 
