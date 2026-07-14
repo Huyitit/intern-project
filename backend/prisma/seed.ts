@@ -1,12 +1,12 @@
-import prisma from '../config/prisma';
+import prisma from '../src/config/prisma';
 import { hash } from 'bcrypt';
 
 async function main() {
   console.log('Starting seed...');
   // delete current data before seeding
-  // await prisma.$executeRawUnsafe(`
-  // TRUNCATE TABLE users;
-  // `);
+  await prisma.$executeRawUnsafe(`
+  TRUNCATE TABLE users;
+  `);
   // await prisma.users.deleteMany();
   // Hash passwords (using 4 salt rounds to match user.controller.ts)
   const adminPassword = await hash('admin123', 4);
