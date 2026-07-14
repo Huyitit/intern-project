@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 var _a;
 Object.defineProperty(exports, "__esModule", { value: true });
-const prisma_1 = __importDefault(require("../../config/prisma"));
-const jwt_1 = require("../../config/jwt");
+const prisma_1 = __importDefault(require("../config/prisma"));
+const jwt_1 = require("../config/jwt");
 const bcrypt_1 = require("bcrypt");
 class authController {
 }

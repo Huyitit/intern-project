@@ -18,5 +18,5 @@ exports.config = {
     dbPass: process.env.DATABASE_PASSWORD || "",
     dbName: process.env.DATABASE_NAME || "",
     dbHost: process.env.DATABASE_HOST || "",
-    dbPost: process.env.DATABASE_PORT || "",
+    dbPort: process.env.DATABASE_PORT || "",
 };

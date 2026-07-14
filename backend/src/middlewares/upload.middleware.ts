@@ -3,7 +3,7 @@ import path from "path";
 import fs from "fs";
 
 import { Request, Response, NextFunction } from "express";
-import prisma from "../../config/prisma";
+import prisma from "../config/prisma";
 
 // Ensure upload directory exists
 const uploadDir = path.join(__dirname, "../../public/uploads/avatars");
@@ -87,28 +87,28 @@ export const parseCsvMiddleware = async (req: Request, res: Response, next: Next
   try {
     const fileContent = fs.readFileSync(req.file.path, 'utf-8');
     const lines = fileContent.split(/\r?\n/).filter(line => line.trim() !== "");
-    
+
     if (lines.length < 2) {
       return res.status(406).json({ success: false, message: "CSV file must contain a header row and at least one data row." });
     }
 
     const headers = lines[0].split(',').map(h => h.trim());
-    
+
     // Expected headers exactly as requested
     const expectedHeaders = ['full_name', 'username', 'phone', 'email'];
     const missingHeaders = expectedHeaders.filter(h => !headers.includes(h));
-    
+
     if (missingHeaders.length > 0) {
-      return res.status(406).json({ 
-        success: false, 
-        message: `CSV is missing required headers: ${missingHeaders.join(', ')}. Expected headers: full_name,username,phone,email` 
+      return res.status(406).json({
+        success: false,
+        message: `CSV is missing required headers: ${missingHeaders.join(', ')}. Expected headers: full_name,username,phone,email`
       });
     }
 
     const values = lines[1].split(',').map(v => v.trim());
-    
+
     const parsedData: Record<string, any> = {};
-    
+
     headers.forEach((header, index) => {
       if (expectedHeaders.includes(header)) {
         const val = values[index];
@@ -140,7 +140,7 @@ export const parseCsvMiddleware = async (req: Request, res: Response, next: Next
     };
 
     req.body.user = mergedUser;
-    
+
     next();
   } catch (error: any) {
     return res.status(500).json({ success: false, message: "Internal Server Error" });

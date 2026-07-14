@@ -7,7 +7,7 @@ exports.parseCsvMiddleware = exports.uploadCsvMiddleware = exports.uploadAvatarM
 const multer_1 = __importDefault(require("multer"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
-const prisma_1 = __importDefault(require("../../config/prisma"));
+const prisma_1 = __importDefault(require("../config/prisma"));
 // Ensure upload directory exists
 const uploadDir = path_1.default.join(__dirname, "../../public/uploads/avatars");
 if (!fs_1.default.existsSync(uploadDir)) {

@@ -8,9 +8,11 @@ const adapter = new adapter_mariadb_1.PrismaMariaDb({
     user: env_1.config.dbUser,
     password: env_1.config.dbPass,
     database: env_1.config.dbName,
+    port: Number(env_1.config.dbPort),
     connectionLimit: 5,
+    connectTimeout: 20000,
     ssl: {
-        rejectUnauthorized: true
+        rejectUnauthorized: false
     }
 });
 const prisma = new client_1.PrismaClient({ adapter });
