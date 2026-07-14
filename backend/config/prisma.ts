@@ -9,6 +9,7 @@ const adapter = new PrismaMariaDb({
     database: config.dbName,
     port: Number(config.dbPort),
     connectionLimit: 5,
+    connectTimeout: 20000,
     ssl: {
         rejectUnauthorized: false
     }
