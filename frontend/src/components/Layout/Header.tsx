@@ -1,4 +1,3 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getUser, logout } from '../../utils/auth';
 import styles from './Header.module.css';

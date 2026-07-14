@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { getUser } from '../../utils/auth';
 import styles from './Sidebar.module.css';

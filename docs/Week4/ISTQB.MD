@@ -73,8 +73,41 @@ Techniques + methodical + analytical thinking + critical thinking + Domain knowl
 
 #### 2.2.1. Teset levels
 
-+ Component testing
-+ Component integration testing
-+ System testing
-+ System integration testing
-+ Acceptance testing
++ **Component testing** focuses on testing components isolation
++ **Component integration testing** focuses testing the interfaces and interacion between components.
++ **System testing** focuses on the overall behavior and caabilities of an entire system or product.
++ **System integration testing** focuses on testing the interfaces of the system under test and other systems and external services.
++ **Acceptance testing** focuses on validation and on demonstrating readiness for deployment, which means that the system fulfills the user's business needs.
+
+#### 2.2.2. Test types
+
++ **Functional testing** evaluates the functions that a component or system should perform.
++ **Non-finctional testing** evaluates attributes other than funcitonal characteristics of a component or system.
++ **Black box testing**
++ **White box testing**
+
+#### 2.2.3. Confirmation testing and regression testing
+
++ Confirmation testing confirms that an original defact has been successfully fixed.
+
++ Regression testing confirms that no adverse consequences have been caused
+by a change
+
+### 2.3. Maintenance testing
+
+## Chapter 4 - Test Analysis and Design
+
+### 4.2. Black-box test techniques
+
+#### 4.2.1. Equivalent partitioning
+
+Equivalent partitioning divides data into patitions based onthe expectaiton that all the elements of a given partition are to be processed in the same way by the test object.
+
+#### 4.2.2. Boundary value analysis
+
++ Boundary Value Analysis is a test technique based on the exercising the boundaries of equivalence partitions.
+
++ The minimum and maximum values of a partition are its boundary values.
+
+#### 4.2.3. Decision table testing
+

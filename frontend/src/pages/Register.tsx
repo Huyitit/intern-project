@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { registerUser } from "../api/auth";
-import { setToken, setUser } from "../utils/auth";
 import styles from "./Register.module.css";
 
 export const Register = () => {

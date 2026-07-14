@@ -1,0 +1,265 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+var _a;
+Object.defineProperty(exports, "__esModule", { value: true });
+const bcrypt_1 = require("bcrypt");
+const prisma_1 = __importDefault(require("../../config/prisma"));
+class userController {
+}
+_a = userController;
+// get users with pagination
+userController.getUsers = async (req, res) => {
+    const page = Number(req.query.page);
+    const limit = Number(req.query.limit);
+    const keyword = String(req.query.keyword);
+    const sort = String(req.query.sortBy);
+    const order = String(req.query.order);
+    console.log(sort, "and", order);
+    try {
+        const result = await prisma_1.default.users.findMany({
+            select: {
+                id: true,
+                full_name: true,
+                username: true,
+                phone: true,
+                email: true,
+                role: true,
+                create_at: true
+            },
+            where: {
+                role: "user",
+                username: {
+                    contains: keyword
+                }
+            },
+            orderBy: {
+                [sort]: order
+            },
+            take: limit,
+            skip: (page - 1) * limit
+        });
+        if (result.length === 0) {
+            console.log("send response");
+            return res.status(200).json({
+                success: true,
+                users: [],
+                message: "No more users"
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            users: result
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+// Intentionally slow endpoint for dev testing
+userController.exportUsersSlow = async (req, res) => {
+    // Simulate 3 seconds delay
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    try {
+        const result = await prisma_1.default.users.findMany({
+            select: {
+                id: true,
+                full_name: true,
+                username: true,
+                phone: true,
+                email: true,
+                role: true,
+                create_at: true
+            },
+            where: {
+                role: "user"
+            },
+            // Use a high limit or just fetch all
+            take: 10000
+        });
+        return res.status(200).json({
+            success: true,
+            users: result
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+// get a user by id
+userController.getUserById = async (req, res) => {
+    const { id } = (req.params);
+    try {
+        const result = await prisma_1.default.users.findUnique({
+            where: {
+                id: Number(id)
+            },
+            select: {
+                id: true,
+                full_name: true,
+                username: true,
+                phone: true,
+                email: true,
+                role: true
+            }
+        });
+        if (!result) {
+            return res.status(409).json({
+                success: false,
+                message: "Cannot find user"
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            user: result
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+// create a user
+userController.createUser = async (req, res) => {
+    const { user } = req.body;
+    // check if username already exists
+    if (user.username) {
+        const existingUser = await prisma_1.default.users.findUnique({ where: { username: user.username } });
+        if (existingUser) {
+            return res.status(409).json({
+                success: false,
+                message: "Username already exists"
+            });
+        }
+    }
+    try {
+        // create new user
+        // hash password
+        const hashed_password = await (0, bcrypt_1.hash)(user.password, 4);
+        user.hashed_password = hashed_password;
+        const newUser = await prisma_1.default.users.create({
+            data: user,
+            select: {
+                id: true,
+                full_name: true,
+                username: true,
+                phone: true,
+                email: true,
+                role: true,
+                create_at: true
+            }
+        });
+        return res.status(201).json({
+            success: true,
+            user: newUser
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+// update a user
+userController.updateUserById = async (req, res) => {
+    const { user } = req.body;
+    if (!user) {
+        return res.status(406).json({ message: "Please provide data to update" });
+    }
+    // check if user is exists
+    const currentUser = await prisma_1.default.users.findUnique({
+        where: { id: Number(user.id) }
+    });
+    if (!currentUser) {
+        return res.status(409).json({
+            success: false,
+            message: "Cannot find user"
+        });
+    }
+    // update user
+    try {
+        const updatedUser = await prisma_1.default.users.update({
+            where: { id: Number(user.id) },
+            data: user,
+            select: {
+                id: true,
+                full_name: true,
+                username: true,
+                phone: true,
+                email: true,
+                role: true
+            }
+        });
+        return res.status(200).json({
+            success: true,
+            user: updatedUser
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+// delete a user
+userController.deleteUserById = async (req, res) => {
+    const { id } = (req.params);
+    try {
+        const deletedUser = await prisma_1.default.users.delete({
+            where: { id: Number(id) },
+        });
+        return res.status(200).json({
+            success: true,
+            message: "User deleted successfully",
+        });
+    }
+    catch (error) {
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+// upload avatar
+userController.uploadAvatar = async (req, res) => {
+    const id = Number(req.params.id);
+    if (!req.file) {
+        return res.status(406).json({
+            success: false,
+            message: "No image provided"
+        });
+    }
+    const avatar_url = `/uploads/avatars/${req.file.filename}`;
+    try {
+        await prisma_1.default.users.update({
+            where: { id: id },
+            data: { avatar_url }
+        });
+        return res.status(200).json({
+            success: true,
+            message: "Avatar uploaded successfully",
+            avatar_url
+        });
+    }
+    catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: "Internal Server Error"
+        });
+    }
+};
+exports.default = userController;

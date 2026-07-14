@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getUserById, deleteUser } from "../api/users";
 import { type User } from "../types";
@@ -21,6 +21,7 @@ export const UserDetail = () => {
           toast.error("User not found");
         }
       } catch (err) {
+        console.error(err);
       } finally {
         setLoading(false);
       }
@@ -39,6 +40,7 @@ export const UserDetail = () => {
         toast.error(response.message || "Failed to delete user");
       }
     } catch (err) {
+      console.error(err);
       toast.error("Error deleting user");
     }
   };

@@ -8,7 +8,7 @@ export default defineConfig({
     proxy: {
       // Matches any request starting with /api
       '/api': {
-        target: 'http://localhost:3006', // Your backend server address
+        target: 'https://intern-project-2l2q.onrender.com', // Your backend server address
         changeOrigin: true,             // Changes the origin header to match the target
         secure: false,                  // Set to false if using self-signed SSL certs
       },

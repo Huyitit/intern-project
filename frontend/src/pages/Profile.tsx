@@ -3,7 +3,6 @@ import { getUserById, updateUser, updateProfileByCSV } from "../api/users";
 import { getUser, setUser as saveUserToLocal } from "../utils/auth";
 import { type User } from "../types";
 import { toast } from "react-toastify";
-import { Link } from "react-router-dom";
 import styles from "./Profile.module.css";
 
 export const Profile = () => {
@@ -25,7 +24,7 @@ export const Profile = () => {
           setProfile(response.user);
         }
       } catch (err) {
-        // Errors handled by api client
+        console.error("Error fetching profile", err);
       } finally {
         setLoading(false);
       }
@@ -60,6 +59,7 @@ export const Profile = () => {
         toast.error(response.message || "Failed to update profile");
       }
     } catch (err) {
+      console.error(err);
     } finally {
       setSaving(false);
     }
@@ -86,6 +86,7 @@ export const Profile = () => {
         toast.error(response.message || "Failed to update profile via CSV");
       }
     } catch (err) {
+      console.error(err);
       toast.error("Error uploading CSV");
     } finally {
       setUploadingCsv(false);

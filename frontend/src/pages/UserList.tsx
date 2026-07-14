@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import { getUsers, exportUsersSlow, deleteUser } from "../api/users";
+import { getUsers, exportUsersSlow } from "../api/users";
 import { type User } from "../types";
 import { exportToCSV } from "../utils/csv";
 import styles from "./UserList.module.css";
@@ -13,7 +13,7 @@ export const UserList = () => {
   const [error, setError] = useState(false);
 
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+  const limit = 10;
   const [keyword, setKeyword] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const [sort, setSort] = useState("id");
@@ -33,6 +33,7 @@ export const UserList = () => {
         setError(true);
       }
     } catch (err) {
+      console.error(err);
       setError(true);
     } finally {
       setLoading(false);
@@ -41,6 +42,7 @@ export const UserList = () => {
 
   useEffect(() => {
     fetchUsersData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, limit, keyword, sort, order]);
 
   const handleSearch = (e: React.FormEvent) => {
@@ -71,6 +73,7 @@ export const UserList = () => {
         toast.error("Export failed.");
       }
     } catch (err) {
+      console.error(err);
       toast.error("Error during export.");
     } finally {
       setExporting(false);

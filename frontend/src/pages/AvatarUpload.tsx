@@ -40,6 +40,7 @@ export const AvatarUpload = () => {
         toast.error(response.message || "Failed to upload avatar");
       }
     } catch (error) {
+      console.error(error);
       toast.error("Error uploading avatar");
     } finally {
       setUploading(false);

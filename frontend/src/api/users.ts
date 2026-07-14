@@ -1,5 +1,5 @@
 import { apiClient } from "./client";
-import { type User, type UsersResponse, type UserResponse } from "../types";
+import { type UsersResponse, type UserResponse } from "../types";
 import { getUser } from "../utils/auth";
 
 export const getUsers = async (

@@ -1,0 +1,22 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const user_controller_1 = __importDefault(require("../controllers/user.controller"));
+const validate_middleware_1 = require("../middlewares/validate.middleware");
+const auth_middlewares_1 = require("../middlewares/auth.middlewares");
+const role_middlewares_1 = require("../middlewares/role.middlewares");
+const zod_schemas_1 = require("../utils/zod.schemas");
+const express_1 = __importDefault(require("express"));
+const upload_middleware_1 = require("../middlewares/upload.middleware");
+const userRoutes = express_1.default.Router();
+userRoutes.get('/', auth_middlewares_1.authenticate, role_middlewares_1.checkAdminRole, user_controller_1.default.getUsers);
+userRoutes.get('/export', auth_middlewares_1.authenticate, role_middlewares_1.checkAdminRole, user_controller_1.default.exportUsersSlow);
+userRoutes.get('/:id', auth_middlewares_1.authenticate, role_middlewares_1.checkOwnerOrAdmin, user_controller_1.default.getUserById);
+userRoutes.post('/', auth_middlewares_1.authenticate, role_middlewares_1.checkAdminRole, (0, validate_middleware_1.validate)(zod_schemas_1.registerUserSchema), user_controller_1.default.createUser);
+userRoutes.post('/:id/csv', auth_middlewares_1.authenticate, role_middlewares_1.checkOwnerOrAdmin, upload_middleware_1.uploadCsvMiddleware.single('csv'), upload_middleware_1.parseCsvMiddleware, (0, validate_middleware_1.validate)(zod_schemas_1.userSchema), user_controller_1.default.updateUserById);
+userRoutes.put('/:id', auth_middlewares_1.authenticate, role_middlewares_1.checkOwnerOrAdmin, (0, validate_middleware_1.validate)(zod_schemas_1.userSchema), user_controller_1.default.updateUserById);
+userRoutes.put('/:id/avatar', auth_middlewares_1.authenticate, role_middlewares_1.checkOwnerOrAdmin, upload_middleware_1.uploadAvatarMiddleware.single('avatar'), user_controller_1.default.uploadAvatar);
+userRoutes.delete('/:id', auth_middlewares_1.authenticate, role_middlewares_1.checkAdminRole, user_controller_1.default.deleteUserById);
+exports.default = userRoutes;

@@ -1,4 +1,3 @@
-import React from "react";
 import { getUser } from "../utils/auth";
 import styles from "./Dashboard.module.css";
 
