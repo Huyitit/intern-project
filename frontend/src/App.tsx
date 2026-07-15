@@ -3,7 +3,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import { ProtectedRoute } from "./routes/ProtectedRoute";
-import { Login } from "./pages/Login";
+// import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import { Dashboard } from "./pages/Dashboard";
 import { Profile } from "./pages/Profile";
