@@ -12,13 +12,14 @@ import { UserCreate } from "./pages/UserCreate";
 import { UserDetail } from "./pages/UserDetail";
 import { AvatarUpload } from "./pages/AvatarUpload";
 import { Layout } from "./components/Layout/Layout";
+import { Login } from "./pages/Login";
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Navigate to="/login" replace />} />
-        <Route path="/login" element={<Navigate to='/login'/>} />
+        <Route path="/login" element={<Login/>} />
         <Route path="/register" element={<Register />} />
 
         {/* Protected Routes Wrapped in Layout */}
