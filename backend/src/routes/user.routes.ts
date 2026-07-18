@@ -2,7 +2,7 @@ import userController from "../controllers/user.controller";
 import { validate } from "../middlewares/validate.middleware";
 import { authenticate } from '../middlewares/auth.middlewares';
 import { checkAdminRole, checkOwnerOrAdmin } from "../middlewares/role.middlewares";
-import { registerUserSchema, loginUserSchema, userSchema } from "../utils/zod.schemas";
+import { registerUserSchema, userSchema } from "../utils/zod.schemas";
 import express from 'express';
 
 import { uploadAvatarMiddleware, uploadCsvMiddleware, parseCsvMiddleware } from "../middlewares/upload.middleware";

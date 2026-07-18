@@ -40,7 +40,7 @@ function App() {
 
         <Route path="*" element={<div>Page not found</div>} />
       </Routes>
-      <ToastContainer position="top-right" autoClose={5000} theme="dark" />
+      <ToastContainer data-testid = "toast-container" position="top-right" autoClose={5000} theme="dark" />
     </BrowserRouter>
   );
 }
