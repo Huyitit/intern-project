@@ -28,19 +28,19 @@
 
 ### A. User Login
 
-1. User open login page
+1. User opens login page
 2. System displays login page including login form: username field, password field, login button
 3. User enters username and password and clicks login button
-4. System validates username and password and display a success message
+4. System validates username and password and navigates to the dashboard, displaying a success message
 
 ### B. User Register
 
-1. User open login page
-2. System displays login page including link to register page
-3. User clicks on link to the register page
-4. System displays register page including register form: username field, password field, confirm password field, register button
-5. User enters username, password and confirm password and clicks register button
-6. System validates username, password and open home page based on role of user
+1. User opens login page
+2. System displays login page including a link to the register page
+3. User clicks on the link to the register page
+4. System displays register page including register form: Full Name, Username, Password, Phone, and Email fields, along with a Register button
+5. User enters details and clicks the Register button
+6. System validates the data, registers the user, displays a success message, and navigates back to the login page
 
 ### C. Admin view user table
 
@@ -50,8 +50,8 @@
 
 **Steps**:
 
-1. Admin clicks view user table button in Dashboard
-2. System displays a screen including user table: user's id, username
+1. Admin clicks Manage Users button in the Sidebar
+2. System displays a screen including the user table (ID, Username, Full Name, Actions), search form, pagination controls, and export button
 
 ### D. Admin view user's detail
 
@@ -61,10 +61,10 @@
 
 **Steps**:
 
-1. Admin clicks view user table button in Dashboard
-2. System displays a screen including user table: user's id, username
-3. Admin clicks on a line of user table
-4. System displays a screen including user's detail: id, username, phone, email.
+1. Admin clicks Manage Users button in the Sidebar
+2. System displays a screen including the user table
+3. Admin clicks the "View Profile" button on a specific user's row
+4. System navigates to a screen displaying the user's detail: ID, Username, Full Name, Phone, Email, Role, and a Delete User button
 
 ### E. Admin create user
 
@@ -74,10 +74,10 @@
 
 **Steps**:
 
-1. Admin clicks create user button in Dashboard
-2. System displays a screen including user's form: username field, password field, create button
-3. Admin enters username, password and confirm password and clicks create button
-4. System validates username, password and creates user. Then, system displays a success message
+1. Admin clicks Create User button in the Sidebar
+2. System displays a screen including the Create User form: Full Name, Username, Password, Phone, and Email fields
+3. Admin enters the required details and clicks the Create User button
+4. System validates the information, creates the user, displays a success message, and navigates back to the Manage Users page
 
 ### F. Admin delete a user
 
@@ -87,12 +87,13 @@
 
 **Steps**:
 
-1. Admin clicks view user table button in Dashboard
-2. System displays a screen including user table: user's id, username
-3. Admin clicks on a line of user table
-4. System displays a screen including user's detail: id, username, phone, email
-5. Admin clicks delete button
-6. System validates information and deletes user. Then, system displays a success message
+1. Admin clicks Manage Users button in the Sidebar
+2. System displays a screen including the user table
+3. Admin clicks the "View Profile" button on a specific user's row
+4. System navigates to a screen displaying the user's detail
+5. Admin clicks the "Delete User" button
+6. System displays a confirmation prompt. Admin confirms the deletion
+7. System deletes the user, displays a success message, and navigates back to the Manage Users page
 
 ### G. User view their detail
 
@@ -102,8 +103,8 @@
 
 **Steps**:
 
-1. User clicks profile button in Dashboard
-2. System displays a screen including user's form: username, phone, email
+1. User clicks Profile button in the Sidebar
+2. System displays the Profile screen including sections for CSV Update and Manual Update, showing current Full Name, Username (disabled), Phone, and Email
 
 ### H. User update their information
 
@@ -113,10 +114,10 @@
 
 **Steps**:
 
-1. User clicks update information button in Dashboard
-2. System displays a screen including user's form: username, phone, email
-3. User enters new information and clicks update button
-4. System validates information and updates it. Then, system displays a success message
+1. User clicks Profile button in the Sidebar
+2. System displays the Profile screen
+3. User enters new information (Full Name, Phone, Email) in the Manual Update form and clicks the "Update Profile" button (or alternatively, selects a CSV file and clicks "Upload CSV")
+4. System validates information, updates it in the database, and displays a success message
 
 ### I. User upload avatar
 
@@ -126,11 +127,11 @@
 
 **Steps**:
 
-1. User clicks upload avatar button/link in Dashboard (or profile)
-2. System displays a screen with a file upload form for the avatar
-3. User selects an image file and clicks upload button
-4. System processes the upload, saves the avatar, and displays a success message
-5. System displays the newly uploaded avatar in the UI
+1. User clicks Upload Avatar button in the Sidebar
+2. System displays a screen with a file input for the avatar
+3. User selects an image file. System displays a visual preview of the selected image
+4. User clicks the Upload button
+5. System processes the upload, saves the avatar URL to the user profile, and displays a success message
 
 ### J. Admin export users table as CSV file
 
@@ -140,11 +141,11 @@
 
 **Steps**:
 
-1. Admin clicks view user table button in Dashboard
-2. System displays a screen including user table
-3. Admin clicks the 'Export to CSV' button
-4. System prepares the CSV file containing user data (with a simulated delay)
-5. System prompts the admin to download the generated CSV file
+1. Admin clicks Manage Users button in the Sidebar
+2. System displays a screen including the user table
+3. Admin clicks the 'Export CSV' button
+4. System requests the export data from the server and prepares the CSV file
+5. System displays a success message and automatically triggers the download of the `users_export.csv` file
 
 ## Flowcharts
 
