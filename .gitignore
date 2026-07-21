@@ -1,6 +1,6 @@
 .agents/
 .user/
-
+.playwright-mcp
 # # Configuration
 # package-lock.json
 # .env
