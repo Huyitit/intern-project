@@ -29,7 +29,11 @@ export const Register = () => {
         toast.success("Registration successful! Please login.");
         navigate("/login");
       } else {
-        toast.error(response.message || "Registration failed");
+        if (response.errors && response.errors.length > 0) {
+          response.errors.forEach(err => toast.error(err.error_message));
+        } else {
+          toast.error(response.message || "Registration failed");
+        }
       }
     } catch (error: any) {
       toast.error(error.message || "An error occurred");
@@ -46,15 +50,15 @@ export const Register = () => {
           <div className={styles.formGrid}>
             <div className={`${styles.formGroup} ${styles.fullWidth}`} data-testid="register-full_name-group">
               <label data-testid="register-full_name-label">Full Name:</label>
-              <input className={styles.inputField} data-testid="register-full_name-input" name="full_name" type="text" onChange={handleChange} required />
+              <input className={styles.inputField} data-testid="register-full_name-input" name="full_name" type="text" onChange={handleChange} />
             </div>
             <div className={styles.formGroup} data-testid="register-username-group">
               <label data-testid="register-username-label">Username:</label>
-              <input className={styles.inputField} data-testid="register-username-input" name="username" type="text" onChange={handleChange} required />
+              <input className={styles.inputField} data-testid="register-username-input" name="username" type="text" onChange={handleChange} />
             </div>
             <div className={styles.formGroup} data-testid="register-password-group">
               <label data-testid="register-password-label">Password:</label>
-              <input className={styles.inputField} data-testid="register-password-input" name="password" type="password" onChange={handleChange} required />
+              <input className={styles.inputField} data-testid="register-password-input" name="password" type="password" onChange={handleChange} />
             </div>
             <div className={styles.formGroup} data-testid="register-phone-group">
               <label data-testid="register-phone-label">Phone:</label>

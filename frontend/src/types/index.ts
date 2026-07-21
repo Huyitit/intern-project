@@ -14,6 +14,7 @@ export interface AuthResponse {
   user?: User;
   token?: string;
   message?: string;
+  errors?: { error_message: string; code: string }[];
 }
 
 export interface UsersResponse {
