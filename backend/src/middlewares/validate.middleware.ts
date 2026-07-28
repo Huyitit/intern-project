@@ -31,7 +31,7 @@ export const validate: ValidateInput = (schema): MiddlewareFunction => (req, res
             success: false,
             message: "invalid input",
             errors: result.error.issues.map((i)=>({
-                error_message: i.message,
+                message: i.message,
                 code: i.code
             }))
         });

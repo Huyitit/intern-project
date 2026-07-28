@@ -6,7 +6,8 @@ export const checkAdminRole = (req: Request, res: Response, next: NextFunction) 
     {
         return res.status(500).json({
             success: false,
-            message: "Internal Server Error"
+            message: "Internal Server Error",
+            errors: [{ code: "server_error", message: "Internal Server Error" }]
         });
     }
 
@@ -18,7 +19,8 @@ export const checkAdminRole = (req: Request, res: Response, next: NextFunction) 
 
     return res.status(403).json({
         success: false,
-        message: "You do not have permission to perform this action"
+        message: "You do not have permission to perform this action",
+        errors: [{ code: "forbidden", message: "You do not have permission to perform this action" }]
     });
 
 }
@@ -36,6 +38,7 @@ export const checkOwnerOrAdmin = (req: Request, res: Response, next: NextFunctio
 
     return res.status(403).json({
         success: false,
-        message: "You do not have permission to update this profile"
+        message: "You do not have permission to update this profile",
+        errors: [{ code: "forbidden", message: "You do not have permission to update this profile" }]
     });
 }

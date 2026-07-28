@@ -9,7 +9,8 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
     if (!token) {
         return res.status(406).json({
             success: false,
-            message: "Token is required"
+            message: "Token is required",
+            errors: [{ code: "auth_required", message: "Token is required" }]
         });
     }
 
@@ -27,7 +28,8 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
         console.log(error);
         return res.status(403).json({
             success: false,
-            message: "Token is expired or invalid"
+            message: "Token is expired or invalid",
+            errors: [{ code: "auth_invalid", message: "Token is expired or invalid" }]
         });
     }
 }

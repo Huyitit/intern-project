@@ -11,12 +11,12 @@ export const env = {
   User:
   {
     admin: {
-      username: process.env.AdminUsername ?? 'admin123',
-      password: process.env.AdminPassword ?? 'admin123'
+      username: process.env.ADMIN_USERNAME || 'admin123',
+      password: process.env.ADMIN_PASSWORD || 'admin123'
     },
     normal: {
-      username: process.env.UserUsername ?? 'username01',
-      password: process.env.UserPassword ?? 'userpassword1'
+      username: process.env.USER_USERNAME || 'username01',
+      password: process.env.USER_PASSWORD || 'userpassword1'
     }
   }
 };

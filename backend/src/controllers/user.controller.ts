@@ -9,11 +9,11 @@ export default class userController {
     // get users with pagination
     static getUsers = async (req: Request, res: Response) => {
 
-        const page = Number(req.query.page);
-        const limit = Number(req.query.limit);
-        const keyword = String(req.query.keyword);
-        const sort = String(req.query.sortBy);
-        const order = String(req.query.order);
+        const page = Number(req.query.page) || 1;
+        const limit = Number(req.query.limit) || 10;
+        const keyword = req.query.keyword ? String(req.query.keyword) : "";
+        const sort = req.query.sortBy ? String(req.query.sortBy) : "id";
+        const order = req.query.order ? String(req.query.order) : "asc";
         console.log(sort, "and", order);
         try {
 
@@ -59,7 +59,8 @@ export default class userController {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                message: "Internal Server Error"
+                message: "Internal Server Error",
+                errors: [{ code: "server_error", message: "Internal Server Error" }]
             });
         }
 
@@ -94,7 +95,8 @@ export default class userController {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                message: "Internal Server Error"
+                message: "Internal Server Error",
+                errors: [{ code: "server_error", message: "Internal Server Error" }]
             });
         }
     }
@@ -123,7 +125,8 @@ export default class userController {
             if (!result) {
                 return res.status(409).json({
                     success: false,
-                    message: "Cannot find user"
+                    message: "Cannot find user",
+                    errors: [{ code: "not_found", message: "Cannot find user" }]
                 });
             }
 
@@ -134,7 +137,8 @@ export default class userController {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                message: "Internal Server Error"
+                message: "Internal Server Error",
+                errors: [{ code: "server_error", message: "Internal Server Error" }]
             });
         }
     }
@@ -151,7 +155,8 @@ export default class userController {
             if (existingUser) {
                 return res.status(409).json({
                     success: false,
-                    message: "Username already exists"
+                    message: "Username already exists",
+                    errors: [{ code: "conflict", message: "Username already exists" }]
                 });
             }
         }
@@ -184,7 +189,8 @@ export default class userController {
             console.log(error);
             return res.status(500).json({
                 success: false,
-                message: "Internal Server Error"
+                message: "Internal Server Error",
+                errors: [{ code: "server_error", message: "Internal Server Error" }]
             });
 
         }
@@ -196,7 +202,11 @@ export default class userController {
         const { user } = req.body;
 
         if (!user) {
-            return res.status(406).json({ message: "Please provide data to update" });
+            return res.status(406).json({
+                success: false,
+                message: "Please provide data to update",
+                errors: [{ code: "missing_body", message: "Please provide data to update" }]
+            });
         }
 
         // check if user is exists
@@ -207,7 +217,8 @@ export default class userController {
         if (!currentUser) {
             return res.status(409).json({
                 success: false,
-                message: "Cannot find user"
+                message: "Cannot find user",
+                errors: [{ code: "not_found", message: "Cannot find user" }]
             });
         }
 
@@ -236,7 +247,8 @@ export default class userController {
             console.log(error);
             return res.status(500).json({
                 success: false,
-                message: "Internal Server Error"
+                message: "Internal Server Error",
+                errors: [{ code: "server_error", message: "Internal Server Error" }]
             });
         }
     }
@@ -260,7 +272,8 @@ export default class userController {
         } catch (error) {
             return res.status(500).json({
                 success: false,
-                message: "Internal Server Error"
+                message: "Internal Server Error",
+                errors: [{ code: "server_error", message: "Internal Server Error" }]
             });
         }
     }
@@ -273,7 +286,8 @@ export default class userController {
         if (!req.file) {
             return res.status(406).json({
                 success: false,
-                message: "No image provided"
+                message: "No image provided",
+                errors: [{ code: "missing_file", message: "No image provided" }]
             });
         }
 
@@ -294,7 +308,8 @@ export default class userController {
             console.log(error);
             return res.status(500).json({
                 success: false,
-                message: "Internal Server Error"
+                message: "Internal Server Error",
+                errors: [{ code: "server_error", message: "Internal Server Error" }]
             });
         }
     }

@@ -179,6 +179,9 @@ Response's body:
 ### 1. Register
 
 Endpoint: POST /auth/register
+Headers:
+
+Content-type: application/json
 
 Request's body:
 
@@ -201,7 +204,6 @@ Response's body:
 
 ```typescript
 {
-    success: true,
     user: {
         id: number,
         full_name: string,
@@ -212,27 +214,36 @@ Response's body:
     }
 }
 ```
+<!-- Validation -->
 
-+ status: 409 Conflict
++ Errors response
+
+| Status |
+| --- |
+| 400 Bad Request |
+| 422 Unprocessable Content |
+| 403 Forbidden |
+| 409 Conflict |
+| 500 Internal Server Error |
+| 504 Gateway Timeout |
+
+Response body:
 
 ```typescript
 {
-    message: "User existed"
-}
-```
-
-+ status: 500
-
-```typescript
-{
-    success: false,
-    message: "Internal Server Error"
+    error: {
+        code: string,
+        message: string
+    }
 }
 ```
 
 ### 2. Login
 
 Endpoint: POST /auth/login
+
+Headers:
+Content-type: application/json
 
 Request's body:
 
@@ -251,7 +262,6 @@ Response's body:
 
 ```typescript
 {
-    success: true,
     user: {
         id: number,
         full_name: string,
@@ -264,30 +274,24 @@ Response's body:
 }
 ```
 
-+ status: 409 Conflict
++ Error response:
+
+| Status |
+| --- |
+| 400 Bad Request |
+| 422 Unprocessable Content |
+| 409 Conflict |
+| 500 Internal Server Error |
+| 504 Gateway Timeout |
+
++ Error response body:
 
 ```typescript
 {
-    success: false,
-    message: "Cannot find user"
-}
-```
-
-+ status: 401 Unauthorized
-
-```typescript
-{
-    success: false,
-    message: "Invalid password"
-}
-```
-
-+ status: 500
-
-```typescript
-{
-    success: false,
-    message: "Internal Server Error"
+    errors: {
+        code: string,
+        message: string
+    }[]
 }
 ```
 

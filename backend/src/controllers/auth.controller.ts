@@ -19,7 +19,13 @@ export default class authController {
         });
 
         if (existedUser) {
-            return res.status(409).json({ message: "User existed" });
+            return res.status(409).json({
+                success: false,
+                message: "User existed",
+                errors: [
+                    { code: "duplicate_user", message: "User existed" }
+                ]
+            });
         }
 
         // add new user
@@ -83,9 +89,10 @@ export default class authController {
             })
 
             if (currentUser === null) {
-                return res.status(409).json({
+                return res.status(401).json({
                     success: false,
-                    message: "Cannot find user"
+                    message: "Cannot find user",
+                    errors: [{ code: "invalid_credentials", message: "Cannot find user" }]
                 });
             }
 
@@ -95,7 +102,8 @@ export default class authController {
             if (!validPassword) {
                 return res.status(401).json({
                     success: false,
-                    message: "Invalid password"
+                    message: "Invalid password",
+                    errors: [{ code: "invalid_credentials", message: "Invalid password" }]
                 });
             }
 

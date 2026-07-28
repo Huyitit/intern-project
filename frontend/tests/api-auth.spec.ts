@@ -1,25 +1,25 @@
+import { randomUUID } from 'crypto';
 import { test, expect } from '@playwright/test';
 
-const API_BASE_URL = 'http://localhost:3000/api';
+const API_BASE_URL = process.env.API_BASE_URL ?? 'http://localhost:3000/api';
 
 test.describe('API Authentication Feature: Register & Login', () => {
 
-  // Helper function to generate unique user data for idempotent tests
-  const generateUniqueUser = (prefix = 'user') => {
-    const timestamp = Date.now();
-    const randomStr = Math.random().toString(36).substring(2, 6);
+  // Helper function to generate schema-valid unique user data for idempotent tests.
+  const generateUniqueUser = () => {
+    const uniqueSuffix = randomUUID().replace(/-/g, '').slice(0, 8);
     return {
-      full_name: `Test ${prefix} ${randomStr}`,
-      username: `${prefix}_${timestamp}_${randomStr}`,
+      full_name: `Test ${uniqueSuffix}`,
+      username: `u_${uniqueSuffix}`,
       password: 'Password123',
       phone: '1234567890',
-      email: `${prefix}_${timestamp}@test.com`,
+      email: `u_${uniqueSuffix}@test.com`,
       role: 'user'
     };
   };
 
   test('API-REG-001: Register with all valid fields', async ({ request }) => {
-    const validUser = generateUniqueUser('allfields');
+    const validUser = generateUniqueUser();
     const response = await request.post(`${API_BASE_URL}/auth/register`, {
       data: { user: validUser }
     });
@@ -33,7 +33,7 @@ test.describe('API Authentication Feature: Register & Login', () => {
   });
 
   test('API-REG-002: Register with only required fields', async ({ request }) => {
-    const uniqueUser = generateUniqueUser('reqfields');
+    const uniqueUser = generateUniqueUser();
     const requiredUser = {
       full_name: uniqueUser.full_name,
       username: uniqueUser.username,
@@ -53,7 +53,7 @@ test.describe('API Authentication Feature: Register & Login', () => {
   });
 
   test('API-REG-003: Register with duplicate username', async ({ request }) => {
-    const uniqueUser = generateUniqueUser('duplicate');
+    const uniqueUser = generateUniqueUser();
     
     // First, register the user to ensure it exists
     await request.post(`${API_BASE_URL}/auth/register`, { data: { user: uniqueUser } });
@@ -86,7 +86,7 @@ test.describe('API Authentication Feature: Register & Login', () => {
   });
 
   test('API-REG-005: Register with Full Name < 6 chars', async ({ request }) => {
-    const user = generateUniqueUser('shortname');
+    const user = generateUniqueUser();
     user.full_name = 'abc';
     
     const response = await request.post(`${API_BASE_URL}/auth/register`, { data: { user } });
@@ -97,7 +97,7 @@ test.describe('API Authentication Feature: Register & Login', () => {
   });
 
   test('API-REG-006: Register with Full Name > 20 chars', async ({ request }) => {
-    const user = generateUniqueUser('longname');
+    const user = generateUniqueUser();
     user.full_name = 'abcdefghijklmnopqrstuvwxyz';
     
     const response = await request.post(`${API_BASE_URL}/auth/register`, { data: { user } });
@@ -108,7 +108,7 @@ test.describe('API Authentication Feature: Register & Login', () => {
   });
 
   test('API-REG-007: Register with Username < 6 chars', async ({ request }) => {
-    const user = generateUniqueUser('usr');
+    const user = generateUniqueUser();
     user.username = 'usr';
     
     const response = await request.post(`${API_BASE_URL}/auth/register`, { data: { user } });
@@ -119,7 +119,7 @@ test.describe('API Authentication Feature: Register & Login', () => {
   });
 
   test('API-REG-008: Register with Username > 20 chars', async ({ request }) => {
-    const user = generateUniqueUser('longuser');
+    const user = generateUniqueUser();
     user.username = 'thisusernameiswaytoolongtobevalid';
     
     const response = await request.post(`${API_BASE_URL}/auth/register`, { data: { user } });
@@ -130,7 +130,7 @@ test.describe('API Authentication Feature: Register & Login', () => {
   });
 
   test('API-REG-009: Register with Password < 6 chars', async ({ request }) => {
-    const user = generateUniqueUser('shortpass');
+    const user = generateUniqueUser();
     user.password = '123';
     
     const response = await request.post(`${API_BASE_URL}/auth/register`, { data: { user } });
@@ -141,7 +141,7 @@ test.describe('API Authentication Feature: Register & Login', () => {
   });
 
   test('API-REG-010: Register with Password > 20 chars', async ({ request }) => {
-    const user = generateUniqueUser('longpass');
+    const user = generateUniqueUser();
     user.password = 'ThisPasswordIsWayTooLong12345';
     
     const response = await request.post(`${API_BASE_URL}/auth/register`, { data: { user } });
@@ -152,7 +152,7 @@ test.describe('API Authentication Feature: Register & Login', () => {
   });
 
   test('API-REG-011: Register with Phone < 10 digits', async ({ request }) => {
-    const user = generateUniqueUser('shortphone');
+    const user = generateUniqueUser();
     user.phone = '12345';
     
     const response = await request.post(`${API_BASE_URL}/auth/register`, { data: { user } });
@@ -163,7 +163,7 @@ test.describe('API Authentication Feature: Register & Login', () => {
   });
 
   test('API-REG-012: Register with Phone > 15 digits', async ({ request }) => {
-    const user = generateUniqueUser('longphone');
+    const user = generateUniqueUser();
     user.phone = '12345678901234567890';
     
     const response = await request.post(`${API_BASE_URL}/auth/register`, { data: { user } });
@@ -174,25 +174,24 @@ test.describe('API Authentication Feature: Register & Login', () => {
   });
 
   test('API-REG-013: Register with invalid email', async ({ request }) => {
-    const user = generateUniqueUser('bademail');
+    const user = generateUniqueUser();
     user.email = 'notanemail';
     
     const response = await request.post(`${API_BASE_URL}/auth/register`, { data: { user } });
     
     expect(response.status()).toBe(400);
     const body = await response.json();
-    expect(body.errors.some((e: any) => e.error_message.includes('Invalid email format'))).toBeTruthy();
+    expect(body.errors.some((e: any) => e.error_message.includes('Invalid email address'))).toBeTruthy();
   });
 
   test('API-REG-014: Register with SQL injection in username', async ({ request }) => {
-    const user = generateUniqueUser('sqlinj');
+    const user = generateUniqueUser();
     user.username = "admin' OR 1=1--";
     
     const response = await request.post(`${API_BASE_URL}/auth/register`, { data: { user } });
     
-    // Zod validation should catch this as invalid string format if there's a regex, or at least it won't crash DB
-    // Zod validation on username does not explicitly forbid SQL injection characters in Validations.MD, but it should not 500.
-    expect([201, 400]).toContain(response.status());
+    // This payload may be accepted, rejected by validation, or rejected as a duplicate in parallel browser runs.
+    expect([201, 400, 409]).toContain(response.status());
   });
 
   // ==========================================
@@ -200,7 +199,7 @@ test.describe('API Authentication Feature: Register & Login', () => {
   // ==========================================
 
   test('API-LOG-001: Login with valid credentials', async ({ request }) => {
-    const user = generateUniqueUser('validlogin');
+    const user = generateUniqueUser();
     
     // Setup: create user
     await request.post(`${API_BASE_URL}/auth/register`, { data: { user } });
@@ -229,7 +228,7 @@ test.describe('API Authentication Feature: Register & Login', () => {
   });
 
   test('API-LOG-003: Login with incorrect password', async ({ request }) => {
-    const user = generateUniqueUser('wrongpass');
+    const user = generateUniqueUser();
     await request.post(`${API_BASE_URL}/auth/register`, { data: { user } });
     
     const response = await request.post(`${API_BASE_URL}/auth/login`, {

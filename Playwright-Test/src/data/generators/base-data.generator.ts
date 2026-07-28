@@ -3,6 +3,10 @@ import { faker } from '@faker-js/faker';
 export abstract class BaseDataGenerator {
   protected static faker = faker;
 
+  protected static setPrefix(value:string, prefix: string = 'test') {
+    return `${prefix}${value}`;
+  }
+
   protected static constrainLength(value: string, min: number, max: number): string {
     if (value.length > max) {
       return value.substring(0, max);
