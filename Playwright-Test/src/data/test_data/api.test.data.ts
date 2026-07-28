@@ -107,7 +107,7 @@ export class ApiData {
       description: 'SQL Injection attempt in credentials',
       payload: {
         user: {
-          username: "' OR '1'='1",
+          username: "test' OR '1'='1",
           password: "' OR '1'='1",
         },
       },
@@ -323,54 +323,84 @@ export class ApiData {
    * Delete User API Test Datasets (DELETE /api/users/:id)
    */
   static readonly deleteUser: Record<string, () => TestCaseRecord> = {
-    'TC-DU-01': () => ({
-      tcId: 'TC-DU-01',
-      description: 'Valid Deletion (Admin)',
-      payload: {},
-      expectedStatus: 200,
-    }),
+    
+    'TC-DU-01': () => {
+      const newUser = createValidUser();
+      return {
+        tcId: 'TC-DU-01',
+        description: 'Valid Deletion (Admin)',
+        user: newUser,
+        payload: {},
+        expectedStatus: 200,
+      };
+    },
     'TC-DU-02': () => ({
       tcId: 'TC-DU-02',
       description: 'Delete Non-Existent User',
       payload: { targetId: '999999' },
       expectedStatus: 500,
     }),
-    'TC-DU-03': () => ({
-      tcId: 'TC-DU-03',
-      description: 'Idempotency Check',
-      payload: {},
-      expectedStatus: 200,
-    }),
-    'TC-DU-04': () => ({
-      tcId: 'TC-DU-04',
-      description: 'User Role Forbidden',
-      payload: {},
-      expectedStatus: 403,
-    }),
-    'TC-DU-05': () => ({
-      tcId: 'TC-DU-05',
-      description: 'No Token',
-      payload: {},
-      expectedStatus: 406,
-    }),
+    'TC-DU-03': () => {
+      const newUser = createValidUser();
+      return {
+        tcId: 'TC-DU-03',
+        description: 'Idempotency Check',
+        user: newUser,
+        payload: {},
+        expectedStatus: 200,
+      };
+    },
+    'TC-DU-04': () => {
+      const newUser = createValidUser();
+      return {
+        tcId: 'TC-DU-04',
+        description: 'User Role Forbidden',
+        user: newUser,
+        payload: {},
+        expectedStatus: 403,
+      };
+    },
+    'TC-DU-05': () => {
+      const newUser = createValidUser();
+      return {
+        tcId: 'TC-DU-05',
+        description: 'No Token',
+        user: newUser,
+        payload: {},
+        expectedStatus: 406,
+      };
+    },
   };
 
   /**
    * Get User By ID API Test Datasets (GET /api/users/:id)
    */
   static readonly getUserById: Record<string, () => TestCaseRecord> = {
-    'TC-GI-01': () => ({
-      tcId: 'TC-GI-01',
-      description: 'Admin fetches any user by ID',
-      payload: {},
-      expectedStatus: 200,
-    }),
-    'TC-GI-02': () => ({
-      tcId: 'TC-GI-02',
-      description: 'User fetches their own profile',
-      payload: {},
-      expectedStatus: 200,
-    }),
+    'TC-GI-01': () => {
+      const newUser = createValidUser();
+      return {
+        tcId: 'TC-GI-01',
+        description: 'Admin fetches any user by ID',
+        user: newUser,
+        payload: {},
+        expectedStatus: 200,
+      }
+    },
+    'TC-GI-02': () => {
+      const newUser = createValidUser();
+      return {
+        tcId: 'TC-GI-02',
+        description: 'User fetches their own profile',
+        user: newUser,
+        payload: {
+          user: {
+            username: newUser.username,
+            password: newUser.password,
+          },
+        },
+        expectedStatus: 200,
+      }
+    },
     'TC-GI-03': () => ({
       tcId: 'TC-GI-03',
       description: 'Fetch a non-existent user ID',
@@ -487,21 +517,39 @@ export class ApiData {
   static readonly updateUser: Record<string, () => TestCaseRecord> = {
     'TC-UU-01': () => {
       const user = createValidUser();
-      user.full_name = 'Admin Updated Name';
+      const updatedUser = new UserBuilder()
+      .setFull_name('Admin Updated Name')
+      .setUserName(user.username)
+      .setPassword(user.password)
+      .setRole("user")
+      .build();
+
       return {
         tcId: 'TC-UU-01',
         description: 'Valid Update (Admin)',
-        payload: { user },
+        user: user,
+        payload: { 
+          user: updatedUser
+         },
         expectedStatus: 200,
       };
     },
     'TC-UU-02': () => {
       const user = createValidUser();
-      user.full_name = 'Owner Updated Name';
+      const updatedUser = new UserBuilder()
+      .setFull_name('Admin Updated Name')
+      .setUserName(user.username)
+      .setPassword(user.password)
+      .setRole("user")
+      .build();
       return {
         tcId: 'TC-UU-02',
         description: 'Valid Update (Owner)',
-        payload: { user },
+        user: user,
+        payload: { 
+          userId: user.id,
+          user: updatedUser
+         },
         expectedStatus: 200,
       };
     },
@@ -527,10 +575,11 @@ export class ApiData {
       payload: { user: { full_name: 'A' } },
       expectedStatus: 400,
     }),
-    'TC-UU-06': () => ({
+    'TC-UU-06': () => (
+      {
       tcId: 'TC-UU-06',
       description: 'User Updating Another User',
-      payload: { targetId: 1, user: { full_name: 'Hacked' } },
+      payload: { targetId: 7, user: { full_name: 'Hacked' } },
       expectedStatus: 403,
     }),
     'TC-UU-07': () => ({

@@ -42,6 +42,9 @@ import { ZodTypeAny } from 'zod';
  
 
 export default defineConfig({
+  /* Run data seeding file before run test */
+  globalSetup: require.resolve('./src/data/seed.ts'),
+
   testDir: '.',
   /* Run tests in files in parallel */
   fullyParallel: true,

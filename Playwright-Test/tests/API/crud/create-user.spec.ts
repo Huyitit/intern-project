@@ -8,26 +8,17 @@ import { Expectations } from '../../../src/api/helpers/assertions/base';
 import { createUserResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
 import { authErrorResponseSchema } from '../../../src/api/helpers/schemas/auth.schema';
 import { ApiData } from '../../../src/data/test_data/api.test.data';
-import { env } from '../../../src/api/config/env';
+import { cleanupTestData } from '../../../src/data/cleanup';
 
 test.describe('POST /api/users Test Suite', () => {
   let expectations: Expectations;
-  const createdUserIds: number[] = [];
 
   test.beforeEach(() => {
     expectations = new Expectations();
   });
 
-  test.afterAll(async ({ request }) => {
-    const authServiceForTeardown = new AuthService(new AuthClient(request));
-    const loginRes = await authServiceForTeardown.login({
-      user: { username: env.User.admin.username, password: env.User.admin.password }
-    });
-    const adminToken = (await loginRes.json()).token;
-    const teardownService = new UserService(new ApiClient(request, adminToken));
-    for (const id of createdUserIds) {
-      try { await teardownService.delete(id.toString()); } catch {}
-    }
+  test.afterAll(async () => {
+    await cleanupTestData();
   });
 
   test('TC-CU-01: Valid User Creation (Admin)', async ({ adminService }) => {
@@ -40,7 +31,6 @@ test.describe('POST /api/users Test Suite', () => {
     
     const body = await response.json();
     expect(body.user.username).toBe(record.payload.user.username);
-    createdUserIds.push(body.user.id);
     await expectations.expectUserCreatedOnDatabase(record.payload as any);
   });
 
@@ -50,7 +40,6 @@ test.describe('POST /api/users Test Suite', () => {
     // Initial creation
     const res1 = await adminService.create({ user: record.user } as any);
     await expectations.expectStatus(res1, 201);
-    createdUserIds.push((await res1.json()).user.id);
 
     // Duplicate creation attempt
     const response = await adminService.create(record.payload as any);
@@ -81,6 +70,7 @@ test.describe('POST /api/users Test Suite', () => {
     const record = ApiData.createUser['TC-CU-05']();
 
     const response = await adminService.create(record.payload as any);
+    
     await expectations.expectStatus(response, record.expectedStatus);
     await expectations.expectSchema(response, authErrorResponseSchema);
   });

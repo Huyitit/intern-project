@@ -1,8 +1,7 @@
-import { test, expect } from '@playwright/test';
+import { expect } from '@playwright/test';
+import { test } from "../../../src/api/helpers/fixtures/api.service.fixture";
 import { ApiClient } from '../../../src/api/clients/api.client';
 import { UserService } from '../../../src/api/services/user.service';
-import { AuthClient } from '../../../src/api/clients/auth.client';
-import { AuthService } from '../../../src/api/services/auth.service';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
 import {
   loginResponseSchema,
@@ -12,17 +11,14 @@ import { ApiData } from '../../../src/data/test_data/api.test.data';
 import { registerUser } from '../../../src/api/helpers/actions/register';
 
 test.describe('POST /api/auth/login Test Suite', () => {
-  let authService: AuthService;
   let expectations: Expectations;
 
   test.beforeEach(({ request }) => {
-    const authClient = new AuthClient(request);
-    authService = new AuthService(authClient);
     expectations = new Expectations();
   });
 
   // TC-LOG-01: Valid Login
-  test('TC-LOG-01: should successfully login with valid credentials (200 OK)', async () => {
+  test('TC-LOG-01: should successfully login with valid credentials (200 OK)', async ({ authService }) => {
     const record = ApiData.login['TC-LOG-01']();
     await registerUser(record, authService, expectations);
 
@@ -34,7 +30,7 @@ test.describe('POST /api/auth/login Test Suite', () => {
   });
 
   // TC-LOG-02: Auth Failure (Wrong Password)
-  test('TC-LOG-02: should return 401 Unauthorized for incorrect password', async () => {
+  test('TC-LOG-02: should return 401 Unauthorized for incorrect password', async ({ authService }) => {
     const record = ApiData.login['TC-LOG-02']();
     await registerUser(record, authService, expectations);
 
@@ -45,7 +41,7 @@ test.describe('POST /api/auth/login Test Suite', () => {
   });
 
   // TC-LOG-03: Auth Failure (User Not Found)
-  test('TC-LOG-03: should return 401 Unauthorized for non-existent user', async () => {
+  test('TC-LOG-03: should return 401 Unauthorized for non-existent user', async ({ authService }) => {
     const record = ApiData.login['TC-LOG-03']();
 
     const response = await authService.login(record.payload);
@@ -55,7 +51,7 @@ test.describe('POST /api/auth/login Test Suite', () => {
   });
 
   // TC-LOG-04: Missing Fields
-  test('TC-LOG-04: should return 400 Bad Request when missing password field', async () => {
+  test('TC-LOG-04: should return 400 Bad Request when missing password field', async ({ authService }) => {
     const record = ApiData.login['TC-LOG-04']();
     await registerUser(record, authService, expectations);
 
@@ -66,7 +62,7 @@ test.describe('POST /api/auth/login Test Suite', () => {
   });
 
   // TC-LOG-05: Empty Object
-  test('TC-LOG-05: should return 400 Bad Request when user object is empty', async () => {
+  test('TC-LOG-05: should return 400 Bad Request when user object is empty', async ({ authService }) => {
     const record = ApiData.login['TC-LOG-05']();
 
     const response = await authService.login(record.payload as any);
@@ -76,7 +72,7 @@ test.describe('POST /api/auth/login Test Suite', () => {
   });
 
   // TC-LOG-06: Flat Payload
-  test('TC-LOG-06: should return 400 Bad Request when payload is missing user wrapper', async () => {
+  test('TC-LOG-06: should return 400 Bad Request when payload is missing user wrapper', async ({ authService }) => {
     const record = ApiData.login['TC-LOG-06']();
     await registerUser(record, authService, expectations);
 
@@ -87,7 +83,7 @@ test.describe('POST /api/auth/login Test Suite', () => {
   });
 
   // TC-LOG-07: SQL Injection
-  test('TC-LOG-07: should reject SQL injection payload safely', async () => {
+  test('TC-LOG-07: should reject SQL injection payload safely', async ({ authService }) => {
     const record = ApiData.login['TC-LOG-07']();
 
     const response = await authService.login(record.payload);
@@ -97,7 +93,7 @@ test.describe('POST /api/auth/login Test Suite', () => {
   });
 
   // TC-LOG-08: Multi-Device Login
-  test('TC-LOG-08: should allow multi-device login and return valid tokens for both', async ({ request }) => {
+  test('TC-LOG-08: should allow multi-device login and return valid tokens for both', async ({ request, authService }) => {
     const record = ApiData.login['TC-LOG-08']();
     await registerUser(record, authService, expectations);
 

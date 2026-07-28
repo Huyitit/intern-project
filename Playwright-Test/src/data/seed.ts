@@ -62,12 +62,14 @@ async function main() {
   console.log('50 users seeded/verified successfully.');
 }
 
-main()
-  .catch((e) => {
-    console.error('Error seeding database:', e);
-    process.exit(1);
-  })
-  .finally(async () => {
-    await pool.end(); // close pool cleanly instead of hard exit
-    process.exit(0);
-  });
+export default async function globalSetup() {
+  await main();
+}
+
+if (require.main === module) {
+  main()
+    .catch((e) => {
+      console.error('Error seeding database:', e);
+      process.exit(1);
+    });
+}

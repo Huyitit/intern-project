@@ -1,14 +1,14 @@
 import { expect } from '@playwright/test';
 import { test } from '../../../src/api/helpers/fixtures/api.service.fixture';
 import { ApiClient } from '../../../src/api/clients/api.client';
-import { AuthService } from '../../../src/api/services/auth.service';
 import { UserService } from '../../../src/api/services/user.service';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
 import { getUserByIdResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
 import { authErrorResponseSchema } from '../../../src/api/helpers/schemas/auth.schema';
 import { ApiData } from '../../../src/data/test_data/api.test.data';
 import { UserBuilder } from '../../../src/data/builders/user.builder';
-
+import { cleanupTestData } from '../../../src/data/cleanup';
+import { registerUserAndGetId } from '../../../src/api/helpers/actions/registerUserAndGetId';
 test.describe('GET /api/users/:id Test Suite', () => {
   let expectations: Expectations;
 
@@ -16,23 +16,15 @@ test.describe('GET /api/users/:id Test Suite', () => {
     expectations = new Expectations();
   });
 
-  async function createTestUser(authService: AuthService): Promise<number> {
-    const newUser = new UserBuilder().setValidNewUser().build();
-    const registerRes = await authService.register({ user: newUser });
-    return (await registerRes.json()).user.id;
-  }
+  test.afterAll(async () => {
+    await cleanupTestData();
+  });
 
-  async function cleanupTestUser(id: number, adminService: UserService) {
-    if (id && adminService) {
-      try {
-        await adminService.delete(id.toString());
-      } catch {}
-    }
-  }
+
 
   test('TC-GI-01: Admin fetches any user by ID', async ({ authService, adminService }) => {
     const record = ApiData.getUserById['TC-GI-01']();
-    const testUserId = await createTestUser(authService);
+    const testUserId = await registerUserAndGetId(record, authService, expectations);
 
     const response = await adminService.getById(testUserId.toString());
     await expectations.expectStatus(response, record.expectedStatus);
@@ -40,23 +32,18 @@ test.describe('GET /api/users/:id Test Suite', () => {
     
     const body = await response.json();
     expect(body.user.id).toBe(testUserId);
-
-    await cleanupTestUser(testUserId, adminService);
   });
 
   test('TC-GI-02: User fetches their own profile', async ({ request, authService }) => {
     const record = ApiData.getUserById['TC-GI-02']();
-    const newUser = new UserBuilder().setValidNewUser().build();
-    const regRes = await authService.register({ user: newUser });
-    const userId = (await regRes.json()).user.id;
+    const userId = await registerUserAndGetId(record, authService, expectations);
 
-    const loginRes = await authService.login({
-      user: { username: newUser.username, password: newUser.password }
-    });
+    const loginRes = await authService.login(record.payload);
     const token = (await loginRes.json()).token;
 
     const ownerUserService = new UserService(new ApiClient(request, token));
     const response = await ownerUserService.getById(userId.toString());
+
     await expectations.expectStatus(response, record.expectedStatus);
     await expectations.expectSchema(response, getUserByIdResponseSchema);
     
@@ -68,6 +55,7 @@ test.describe('GET /api/users/:id Test Suite', () => {
     const record = ApiData.getUserById['TC-GI-03']();
 
     const response = await adminService.getById(record.payload.targetId);
+    
     await expectations.expectStatus(response, record.expectedStatus);
     await expectations.expectSchema(response, authErrorResponseSchema);
   });
@@ -79,25 +67,21 @@ test.describe('GET /api/users/:id Test Suite', () => {
     expect(response.status()).toBe(record.expectedStatus);
   });
 
-  test('TC-GI-05: User accessing another user profile', async ({ authService, normalService, adminService }) => {
+  test('TC-GI-05: User accessing another user profile', async ({ authService, normalService }) => {
     const record = ApiData.getUserById['TC-GI-05']();
-    const testUserId = await createTestUser(authService);
+    const testUserId = await registerUserAndGetId(record, authService, expectations);
 
     const response = await normalService.getById(testUserId.toString());
     await expectations.expectStatus(response, record.expectedStatus);
     await expectations.expectSchema(response, authErrorResponseSchema);
-
-    await cleanupTestUser(testUserId, adminService);
   });
 
-  test('TC-GI-06: No Token', async ({ authService, anonymousService, adminService }) => {
+  test('TC-GI-06: No Token', async ({ authService, anonymousService }) => {
     const record = ApiData.getUserById['TC-GI-06']();
-    const testUserId = await createTestUser(authService);
+    const testUserId = await registerUserAndGetId(record, authService, expectations);
 
     const response = await anonymousService.getById(testUserId.toString());
     await expectations.expectStatus(response, record.expectedStatus);
     await expectations.expectSchema(response, authErrorResponseSchema);
-
-    await cleanupTestUser(testUserId, adminService);
   });
 });

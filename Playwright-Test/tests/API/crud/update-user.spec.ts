@@ -8,12 +8,18 @@ import { updateUserResponseSchema } from '../../../src/api/helpers/schemas/user.
 import { authErrorResponseSchema } from '../../../src/api/helpers/schemas/auth.schema';
 import { ApiData } from '../../../src/data/test_data/api.test.data';
 import { UserBuilder } from '../../../src/data/builders/user.builder';
-
+import { cleanupTestData } from '../../../src/data/cleanup';
+import { registerUserAndGetId } from '../../../src/api/helpers/actions/registerUserAndGetId';
+import { loginUser } from '../../../src/api/helpers/actions/login';
 test.describe('PUT /api/users/:id Test Suite', () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {
     expectations = new Expectations();
+  });
+
+  test.afterAll(async () => {
+    await cleanupTestData();
   });
 
   async function createTargetUser(authService: AuthService): Promise<{ userId: number; token: string }> {
@@ -28,18 +34,18 @@ test.describe('PUT /api/users/:id Test Suite', () => {
 
     return { userId, token };
   }
-
-  async function cleanupTargetUser(userId: number, adminService: UserService) {
-    if (userId && adminService) {
-      try {
-        await adminService.delete(userId.toString());
-      } catch {}
-    }
-  }
+  //what I function return : userId - registerUserAndGetId
+  // token
 
   test('TC-UU-01: Valid Update (Admin)', async ({ authService, adminService }) => {
+
+    // Create a user
+    // Change User attributes value 
+    // Update it 
     const record = ApiData.updateUser['TC-UU-01']();
-    const { userId } = await createTargetUser(authService);
+
+    // Register and get user id
+    const userId = await registerUserAndGetId(record, authService, expectations);
 
     const updatePayload = { user: { id: userId, ...record.payload.user } };
     const response = await adminService.updateUser(userId, updatePayload);
@@ -49,25 +55,26 @@ test.describe('PUT /api/users/:id Test Suite', () => {
 
     const body = await response.json();
     expect(body.user.full_name).toBe(record.payload.user.full_name);
-
-    await cleanupTargetUser(userId, adminService);
   });
 
-  test('TC-UU-02: Valid Update (Owner)', async ({ request, authService, adminService }) => {
-    const record = ApiData.updateUser['TC-UU-02']();
-    const { userId, token: testUserToken } = await createTargetUser(authService);
-    const testUserService = new UserService(new ApiClient(request, testUserToken));
+  test('TC-UU-02: Valid Update (Owner)', async ({ request, authService }) => {
 
+    // Create a User and login it
+    // Change User attributes value 
+    // User update it self 
+    const record = ApiData.updateUser['TC-UU-02']();
+    const userId = await registerUserAndGetId(record, authService, expectations);
+    const token = await loginUser(record, authService, expectations);
+
+    const userService = new UserService(new ApiClient(request, token));
     const updatePayload = { user: { id: userId, ...record.payload.user } };
-    const response = await testUserService.updateUser(userId, updatePayload);
+    const response = await userService.updateUser(userId, updatePayload);
 
     await expectations.expectStatus(response, record.expectedStatus);
     await expectations.expectSchema(response, updateUserResponseSchema);
 
     const body = await response.json();
     expect(body.user.full_name).toBe(record.payload.user.full_name);
-
-    await cleanupTargetUser(userId, adminService);
   });
 
   test('TC-UU-03: User Not Found', async ({ adminService }) => {
@@ -88,8 +95,6 @@ test.describe('PUT /api/users/:id Test Suite', () => {
 
     await expectations.expectStatus(response, record.expectedStatus);
     await expectations.expectSchema(response, authErrorResponseSchema);
-
-    await cleanupTargetUser(userId, adminService);
   });
 
   test('TC-UU-05: Validation Failure', async ({ authService, adminService }) => {
@@ -101,25 +106,19 @@ test.describe('PUT /api/users/:id Test Suite', () => {
 
     await expectations.expectStatus(response, record.expectedStatus);
     await expectations.expectSchema(response, authErrorResponseSchema);
-
-    await cleanupTargetUser(userId, adminService);
   });
 
-  test('TC-UU-06: User Updating Another User', async ({ request, authService, adminService }) => {
+  test('TC-UU-06: User Updating Another User', async ({ request, authService, normalService}) => {
     const record = ApiData.updateUser['TC-UU-06']();
-    const { userId, token: testUserToken } = await createTargetUser(authService);
-    const testUserService = new UserService(new ApiClient(request, testUserToken));
 
     const updatePayload = { user: { id: record.payload.targetId, ...record.payload.user } };
-    const response = await testUserService.updateUser(record.payload.targetId, updatePayload);
+    const response = await normalService.updateUser(record.payload.targetId, updatePayload);
 
     await expectations.expectStatus(response, record.expectedStatus);
     await expectations.expectSchema(response, authErrorResponseSchema);
-
-    await cleanupTargetUser(userId, adminService);
   });
 
-  test('TC-UU-07: No Token', async ({ authService, anonymousService, adminService }) => {
+  test('TC-UU-07: No Token', async ({ authService, anonymousService }) => {
     const record = ApiData.updateUser['TC-UU-07']();
     const { userId } = await createTargetUser(authService);
 
@@ -128,11 +127,9 @@ test.describe('PUT /api/users/:id Test Suite', () => {
 
     await expectations.expectStatus(response, record.expectedStatus);
     await expectations.expectSchema(response, authErrorResponseSchema);
-
-    await cleanupTargetUser(userId, adminService);
   });
 
-  test('TC-UU-08: Expired Token', async ({ request, authService, adminService }) => {
+  test('TC-UU-08: Expired Token', async ({ request, authService }) => {
     const record = ApiData.updateUser['TC-UU-08']();
     const { userId } = await createTargetUser(authService);
     const invalidService = new UserService(new ApiClient(request, 'invalid.token'));
@@ -142,7 +139,5 @@ test.describe('PUT /api/users/:id Test Suite', () => {
 
     await expectations.expectStatus(response, record.expectedStatus);
     await expectations.expectSchema(response, authErrorResponseSchema);
-
-    await cleanupTargetUser(userId, adminService);
   });
 });
