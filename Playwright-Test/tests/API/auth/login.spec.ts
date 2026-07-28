@@ -9,6 +9,7 @@ import {
 } from '../../../src/api/helpers/schemas/auth.schema';
 import { ApiData } from '../../../src/data/test_data/api.test.data';
 import { registerUser } from '../../../src/api/helpers/actions/register';
+import { getLoginTestCases } from '../../../src/data/test_data/login.dataset';
 
 test.describe('POST /api/auth/login Test Suite', () => {
   let expectations: Expectations;
@@ -88,8 +89,7 @@ test.describe('POST /api/auth/login Test Suite', () => {
 
     const response = await authService.login(record.payload);
 
-    const validRejectStatuses = [400, 401, 404, 409];
-    expect(validRejectStatuses.includes(response.status())).toBeTruthy();
+    await expectations.expectStatusIn(response, [400, 401, 404, 409]);
   });
 
   // TC-LOG-08: Multi-Device Login
@@ -122,4 +122,51 @@ test.describe('POST /api/auth/login Test Suite', () => {
     const userProfile2 = await userService2.getById(body2.user.id.toString());
     await expectations.expectStatus(userProfile2, 200);
   });
+});
+
+test.describe('POST /api/auth/login Data-Driven Tests', () => {
+  let expectations: Expectations;
+
+  test.beforeEach(() => {
+    expectations = new Expectations();
+  });
+
+  const ddtTestCases = getLoginTestCases();
+
+  for (const tc of ddtTestCases) {
+    test(`${tc.tcId}: ${tc.description}`, async ({ authService }) => {
+      // Setup pre-registered user if required
+      if (tc.shouldRegisterFirst && tc.username) {
+        const passwordToRegister = tc.registerPassword ?? tc.password;
+        if (passwordToRegister) {
+          const registerRes = await authService.register({
+            user: {
+              username: tc.username,
+              password: passwordToRegister,
+              full_name: 'DDT Setup User',
+              role: 'user',
+            },
+          });
+          await expectations.expectStatus(registerRes, 201);
+        }
+      }
+
+      // Construct request body based on payloadType
+      let payload: any;
+      if (tc.payloadType === 'emptyObject') {
+        payload = { user: {} };
+      } else if (tc.payloadType === 'missingPassword') {
+        payload = { user: { username: tc.username } };
+      } else if (tc.payloadType === 'unwrapped') {
+        payload = { username: tc.username, password: tc.password };
+      } else {
+        payload = { user: { username: tc.username, password: tc.password } };
+      }
+
+      const response = await authService.login(payload);
+
+      await expectations.expectStatus(response, tc.expectedStatus);
+      await expectations.expectSchema(response, tc.expectedSchema);
+    });
+  }
 });

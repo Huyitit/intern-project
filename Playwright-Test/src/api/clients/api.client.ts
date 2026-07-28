@@ -32,14 +32,16 @@ export class ApiClient {
     const res = await this.request.post(url, {
       data,
       headers: this.mergeHeader(options.headers),
-      params: options.params
+      params: options.params,
+      multipart: options.multipart
     });
     return res;
   }
   async put(url: string, data?: object, options: RequestOptions = {}): Promise<APIResponse> {
     const res = await this.request.put(url, { 
       data,
-      headers: this.mergeHeader(options.headers)
+      headers: this.mergeHeader(options.headers),
+      multipart: options.multipart
     });
     return res;
   }

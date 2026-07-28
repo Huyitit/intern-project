@@ -1,4 +1,4 @@
-import { defineConfig, devices, expect, APIResponse } from '@playwright/test';
+import { defineConfig, devices } from '@playwright/test';
 import { env } from './src/api/config/env';
 import { ZodTypeAny } from 'zod';
 /**
@@ -59,7 +59,9 @@ export default defineConfig({
     ['list'],
     ['html', {
       open: 'always'
-  }]],
+    }],
+    ['json', {outputFile: 'test-results/api-results.json'}]
+],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */

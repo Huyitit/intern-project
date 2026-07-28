@@ -11,6 +11,8 @@ import { UserBuilder } from '../../../src/data/builders/user.builder';
 import { cleanupTestData } from '../../../src/data/cleanup';
 import { registerUserAndGetId } from '../../../src/api/helpers/actions/registerUserAndGetId';
 import { loginUser } from '../../../src/api/helpers/actions/login';
+import { createTargetUser } from '../../../src/api/helpers/actions/createTargetUser';
+
 test.describe('PUT /api/users/:id Test Suite', () => {
   let expectations: Expectations;
 
@@ -21,19 +23,6 @@ test.describe('PUT /api/users/:id Test Suite', () => {
   test.afterAll(async () => {
     await cleanupTestData();
   });
-
-  async function createTargetUser(authService: AuthService): Promise<{ userId: number; token: string }> {
-    const newUser = new UserBuilder().setValidNewUser().build();
-    const registerRes = await authService.register({ user: newUser });
-    const userId = (await registerRes.json()).user.id;
-
-    const loginRes = await authService.login({
-      user: { username: newUser.username, password: newUser.password }
-    });
-    const token = (await loginRes.json()).token;
-
-    return { userId, token };
-  }
   //what I function return : userId - registerUserAndGetId
   // token
 
@@ -108,7 +97,7 @@ test.describe('PUT /api/users/:id Test Suite', () => {
     await expectations.expectSchema(response, authErrorResponseSchema);
   });
 
-  test('TC-UU-06: User Updating Another User', async ({ request, authService, normalService}) => {
+  test('TC-UU-06: User Updating Another User', async ({ normalService }) => {
     const record = ApiData.updateUser['TC-UU-06']();
 
     const updatePayload = { user: { id: record.payload.targetId, ...record.payload.user } };

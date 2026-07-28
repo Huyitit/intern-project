@@ -1,46 +1,59 @@
-import { test as base} from "@playwright/test";
+import { test as base } from "@playwright/test";
 import { AuthService } from "../../services/auth.service";
 import { AuthClient } from "../../clients/auth.client";
+import { env } from "../../config/env";
 
+export const test = base.extend<
+  {}, // Test-scoped fixtures
+  { adminToken: string; userToken: string } // Worker-scoped fixtures
+>({
+  adminToken: [
+    async ({ playwright }, use) => {
+      const requestContext = await playwright.request.newContext({
+        baseURL: env.baseUrl,
+      });
+      const apiClient = new AuthClient(requestContext);
+      const authService = new AuthService(apiClient);
+      console.log("Creating admin token (worker scope)...");
 
-export const test = base.extend<{adminToken: string, userToken: string}>({
-  adminToken: async ({request}, use)=>{
-    const apiClient = new AuthClient(request);
-    const authService = new AuthService(apiClient);
+      const credentials = {
+        user: {
+          username: env.User.admin.username,
+          password: env.User.admin.password,
+        },
+      };
 
-    let token: string;
+      const res = await authService.login(credentials);
+      const token = (await res.json()).token;
 
-    const credentials = {
-      user: 
-      {
-        username: process.env.ADMIN_USERNAME || "admin123",
-        password: process.env.ADMIN_PASSWORD || "admin123"
-      }
-    }
+      await use(token);
+      await requestContext.dispose();
+    },
+    { scope: "worker" },
+  ],
 
-    const res = await authService.login(credentials)
-    token = (await res.json()).token;
+  userToken: [
+    async ({ playwright }, use) => {
+      const requestContext = await playwright.request.newContext({
+        baseURL: env.baseUrl,
+      });
+      const apiClient = new AuthClient(requestContext);
+      const authService = new AuthService(apiClient);
+      console.log("Creating user token (worker scope)...");
 
-    await use(token);
-  },
+      const credentials = {
+        user: {
+          username: env.User.normal.username,
+          password: env.User.normal.password,
+        },
+      };
 
-  userToken: async ({request}, use)=>{
-    const apiClient = new AuthClient(request);
-    const authService = new AuthService(apiClient);
+      const res = await authService.login(credentials);
+      const token = (await res.json()).token;
 
-    let token: string;
-
-    const credentials = {
-      user: 
-      {
-        username: process.env.USER_USERNAME || "username01",
-        password: process.env.USER_PASSWORD || "userpassword1"
-      }
-    }
-
-    const res = await authService.login(credentials)
-    token = (await res.json()).token;
-
-    await use(token);
-  }
+      await use(token);
+      await requestContext.dispose();
+    },
+    { scope: "worker" },
+  ],
 });

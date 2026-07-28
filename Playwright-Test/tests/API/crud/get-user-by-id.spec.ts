@@ -9,6 +9,7 @@ import { ApiData } from '../../../src/data/test_data/api.test.data';
 import { UserBuilder } from '../../../src/data/builders/user.builder';
 import { cleanupTestData } from '../../../src/data/cleanup';
 import { registerUserAndGetId } from '../../../src/api/helpers/actions/registerUserAndGetId';
+import { createTargetUser } from '../../../src/api/helpers/actions/createTargetUser';
 test.describe('GET /api/users/:id Test Suite', () => {
   let expectations: Expectations;
 
@@ -36,10 +37,7 @@ test.describe('GET /api/users/:id Test Suite', () => {
 
   test('TC-GI-02: User fetches their own profile', async ({ request, authService }) => {
     const record = ApiData.getUserById['TC-GI-02']();
-    const userId = await registerUserAndGetId(record, authService, expectations);
-
-    const loginRes = await authService.login(record.payload);
-    const token = (await loginRes.json()).token;
+    const { userId, token } = await createTargetUser(authService);
 
     const ownerUserService = new UserService(new ApiClient(request, token));
     const response = await ownerUserService.getById(userId.toString());

@@ -31,7 +31,7 @@ export class Expectations {
     const result = schema.safeParse(json);
 
     const errorMessage = result.success
-      ? ""
+      ? "Expect response schema match the design"
       : `Response body does not match expected schema:\n
           ${JSON.stringify(zod.toJSONSchema(schema), null, 4)}
           \n${result.error.issues
@@ -77,6 +77,26 @@ export class Expectations {
       }
     }
     expect(response.status(), `Expected response status code to be ${status}, but received ${response.status()}`).toBe(status);
+  }
+
+  /**
+   * Test Status code belongs to one of allowed status codes
+   * @param response API Response object
+   * @param allowedStatuses Array of allowed HTTP status codes
+   * @param description Optional custom assertion error description
+   */
+  async expectStatusIn(response: APIResponse, allowedStatuses: number[], description?: string) {
+    const currentStatus = response.status();
+    if (!allowedStatuses.includes(currentStatus)) {
+      try {
+        const json = await response.json();
+        console.error(`Status mismatch! Expected HTTP status to be one of [${allowedStatuses.join(', ')}], but received HTTP ${currentStatus}. Body:`, json);
+      } catch (e) {
+        console.error(`Status mismatch! Expected HTTP status to be one of [${allowedStatuses.join(', ')}], but received HTTP ${currentStatus}. Body could not be parsed as JSON.`);
+      }
+    }
+    const message = description ?? `Expected response status code to be one of [${allowedStatuses.join(', ')}], but received ${currentStatus}`;
+    expect(allowedStatuses.includes(currentStatus), message).toBe(true);
   }
 
   /**
