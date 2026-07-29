@@ -1,12 +1,13 @@
 import { expect } from '@playwright/test';
 import { test } from '../../../src/api/helpers/fixtures/api.service.fixture';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
+import { HttpStatus } from '../../../src/api/config/httpStatus';
 import { cleanupTestData } from '../../../src/data/cleanup';
 import { ApiClient } from '../../../src/api/clients/api.client';
 import { UserService } from '../../../src/api/services/user.service';
 import { createTargetUser } from '../../../src/api/helpers/actions/createTargetUser';
 
-test.describe('POST /api/users/:id/csv Test Suite', () => {
+test.describe('POST /api/users/:id/csv Test Suite @crud', () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {
@@ -33,7 +34,7 @@ test.describe('POST /api/users/:id/csv Test Suite', () => {
       },
     });
 
-    await expectations.expectStatus(response, 200);
+    await expectations.expectStatus(response, HttpStatus.OK);
 
     const body = await response.json();
     expect(body.success).toBe(true);
@@ -55,7 +56,7 @@ test.describe('POST /api/users/:id/csv Test Suite', () => {
       },
     });
 
-    await expectations.expectStatus(response, 200);
+    await expectations.expectStatus(response, HttpStatus.OK);
   });
 
   // TC-CSV-03: Missing CSV file in payload
@@ -64,7 +65,7 @@ test.describe('POST /api/users/:id/csv Test Suite', () => {
 
     const response = await adminService.uploadCsv(userId, {});
 
-    await expectations.expectStatusIn(response, [400, 406]);
+    await expectations.expectStatusIn(response, [HttpStatus.BAD_REQUEST, HttpStatus.NOT_ACCEPTABLE]);
   });
 
   // TC-CSV-04: Invalid/missing required CSV headers
@@ -82,7 +83,7 @@ test.describe('POST /api/users/:id/csv Test Suite', () => {
       },
     });
 
-    await expectations.expectStatusIn(response, [400, 406]);
+    await expectations.expectStatusIn(response, [HttpStatus.BAD_REQUEST, HttpStatus.NOT_ACCEPTABLE]);
   });
 
   // TC-CSV-05: Non-owner standard user updating another user via CSV
@@ -100,7 +101,7 @@ test.describe('POST /api/users/:id/csv Test Suite', () => {
       },
     });
 
-    await expectations.expectStatus(response, 403);
+    await expectations.expectStatus(response, HttpStatus.FORBIDDEN);
   });
 
   // TC-CSV-06: Anonymous upload request without token
@@ -118,6 +119,6 @@ test.describe('POST /api/users/:id/csv Test Suite', () => {
       },
     });
 
-    await expectations.expectStatusIn(response, [401, 403, 406]);
+    await expectations.expectStatusIn(response, [HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN, HttpStatus.NOT_ACCEPTABLE]);
   });
 });

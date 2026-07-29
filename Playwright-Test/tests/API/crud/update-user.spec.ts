@@ -1,19 +1,18 @@
 import { expect } from '@playwright/test';
 import { test } from '../../../src/api/helpers/fixtures/api.service.fixture';
 import { ApiClient } from '../../../src/api/clients/api.client';
-import { AuthService } from '../../../src/api/services/auth.service';
 import { UserService } from '../../../src/api/services/user.service';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
+import { HttpStatus } from '../../../src/api/config/httpStatus';
 import { updateUserResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
 import { authErrorResponseSchema } from '../../../src/api/helpers/schemas/auth.schema';
 import { ApiData } from '../../../src/data/test_data/api.test.data';
-import { UserBuilder } from '../../../src/data/builders/user.builder';
 import { cleanupTestData } from '../../../src/data/cleanup';
 import { registerUserAndGetId } from '../../../src/api/helpers/actions/registerUserAndGetId';
 import { loginUser } from '../../../src/api/helpers/actions/login';
 import { createTargetUser } from '../../../src/api/helpers/actions/createTargetUser';
 
-test.describe('PUT /api/users/:id Test Suite', () => {
+test.describe('PUT /api/users/:id Test Suite @crud', () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {
@@ -23,17 +22,10 @@ test.describe('PUT /api/users/:id Test Suite', () => {
   test.afterAll(async () => {
     await cleanupTestData();
   });
-  //what I function return : userId - registerUserAndGetId
-  // token
 
   test('TC-UU-01: Valid Update (Admin)', async ({ authService, adminService }) => {
-
-    // Create a user
-    // Change User attributes value 
-    // Update it 
     const record = ApiData.updateUser['TC-UU-01']();
 
-    // Register and get user id
     const userId = await registerUserAndGetId(record, authService, expectations);
 
     const updatePayload = { user: { id: userId, ...record.payload.user } };
@@ -47,10 +39,6 @@ test.describe('PUT /api/users/:id Test Suite', () => {
   });
 
   test('TC-UU-02: Valid Update (Owner)', async ({ request, authService }) => {
-
-    // Create a User and login it
-    // Change User attributes value 
-    // User update it self 
     const record = ApiData.updateUser['TC-UU-02']();
     const userId = await registerUserAndGetId(record, authService, expectations);
     const token = await loginUser(record, authService, expectations);

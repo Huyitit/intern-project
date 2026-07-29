@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { test } from '../../../src/api/helpers/fixtures/api.service.fixture';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
+import { HttpStatus } from '../../../src/api/config/httpStatus';
 import { cleanupTestData } from '../../../src/data/cleanup';
 import { ApiClient } from '../../../src/api/clients/api.client';
 import { UserService } from '../../../src/api/services/user.service';
@@ -11,7 +12,7 @@ const dummyPngBuffer = Buffer.from(
   'base64'
 );
 
-test.describe('PUT /api/users/:id/avatar Test Suite', () => {
+test.describe('PUT /api/users/:id/avatar Test Suite @crud', () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {
@@ -35,7 +36,7 @@ test.describe('PUT /api/users/:id/avatar Test Suite', () => {
       },
     });
 
-    await expectations.expectStatus(response, 200);
+    await expectations.expectStatus(response, HttpStatus.OK);
 
     const body = await response.json();
     expect(body.success).toBe(true);
@@ -55,7 +56,7 @@ test.describe('PUT /api/users/:id/avatar Test Suite', () => {
       },
     });
 
-    await expectations.expectStatus(response, 200);
+    await expectations.expectStatus(response, HttpStatus.OK);
   });
 
   // TC-AVT-03: Missing avatar file in payload
@@ -64,7 +65,7 @@ test.describe('PUT /api/users/:id/avatar Test Suite', () => {
 
     const response = await adminService.uploadAvatar(userId, {});
 
-    await expectations.expectStatusIn(response, [400, 406]);
+    await expectations.expectStatusIn(response, [HttpStatus.BAD_REQUEST, HttpStatus.NOT_ACCEPTABLE]);
   });
 
   // TC-AVT-04: Uploading non-image file type (e.g. text/plain)
@@ -79,7 +80,7 @@ test.describe('PUT /api/users/:id/avatar Test Suite', () => {
       },
     });
 
-    await expectations.expectStatusIn(response, [400, 415, 500]);
+    await expectations.expectStatusIn(response, [HttpStatus.BAD_REQUEST, HttpStatus.UNSUPPORTED_MEDIA_TYPE, HttpStatus.INTERNAL_SERVER_ERROR]);
   });
 
   // TC-AVT-05: Non-owner standard user updating another user's avatar
@@ -94,7 +95,7 @@ test.describe('PUT /api/users/:id/avatar Test Suite', () => {
       },
     });
 
-    await expectations.expectStatus(response, 403);
+    await expectations.expectStatus(response, HttpStatus.FORBIDDEN);
   });
 
   // TC-AVT-06: Anonymous request without token
@@ -109,6 +110,6 @@ test.describe('PUT /api/users/:id/avatar Test Suite', () => {
       },
     });
 
-    await expectations.expectStatusIn(response, [401, 403, 406]);
+    await expectations.expectStatusIn(response, [HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN, HttpStatus.NOT_ACCEPTABLE]);
   });
 });

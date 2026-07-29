@@ -1,19 +1,24 @@
 import { test } from '../../../src/api/helpers/fixtures/api.service.fixture';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
+import { HttpStatus } from '../../../src/api/config/httpStatus';
 import {
   registerResponseSchema,
   authErrorResponseSchema,
 } from '../../../src/api/helpers/schemas/auth.schema';
 import { ApiData } from '../../../src/data/test_data/api.test.data';
 import { registerUser } from '../../../src/api/helpers/actions/register';
+import cleanupTestData from '../../../src/data/cleanup';
 
-test.describe('POST /api/auth/register Test Suite (REST & Security Standard)', () => {
+test.describe('POST /api/auth/register Test Suite @auth', () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {
     expectations = new Expectations();
   });
 
+  test.afterAll(async()=>{
+    await cleanupTestData();
+  })
   // TC-REG-01: Valid User Registration
   test('TC-REG-01: should successfully register a new user with valid dynamic payload (201 Created)', async ({ authService }) => {
     const record = ApiData.register['TC-REG-01']();

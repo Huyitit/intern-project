@@ -88,8 +88,10 @@ export default class userController {
                 take: 10000
             });
 
+            const random = Math.random() > 0.7 ? true : false;
+
             return res.status(200).json({
-                success: true,
+                success: random,
                 users: result
             });
         } catch (error) {

@@ -1,13 +1,14 @@
 import { expect } from '@playwright/test';
 import { test } from '../../../src/api/helpers/fixtures/api.service.fixture';
-import { registerUserAndGetId} from '../../../src/api/helpers/actions/registerUserAndGetId'
+import { registerUserAndGetId } from '../../../src/api/helpers/actions/registerUserAndGetId';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
+import { HttpStatus } from '../../../src/api/config/httpStatus';
 import { deleteUserResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
 import { authErrorResponseSchema } from '../../../src/api/helpers/schemas/auth.schema';
 import { ApiData } from '../../../src/data/test_data/api.test.data';
 import { cleanupTestData } from '../../../src/data/cleanup';
 
-test.describe('DELETE /api/users/:id Test Suite', () => {
+test.describe('DELETE /api/users/:id Test Suite @crud', () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {
@@ -29,7 +30,7 @@ test.describe('DELETE /api/users/:id Test Suite', () => {
 
     // Verify it's actually deleted
     const getRes = await adminService.getById(targetUserId.toString());
-    await expectations.expectStatus(getRes, 409);
+    await expectations.expectStatus(getRes, HttpStatus.CONFLICT);
   });
 
   test('TC-DU-02: Delete Non-Existent User', async ({ adminService }) => {
@@ -51,7 +52,7 @@ test.describe('DELETE /api/users/:id Test Suite', () => {
 
     // Second deletion of the same ID
     const res2 = await adminService.delete(targetUserId.toString());
-    await expectations.expectStatus(res2, 500);
+    await expectations.expectStatus(res2, HttpStatus.INTERNAL_SERVER_ERROR);
     await expectations.expectSchema(res2, authErrorResponseSchema);
   });
 

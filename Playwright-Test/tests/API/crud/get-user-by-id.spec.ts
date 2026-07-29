@@ -3,14 +3,15 @@ import { test } from '../../../src/api/helpers/fixtures/api.service.fixture';
 import { ApiClient } from '../../../src/api/clients/api.client';
 import { UserService } from '../../../src/api/services/user.service';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
+import { HttpStatus } from '../../../src/api/config/httpStatus';
 import { getUserByIdResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
 import { authErrorResponseSchema } from '../../../src/api/helpers/schemas/auth.schema';
 import { ApiData } from '../../../src/data/test_data/api.test.data';
-import { UserBuilder } from '../../../src/data/builders/user.builder';
 import { cleanupTestData } from '../../../src/data/cleanup';
 import { registerUserAndGetId } from '../../../src/api/helpers/actions/registerUserAndGetId';
 import { createTargetUser } from '../../../src/api/helpers/actions/createTargetUser';
-test.describe('GET /api/users/:id Test Suite', () => {
+
+test.describe('GET /api/users/:id Test Suite @crud', () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {
@@ -20,8 +21,6 @@ test.describe('GET /api/users/:id Test Suite', () => {
   test.afterAll(async () => {
     await cleanupTestData();
   });
-
-
 
   test('TC-GI-01: Admin fetches any user by ID', async ({ authService, adminService }) => {
     const record = ApiData.getUserById['TC-GI-01']();
@@ -62,7 +61,7 @@ test.describe('GET /api/users/:id Test Suite', () => {
     const record = ApiData.getUserById['TC-GI-04']();
 
     const response = await adminService.getById(record.payload.targetId);
-    expect(response.status()).toBe(record.expectedStatus);
+    await expectations.expectStatus(response, record.expectedStatus);
   });
 
   test('TC-GI-05: User accessing another user profile', async ({ authService, normalService }) => {

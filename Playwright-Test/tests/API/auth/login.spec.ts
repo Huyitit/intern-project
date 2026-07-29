@@ -3,6 +3,7 @@ import { test } from "../../../src/api/helpers/fixtures/api.service.fixture";
 import { ApiClient } from '../../../src/api/clients/api.client';
 import { UserService } from '../../../src/api/services/user.service';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
+import { HttpStatus } from '../../../src/api/config/httpStatus';
 import {
   loginResponseSchema,
   authErrorResponseSchema,
@@ -10,8 +11,9 @@ import {
 import { ApiData } from '../../../src/data/test_data/api.test.data';
 import { registerUser } from '../../../src/api/helpers/actions/register';
 import { getLoginTestCases } from '../../../src/data/test_data/login.dataset';
+import cleanupTestData from '../../../src/data/cleanup';
 
-test.describe('POST /api/auth/login Test Suite', () => {
+test.describe('POST /api/auth/login Test Suite @auth', () => {
   let expectations: Expectations;
 
   test.beforeEach(({ request }) => {
@@ -89,7 +91,7 @@ test.describe('POST /api/auth/login Test Suite', () => {
 
     const response = await authService.login(record.payload);
 
-    await expectations.expectStatusIn(response, [400, 401, 404, 409]);
+    await expectations.expectStatusIn(response, [HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_FOUND, HttpStatus.CONFLICT]);
   });
 
   // TC-LOG-08: Multi-Device Login
@@ -117,14 +119,14 @@ test.describe('POST /api/auth/login Test Suite', () => {
     const userService2 = new UserService(new ApiClient(request, token2));
 
     const userProfile1 = await userService1.getById(body1.user.id.toString());
-    await expectations.expectStatus(userProfile1, 200);
+    await expectations.expectStatus(userProfile1, HttpStatus.OK);
 
     const userProfile2 = await userService2.getById(body2.user.id.toString());
-    await expectations.expectStatus(userProfile2, 200);
+    await expectations.expectStatus(userProfile2, HttpStatus.OK);
   });
 });
 
-test.describe('POST /api/auth/login Data-Driven Tests', () => {
+test.describe('POST /api/auth/login Data-Driven Tests @auth', () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {
@@ -133,6 +135,9 @@ test.describe('POST /api/auth/login Data-Driven Tests', () => {
 
   const ddtTestCases = getLoginTestCases();
 
+  test.afterAll(async () => {
+    await cleanupTestData();
+  })
   for (const tc of ddtTestCases) {
     test(`${tc.tcId}: ${tc.description}`, async ({ authService }) => {
       // Setup pre-registered user if required
@@ -147,7 +152,7 @@ test.describe('POST /api/auth/login Data-Driven Tests', () => {
               role: 'user',
             },
           });
-          await expectations.expectStatus(registerRes, 201);
+          await expectations.expectStatus(registerRes, HttpStatus.CREATED);
         }
       }
 

@@ -1,16 +1,13 @@
 import { expect } from '@playwright/test';
 import { test } from '../../../src/api/helpers/fixtures/api.service.fixture';
-import { AuthClient } from '../../../src/api/clients/auth.client';
-import { AuthService } from '../../../src/api/services/auth.service';
-import { UserService } from '../../../src/api/services/user.service';
-import { ApiClient } from '../../../src/api/clients/api.client';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
+import { HttpStatus } from '../../../src/api/config/httpStatus';
 import { createUserResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
 import { authErrorResponseSchema } from '../../../src/api/helpers/schemas/auth.schema';
 import { ApiData } from '../../../src/data/test_data/api.test.data';
 import { cleanupTestData } from '../../../src/data/cleanup';
 
-test.describe('POST /api/users Test Suite', () => {
+test.describe('POST /api/users Test Suite @crud', () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {
@@ -39,7 +36,7 @@ test.describe('POST /api/users Test Suite', () => {
 
     // Initial creation
     const res1 = await adminService.create({ user: record.user } as any);
-    await expectations.expectStatus(res1, 201);
+    await expectations.expectStatus(res1, HttpStatus.CREATED);
 
     // Duplicate creation attempt
     const response = await adminService.create(record.payload as any);

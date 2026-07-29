@@ -4,6 +4,7 @@ dotenv.config();
 export const env = {
   baseUrl: process.env.BASE_URL ?? '',
   apiTimeout: Number(process.env.API_TIMEOUT ?? 30000),
+  logLevel: process.env.LOG_LEVEL ?? 'info',
   testUser: {
     email: process.env.TEST_USER_EMAIL ?? '',
     password: process.env.TEST_USER_PASSWORD ?? '',

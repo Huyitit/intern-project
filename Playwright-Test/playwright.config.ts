@@ -1,49 +1,16 @@
 import { defineConfig, devices } from '@playwright/test';
 import { env } from './src/api/config/env';
-import { ZodTypeAny } from 'zod';
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// import dotenv from 'dotenv';
-// import path from 'path';
-// dotenv.config({ path: path.resolve(__dirname, '.env') });
-
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
-
-
-/**
- * Extend expect function to verify API schema with Zod schema
- */
-// expect.extend({
-//   async toMatchSchema(received: APIResponse, schema: ZodTypeAny) {
-//     const response = await received.json();
-//     const result = await schema.safeParseAsync(response);
-//     if (result.success) {
-//       return {
-//         message: () => "schema matched",
-//         pass: true,
-//       };
-//     } else {
-//       return {
-//         message: () =>
-//           "Result does not match schema: " +
-//           result.error.issues.map((issue) => issue.message).join("\n") +
-//           "\n" +
-//           "Details: " +
-//           JSON.stringify(result.error, null, 2),
-//         pass: false,
-//       };
-//     }
-//   },
-// });
- 
+import { TIMEOUTS } from './src/api/config/timeouts';
 
 export default defineConfig({
   /* Run data seeding file before run test */
   globalSetup: require.resolve('./src/data/seed.ts'),
+  // Test timeout from central TIMEOUTS config
+  timeout: TIMEOUTS.DEFAULT,
+
+  expect: {
+    timeout: TIMEOUTS.EXPECT,
+  },
 
   testDir: '.',
   /* Run tests in files in parallel */
@@ -51,7 +18,7 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 3,
+  retries: process.env.CI ? 2 : 1,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */

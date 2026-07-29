@@ -1,15 +1,14 @@
 import { expect } from '@playwright/test';
 import { test } from '../../../src/api/helpers/fixtures/auth.fixture';
 import { ApiClient } from '../../../src/api/clients/api.client';
-import { AuthClient } from '../../../src/api/clients/auth.client';
-import { AuthService } from '../../../src/api/services/auth.service';
 import { UserService } from '../../../src/api/services/user.service';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
+import { HttpStatus } from '../../../src/api/config/httpStatus';
 import { getUsersResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
 import { authErrorResponseSchema } from '../../../src/api/helpers/schemas/auth.schema';
 import { ApiData } from '../../../src/data/test_data/api.test.data';
 
-test.describe('GET /api/users Test Suite', () => {
+test.describe('GET /api/users Test Suite @crud', () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {
@@ -96,7 +95,7 @@ test.describe('GET /api/users Test Suite', () => {
 
     const response = await adminUserService.getUsers();
     
-    if (response.status() === 500) {
+    if (response.status() === HttpStatus.INTERNAL_SERVER_ERROR) {
       await expectations.expectSchema(response, authErrorResponseSchema);
     } else {
       await expectations.expectStatus(response, record.expectedStatus);
@@ -109,9 +108,7 @@ test.describe('GET /api/users Test Suite', () => {
     const adminUserService = new UserService(new ApiClient(request, adminToken));
 
     const response = await adminUserService.getUsers(record.payload);
-    if (response.status() === 500 || response.status() === 400) {
-       await expectations.expectSchema(response, authErrorResponseSchema);
-    }
+    await expectations.expectStatusIn(response, [HttpStatus.BAD_REQUEST, HttpStatus.INTERNAL_SERVER_ERROR]);
   });
 
   test('TC-GU-09: should handle invalid sort column', async ({ request, adminToken }) => {
