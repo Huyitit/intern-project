@@ -133,6 +133,41 @@ export class ApiData {
         expectedStatus: 200,
       };
     },
+    'TC-LOG-09': () => {
+      const user = new UserBuilder().setUserName(UserDataGenerator.adminUsername())
+      .setPassword(UserDataGenerator.adminPassword())
+      .build();
+      return {
+        tcId: 'TC-LOG-09',
+        description: 'Admin login',
+        user,
+        payload: {
+          user: {
+            username: user.username,
+            password: user.password,
+          },
+        },
+        expectedStatus: 200,
+      };
+
+    },
+    'TC-LOG-10': () => {
+      const user = new UserBuilder().setUserName(UserDataGenerator.userUsername())
+      .setPassword(UserDataGenerator.userPassword())
+      .build();
+      return {
+        tcId: 'TC-LOG-10',
+        description: 'User login',
+        user,
+        payload: {
+          user: {
+            username: user.username,
+            password: user.password,
+          },
+        },
+        expectedStatus: 200,
+      };
+    },
   };
 
   /**
@@ -703,7 +738,7 @@ export class ApiData {
   static readonly uploadCsv: Record<string, () => TestCaseRecord> = {
     'TC-CSV-01': () => {
       const user = createValidUser();
-      const csvData = `full_name,username,phone,email\nTest CSV Updated,${user.username},0912345678,testcsv@example.com`;
+      const csvData = `full_name,username,phone,email\nTest CSV Updated,${user.username},0912345678,${user.email}`;
       return {
         tcId: 'TC-CSV-01',
         description: 'Owner should successfully update profile (Fullname) via CSV upload (200 OK)',
@@ -720,7 +755,7 @@ export class ApiData {
     },
     'TC-CSV-02': () => {
       const user = createValidUser();
-      const csvData = `full_name,username,phone,email\nAdmin CSV Update,${user.username},0987654321,admincsv@example.com`;
+      const csvData = `full_name,username,phone,email\nAdmin CSV Update,${user.username},0987654321,${user.email}`;
       return {
         tcId: 'TC-CSV-02',
         description: 'Admin should successfully update any user profile via CSV (200 OK)',

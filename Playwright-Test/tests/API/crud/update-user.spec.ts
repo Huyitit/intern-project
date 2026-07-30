@@ -5,11 +5,9 @@ import { UserService } from '../../../src/api/services/user.service';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
 import { updateUserResponseSchema, crudErrorResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
 import { ApiData } from '../../../src/data/test_data/api.test.data';
-import { cleanupTestData } from '../../../src/data/cleanup';
 import { registerUserAndGetInfo, loginUser, createTargetUser } from '../../../src/api/helpers/actions/actions';
 
-
-test.describe('PUT /api/users/:id Test Suite @crud', () => {
+test.describe('Update User Test Suite', { tag: ['@crud', '@regression'] }, () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {
@@ -20,7 +18,7 @@ test.describe('PUT /api/users/:id Test Suite @crud', () => {
     // await cleanupTestData();
   });
 
-  test('TC-UU-01: Valid Update (Admin)', async ({ authService, adminService }) => {
+  test('TC-UU-01: Valid Update (Admin)', { tag: ['@smoke', '@regression'] }, async ({ authService, adminService }) => {
     const record = ApiData.updateUser['TC-UU-01']();
 
     const { id: userId } = await registerUserAndGetInfo(record, authService, expectations);
@@ -35,7 +33,7 @@ test.describe('PUT /api/users/:id Test Suite @crud', () => {
     expect(body.user.full_name).toBe(record.payload.user.full_name);
   });
 
-  test('TC-UU-02: Valid Update (Owner)', async ({ request, authService }) => {
+  test('TC-UU-02: Valid Update (Owner)', { tag: ['@smoke', '@regression'] }, async ({ request, authService }) => {
     const record = ApiData.updateUser['TC-UU-02']();
     const {id: userId} = await registerUserAndGetInfo(record, authService, expectations);
     const token = await loginUser(record, authService, expectations);
@@ -51,7 +49,7 @@ test.describe('PUT /api/users/:id Test Suite @crud', () => {
     expect(body.user.full_name).toBe(record.payload.user.full_name);
   });
 
-  test('TC-UU-03: User Not Found', async ({ adminService }) => {
+  test('TC-UU-03: User Not Found', { tag: '@regression' }, async ({ adminService }) => {
     const record = ApiData.updateUser['TC-UU-03']();
 
     const updatePayload = { user: { id: record.payload.targetId, ...record.payload.user } };
@@ -61,7 +59,7 @@ test.describe('PUT /api/users/:id Test Suite @crud', () => {
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
-  test('TC-UU-04: Missing Body', async ({ authService, adminService }) => {
+  test('TC-UU-04: Missing Body', { tag: '@regression' }, async ({ authService, adminService }) => {
     const record = ApiData.updateUser['TC-UU-04']();
     const { userId } = await createTargetUser(authService);
 
@@ -71,7 +69,7 @@ test.describe('PUT /api/users/:id Test Suite @crud', () => {
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
-  test('TC-UU-05: Validation Failure', async ({ authService, adminService }) => {
+  test('TC-UU-05: Validation Failure', { tag: '@regression' }, async ({ authService, adminService }) => {
     const record = ApiData.updateUser['TC-UU-05']();
     const { userId } = await createTargetUser(authService);
 
@@ -82,7 +80,7 @@ test.describe('PUT /api/users/:id Test Suite @crud', () => {
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
-  test('TC-UU-06: User Updating Another User', async ({ normalService }) => {
+  test('TC-UU-06: User Updating Another User', { tag: '@regression' }, async ({ normalService }) => {
     const record = ApiData.updateUser['TC-UU-06']();
 
     const updatePayload = { user: { id: record.payload.targetId, ...record.payload.user } };
@@ -92,7 +90,7 @@ test.describe('PUT /api/users/:id Test Suite @crud', () => {
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
-  test('TC-UU-07: No Token', async ({ authService, anonymousService }) => {
+  test('TC-UU-07: No Token', { tag: '@regression' }, async ({ authService, anonymousService }) => {
     const record = ApiData.updateUser['TC-UU-07']();
     const { userId } = await createTargetUser(authService);
 
@@ -103,7 +101,7 @@ test.describe('PUT /api/users/:id Test Suite @crud', () => {
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
-  test('TC-UU-08: Expired Token', async ({ request, authService }) => {
+  test('TC-UU-08: Expired Token', { tag: '@regression' }, async ({ request, authService }) => {
     const record = ApiData.updateUser['TC-UU-08']();
     const { userId } = await createTargetUser(authService);
     const invalidService = new UserService(new ApiClient(request, 'invalid.token'));

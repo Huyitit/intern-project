@@ -3,7 +3,7 @@ import { test } from '../../../src/api/helpers/fixtures/api.service.fixture';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
 import { HttpStatus } from '../../../src/api/config/httpStatus';
 
-test.describe('GET /api/health Test Suite @system', () => {
+test.describe('GET /api/health Test Suite', { tag: ['@system', '@regression'] }, () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {
@@ -11,7 +11,7 @@ test.describe('GET /api/health Test Suite @system', () => {
   });
 
   // TC-HLT-01: Public Health Check
-  test('TC-HLT-01: should return 200 OK for public health check', async ({ anonymousService }) => {
+  test('TC-HLT-01: should return 200 OK for public health check', { tag: ['@smoke', '@regression'] }, async ({ anonymousService }) => {
     const response = await anonymousService.getHealth();
 
     await expectations.expectStatus(response, HttpStatus.OK);

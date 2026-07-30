@@ -3,7 +3,7 @@ import { test } from '../../../src/api/helpers/fixtures/api.service.fixture';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
 import { HttpStatus } from '../../../src/api/config/httpStatus';
 
-test.describe('GET /api/users/export Test Suite @crud', () => {
+test.describe('Export CSV Test Suite', { tag: ['@crud', '@regression'] }, () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {
@@ -11,7 +11,7 @@ test.describe('GET /api/users/export Test Suite @crud', () => {
   });
 
   // TC-EXP-01: Admin exports user list
-  test('TC-EXP-01: Admin should successfully export user list (200 OK)', async ({ adminService }) => {
+  test('TC-EXP-01: Admin should successfully export user list (200 OK)', { tag: ['@smoke', '@regression'] }, async ({ adminService }) => {
     const startTime = Date.now();
     let attempt = 1;
     
@@ -34,14 +34,14 @@ test.describe('GET /api/users/export Test Suite @crud', () => {
   });
 
   // TC-EXP-02: Standard user forbidden from exporting users
-  test('TC-EXP-02: Standard user should be forbidden from exporting user list (403 Forbidden)', async ({ normalService }) => {
+  test('TC-EXP-02: Standard user should be forbidden from exporting user list (403 Forbidden)', { tag: '@regression' }, async ({ normalService }) => {
     const response = await normalService.exportUsers();
 
     await expectations.expectStatus(response, HttpStatus.FORBIDDEN);
   });
 
   // TC-EXP-03: Anonymous request without token rejected
-  test('TC-EXP-03: Anonymous request without token should be rejected (401/406)', async ({ anonymousService }) => {
+  test('TC-EXP-03: Anonymous request without token should be rejected (401/406)', { tag: '@regression' }, async ({ anonymousService }) => {
     const response = await anonymousService.exportUsers();
 
     await expectations.expectStatusIn(response, [HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN, HttpStatus.NOT_ACCEPTABLE]);

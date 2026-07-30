@@ -7,14 +7,14 @@ import { HttpStatus } from '../../../src/api/config/httpStatus';
 import { getUsersResponseSchema, crudErrorResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
 import { ApiData } from '../../../src/data/test_data/api.test.data';
 
-test.describe('GET /api/users Test Suite @crud', () => {
+test.describe('Get Users Test Suite', { tag: ['@crud', '@regression'] }, () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {
     expectations = new Expectations();
   });
 
-  test('TC-GU-01: should fetch first page of users with default params', async ({ request, adminToken }) => {
+  test('TC-GU-01: should fetch first page of users with default params', { tag: ['@smoke', '@regression'] }, async ({ request, adminToken }) => {
     const record = ApiData.getUsers['TC-GU-01']();
     const adminUserService = new UserService(new ApiClient(request, adminToken));
 
@@ -25,7 +25,7 @@ test.describe('GET /api/users Test Suite @crud', () => {
     await expectations.expectArrayItemProperty(response, 'users', 'role', 'user', 1);
   });
 
-  test('TC-GU-02: should handle fetching a page beyond available data', async ({ request, adminToken }) => {
+  test('TC-GU-02: should handle fetching a page beyond available data', { tag: '@regression' }, async ({ request, adminToken }) => {
     const record = ApiData.getUsers['TC-GU-02']();
     const adminUserService = new UserService(new ApiClient(request, adminToken));
 
@@ -38,7 +38,7 @@ test.describe('GET /api/users Test Suite @crud', () => {
     expect(body.message).toBe('No more users');
   });
 
-  test('TC-GU-03: should filter users by username keyword', async ({ request, adminToken }) => {
+  test('TC-GU-03: should filter users by username keyword', { tag: '@regression' }, async ({ request, adminToken }) => {
     const record = ApiData.getUsers['TC-GU-03']();
     const adminUserService = new UserService(new ApiClient(request, adminToken));
 
@@ -51,7 +51,7 @@ test.describe('GET /api/users Test Suite @crud', () => {
     }
   });
 
-  test('TC-GU-04: should sort users by username in ascending order', async ({ request, adminToken }) => {
+  test('TC-GU-04: should sort users by username in ascending order', { tag: '@regression' }, async ({ request, adminToken }) => {
     const record = ApiData.getUsers['TC-GU-04']();
     const adminUserService = new UserService(new ApiClient(request, adminToken));
 
@@ -64,7 +64,7 @@ test.describe('GET /api/users Test Suite @crud', () => {
     expect(usernames).toEqual(sorted);
   });
 
-  test('TC-GU-05: should sort users by id in descending order', async ({ request, adminToken }) => {
+  test('TC-GU-05: should sort users by id in descending order', { tag: '@regression' }, async ({ request, adminToken }) => {
     const record = ApiData.getUsers['TC-GU-05']();
     const adminUserService = new UserService(new ApiClient(request, adminToken));
 
@@ -77,7 +77,7 @@ test.describe('GET /api/users Test Suite @crud', () => {
     expect(ids).toEqual(sorted);
   });
 
-  test('TC-GU-06: should limit results correctly', async ({ request, adminToken }) => {
+  test('TC-GU-06: should limit results correctly', { tag: '@regression' }, async ({ request, adminToken }) => {
     const record = ApiData.getUsers['TC-GU-06']();
     const adminUserService = new UserService(new ApiClient(request, adminToken));
 
@@ -88,7 +88,7 @@ test.describe('GET /api/users Test Suite @crud', () => {
     expect(body.users.length).toBeLessThanOrEqual(2);
   });
 
-  test('TC-GU-07: should handle missing query params gracefully', async ({ request, adminToken }) => {
+  test('TC-GU-07: should handle missing query params gracefully', { tag: '@regression' }, async ({ request, adminToken }) => {
     const record = ApiData.getUsers['TC-GU-07']();
     const adminUserService = new UserService(new ApiClient(request, adminToken));
 
@@ -102,7 +102,7 @@ test.describe('GET /api/users Test Suite @crud', () => {
     }
   });
 
-  test('TC-GU-08: should handle negative page value', async ({ request, adminToken }) => {
+  test('TC-GU-08: should handle negative page value', { tag: '@regression' }, async ({ request, adminToken }) => {
     const record = ApiData.getUsers['TC-GU-08']();
     const adminUserService = new UserService(new ApiClient(request, adminToken));
 
@@ -110,7 +110,7 @@ test.describe('GET /api/users Test Suite @crud', () => {
     await expectations.expectStatusIn(response, [HttpStatus.BAD_REQUEST, HttpStatus.INTERNAL_SERVER_ERROR]);
   });
 
-  test('TC-GU-09: should handle invalid sort column', async ({ request, adminToken }) => {
+  test('TC-GU-09: should handle invalid sort column', { tag: '@regression' }, async ({ request, adminToken }) => {
     const record = ApiData.getUsers['TC-GU-09']();
     const adminUserService = new UserService(new ApiClient(request, adminToken));
 
@@ -118,7 +118,7 @@ test.describe('GET /api/users Test Suite @crud', () => {
     await expectations.expectStatus(response, record.expectedStatus);
   });
 
-  test('TC-GU-10: should not overlap pages', async ({ request, adminToken }) => {
+  test('TC-GU-10: should not overlap pages', { tag: '@regression' }, async ({ request, adminToken }) => {
     const record = ApiData.getUsers['TC-GU-10']();
     const adminUserService = new UserService(new ApiClient(request, adminToken));
 
@@ -135,7 +135,7 @@ test.describe('GET /api/users Test Suite @crud', () => {
     expect(overlap.length).toBe(0);
   });
 
-  test('TC-GU-11: should reject requests with no token', async ({ request }) => {
+  test('TC-GU-11: should reject requests with no token', { tag: '@regression' }, async ({ request }) => {
     const record = ApiData.getUsers['TC-GU-11']();
     const unauthUserService = new UserService(new ApiClient(request, ''));
 
@@ -144,7 +144,7 @@ test.describe('GET /api/users Test Suite @crud', () => {
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
-  test('TC-GU-12: should reject requests with invalid token', async ({ request }) => {
+  test('TC-GU-12: should reject requests with invalid token', { tag: '@regression' }, async ({ request }) => {
     const record = ApiData.getUsers['TC-GU-12']();
     const invalidService = new UserService(new ApiClient(request, 'invalid.token'));
 
@@ -153,7 +153,7 @@ test.describe('GET /api/users Test Suite @crud', () => {
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
-  test('TC-GU-13: should reject standard user requests', async ({ request, userToken }) => {
+  test('TC-GU-13: should reject standard user requests', { tag: '@regression' }, async ({ request, userToken }) => {
     const record = ApiData.getUsers['TC-GU-13']();
     const normalUserService = new UserService(new ApiClient(request, userToken));
 

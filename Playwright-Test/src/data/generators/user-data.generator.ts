@@ -36,6 +36,22 @@ export class UserDataGenerator extends BaseDataGenerator {
     ).toLowerCase();
   }
 
+  static adminUsername(): string {
+    return process.env.ADMIN_USERNAME!;
+  }
+
+  static adminPassword(): string {
+    return process.env.ADMIN_PASSWORD!;
+  }
+
+  static userUsername(): string {
+    return process.env.USER_USERNAME!;
+  }
+
+  static userPassword(): string {
+    return process.env.USER_PASSWORD!;
+  }
+
   static underBoundUsername(prefix?: string): string {
     const value = this.setPrefix(this.faker.internet.username(), prefix);
     return this.constrainLength(value, this.USERNAME_MIN_LENGTH - 1, this.USERNAME_MIN_LENGTH - 1);

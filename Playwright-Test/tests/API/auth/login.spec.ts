@@ -11,9 +11,8 @@ import {
 import { ApiData } from '../../../src/data/test_data/api.test.data';
 import { registerUser } from '../../../src/api/helpers/actions/actions';
 import { getLoginTestCases } from '../../../src/data/test_data/login.dataset';
-import cleanupTestData from '../../../src/data/cleanup';
 
-test.describe('POST /api/auth/login Test Suite @auth', () => {
+test.describe('Login Test Suite', { tag: ['@auth', '@regression'] }, () => {
   let expectations: Expectations;
 
   test.beforeEach(({ request }) => {
@@ -21,7 +20,7 @@ test.describe('POST /api/auth/login Test Suite @auth', () => {
   });
 
   // TC-LOG-01: Valid Login
-  test('TC-LOG-01: should successfully login with valid credentials (200 OK)', async ({ authService }) => {
+  test('TC-LOG-01: should successfully login with valid credentials (200 OK)', { tag: ['@smoke', '@regression'] }, async ({ authService }) => {
     const record = ApiData.login['TC-LOG-01']();
     await registerUser(record, authService, expectations);
 
@@ -33,7 +32,7 @@ test.describe('POST /api/auth/login Test Suite @auth', () => {
   });
 
   // TC-LOG-02: Auth Failure (Wrong Password)
-  test('TC-LOG-02: should return 401 Unauthorized for incorrect password', async ({ authService }) => {
+  test('TC-LOG-02: should return 401 Unauthorized for incorrect password', { tag: '@regression' }, async ({ authService }) => {
     const record = ApiData.login['TC-LOG-02']();
     await registerUser(record, authService, expectations);
 
@@ -44,7 +43,7 @@ test.describe('POST /api/auth/login Test Suite @auth', () => {
   });
 
   // TC-LOG-03: Auth Failure (User Not Found)
-  test('TC-LOG-03: should return 401 Unauthorized for non-existent user', async ({ authService }) => {
+  test('TC-LOG-03: should return 401 Unauthorized for non-existent user', { tag: '@regression' }, async ({ authService }) => {
     const record = ApiData.login['TC-LOG-03']();
 
     const response = await authService.login(record.payload);
@@ -54,7 +53,7 @@ test.describe('POST /api/auth/login Test Suite @auth', () => {
   });
 
   // TC-LOG-04: Missing Fields
-  test('TC-LOG-04: should return 400 Bad Request when missing password field', async ({ authService }) => {
+  test('TC-LOG-04: should return 400 Bad Request when missing password field', { tag: '@regression' }, async ({ authService }) => {
     const record = ApiData.login['TC-LOG-04']();
     await registerUser(record, authService, expectations);
 
@@ -65,7 +64,7 @@ test.describe('POST /api/auth/login Test Suite @auth', () => {
   });
 
   // TC-LOG-05: Empty Object
-  test('TC-LOG-05: should return 400 Bad Request when user object is empty', async ({ authService }) => {
+  test('TC-LOG-05: should return 400 Bad Request when user object is empty', { tag: '@regression' }, async ({ authService }) => {
     const record = ApiData.login['TC-LOG-05']();
 
     const response = await authService.login(record.payload as any);
@@ -75,7 +74,7 @@ test.describe('POST /api/auth/login Test Suite @auth', () => {
   });
 
   // TC-LOG-06: Flat Payload
-  test('TC-LOG-06: should return 400 Bad Request when payload is missing user wrapper', async ({ authService }) => {
+  test('TC-LOG-06: should return 400 Bad Request when payload is missing user wrapper', { tag: '@regression' }, async ({ authService }) => {
     const record = ApiData.login['TC-LOG-06']();
     await registerUser(record, authService, expectations);
 
@@ -86,7 +85,7 @@ test.describe('POST /api/auth/login Test Suite @auth', () => {
   });
 
   // TC-LOG-07: SQL Injection
-  test('TC-LOG-07: should reject SQL injection payload safely', async ({ authService }) => {
+  test('TC-LOG-07: should reject SQL injection payload safely', { tag: '@regression' }, async ({ authService }) => {
     const record = ApiData.login['TC-LOG-07']();
 
     const response = await authService.login(record.payload);
@@ -95,7 +94,7 @@ test.describe('POST /api/auth/login Test Suite @auth', () => {
   });
 
   // TC-LOG-08: Multi-Device Login
-  test('TC-LOG-08: should allow multi-device login and return valid tokens for both', async ({ request, authService }) => {
+  test('TC-LOG-08: should allow multi-device login and return valid tokens for both', { tag: '@regression' }, async ({ request, authService }) => {
     const record = ApiData.login['TC-LOG-08']();
     await registerUser(record, authService, expectations);
 
@@ -124,9 +123,31 @@ test.describe('POST /api/auth/login Test Suite @auth', () => {
     const userProfile2 = await userService2.getById(body2.user.id.toString());
     await expectations.expectStatus(userProfile2, HttpStatus.OK);
   });
+
+  // Admin logins
+  test('TC-LOG-09: Admin login', { tag: ['@smoke', '@regression'] }, async ({ authService }) => {
+    const record = ApiData.login['TC-LOG-09']();
+
+    const response = await authService.login(record.payload);
+
+    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectUserRole(response, 'admin');
+    await expectations.expectSchema(response, loginResponseSchema);
+  });
+
+  // User logins
+  test('TC-LOG-10: User login', { tag: ['@smoke', '@regression'] }, async ({ authService }) => {
+    const record = ApiData.login['TC-LOG-10']();
+
+    const response = await authService.login(record.payload);
+
+    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectUserRole(response, 'user');
+    await expectations.expectSchema(response, loginResponseSchema);
+  });
 });
 
-test.describe('POST /api/auth/login Data-Driven Tests @auth', () => {
+test.describe('POST /api/auth/login Data-Driven Tests', { tag: ['@auth', '@regression'] }, () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {
@@ -136,10 +157,11 @@ test.describe('POST /api/auth/login Data-Driven Tests @auth', () => {
   const ddtTestCases = getLoginTestCases();
 
   test.afterAll(async () => {
-    await cleanupTestData();
-  })
+    // await cleanupTestData();
+  });
+
   for (const tc of ddtTestCases) {
-    test(`${tc.tcId}: ${tc.description}`, async ({ authService }) => {
+    test(`${tc.tcId}: ${tc.description}`, { tag: '@regression' }, async ({ authService }) => {
       // Setup pre-registered user if required
       if (tc.shouldRegisterFirst && tc.username) {
         const passwordToRegister = tc.registerPassword ?? tc.password;

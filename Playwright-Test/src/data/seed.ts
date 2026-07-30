@@ -18,10 +18,19 @@ dotenv.config();
 // });
 
 async function main() {
+  // console.log(`Database connection state: ${pool.state}`)
+  try {
+    await pool.query('SELECT 1');
+    console.log('Database connected successfully.');
+  } catch (error) {
+    console.error('Database connection failed:', error);
+  }
+
   console.log('Starting seed...');
 
   // Delete current data before seeding
   await pool.query('TRUNCATE TABLE users');
+  
 
   // Hash passwords (using 4 salt rounds to match user.controller.ts)
   const adminPassword = await hash('admin123', 4);

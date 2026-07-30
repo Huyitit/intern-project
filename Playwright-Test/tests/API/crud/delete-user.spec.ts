@@ -5,9 +5,8 @@ import { Expectations } from '../../../src/api/helpers/assertions/base';
 import { HttpStatus } from '../../../src/api/config/httpStatus';
 import { deleteUserResponseSchema, crudErrorResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
 import { ApiData } from '../../../src/data/test_data/api.test.data';
-import { cleanupTestData } from '../../../src/data/cleanup';
 
-test.describe('DELETE /api/users/:id Test Suite @crud', () => {
+test.describe('Delete User Test Suite', { tag: ['@crud', '@regression'] }, () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {
@@ -18,7 +17,7 @@ test.describe('DELETE /api/users/:id Test Suite @crud', () => {
     // await cleanupTestData();
   });
 
-  test('TC-DU-01: Valid Deletion (Admin)', async ({ authService, adminService }) => {
+  test('TC-DU-01: Valid Deletion (Admin)', { tag: ['@smoke', '@regression'] }, async ({ authService, adminService }) => {
     const record = ApiData.deleteUser['TC-DU-01']();
     const {id: targetUserId} = await registerUserAndGetInfo(record, authService, expectations);
 
@@ -32,7 +31,7 @@ test.describe('DELETE /api/users/:id Test Suite @crud', () => {
     await expectations.expectStatus(getRes, HttpStatus.CONFLICT);
   });
 
-  test('TC-DU-02: Delete Non-Existent User', async ({ adminService }) => {
+  test('TC-DU-02: Delete Non-Existent User', { tag: '@regression' }, async ({ adminService }) => {
     const record = ApiData.deleteUser['TC-DU-02']();
 
     const response = await adminService.delete(record.payload.targetId);
@@ -41,7 +40,7 @@ test.describe('DELETE /api/users/:id Test Suite @crud', () => {
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
-  test('TC-DU-03: Idempotency Check', async ({ authService, adminService }) => {
+  test('TC-DU-03: Idempotency Check', { tag: '@regression' }, async ({ authService, adminService }) => {
     const record = ApiData.deleteUser['TC-DU-03']();
     const { id: targetUserId } = await registerUserAndGetInfo(record, authService, expectations);
 
@@ -55,7 +54,7 @@ test.describe('DELETE /api/users/:id Test Suite @crud', () => {
     await expectations.expectSchema(res2, crudErrorResponseSchema);
   });
 
-  test('TC-DU-04: User Role Forbidden', async ({ authService, normalService }) => {
+  test('TC-DU-04: User Role Forbidden', { tag: '@regression' }, async ({ authService, normalService }) => {
     const record = ApiData.deleteUser['TC-DU-04']();
     const {id: targetUserId} = await registerUserAndGetInfo(record, authService, expectations);
 
@@ -65,7 +64,7 @@ test.describe('DELETE /api/users/:id Test Suite @crud', () => {
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
-  test('TC-DU-05: No Token', async ({ authService, anonymousService }) => {
+  test('TC-DU-05: No Token', { tag: '@regression' }, async ({ authService, anonymousService }) => {
     const record = ApiData.deleteUser['TC-DU-05']();
     const {id: targetUserId} = await registerUserAndGetInfo(record, authService, expectations);
 

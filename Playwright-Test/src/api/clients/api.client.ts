@@ -1,6 +1,6 @@
 import { APIRequestContext, APIResponse } from '@playwright/test';
 import { RequestOptions } from './options.client';
-import { Logger } from '../utils/logger';
+// import { Logger } from '../utils/logger';
 
 /**
  * ApiClient class for making API requests
@@ -28,7 +28,7 @@ export class ApiClient {
       params: options.params,
     });
     const duration = Date.now() - startTime;
-    Logger.logApiCall('GET', url, res.status(), duration, options.params);
+    // Logger.logApiCall('GET', url, res.status(), duration, options.params);
     return res;
   }
 
@@ -41,7 +41,7 @@ export class ApiClient {
       multipart: options.multipart
     });
     const duration = Date.now() - startTime;
-    Logger.logApiCall('POST', url, res.status(), duration, data || options.multipart);
+    // Logger.logApiCall('POST', url, res.status(), duration, data || options.multipart);
     return res;
   }
 
@@ -53,7 +53,7 @@ export class ApiClient {
       multipart: options.multipart
     });
     const duration = Date.now() - startTime;
-    Logger.logApiCall('PUT', url, res.status(), duration, data || options.multipart);
+    // Logger.logApiCall('PUT', url, res.status(), duration, data || options.multipart);
     return res;
   }
 
@@ -63,7 +63,7 @@ export class ApiClient {
       headers: this.mergeHeader(options.headers)
     });
     const duration = Date.now() - startTime;
-    Logger.logApiCall('DELETE', url, res.status(), duration);
+    // Logger.logApiCall('DELETE', url, res.status(), duration);
     return res;
   }
 }
