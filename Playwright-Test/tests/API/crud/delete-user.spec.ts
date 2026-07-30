@@ -1,10 +1,9 @@
 import { expect } from '@playwright/test';
 import { test } from '../../../src/api/helpers/fixtures/api.service.fixture';
-import { registerUserAndGetId } from '../../../src/api/helpers/actions/registerUserAndGetId';
+import { registerUserAndGetInfo } from '../../../src/api/helpers/actions/actions';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
 import { HttpStatus } from '../../../src/api/config/httpStatus';
-import { deleteUserResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
-import { authErrorResponseSchema } from '../../../src/api/helpers/schemas/auth.schema';
+import { deleteUserResponseSchema, crudErrorResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
 import { ApiData } from '../../../src/data/test_data/api.test.data';
 import { cleanupTestData } from '../../../src/data/cleanup';
 
@@ -16,12 +15,12 @@ test.describe('DELETE /api/users/:id Test Suite @crud', () => {
   });
 
   test.afterAll(async () => {
-    await cleanupTestData();
+    // await cleanupTestData();
   });
 
   test('TC-DU-01: Valid Deletion (Admin)', async ({ authService, adminService }) => {
     const record = ApiData.deleteUser['TC-DU-01']();
-    const targetUserId = await registerUserAndGetId(record, authService, expectations);
+    const {id: targetUserId} = await registerUserAndGetInfo(record, authService, expectations);
 
     const response = await adminService.delete(targetUserId.toString());
 
@@ -39,12 +38,12 @@ test.describe('DELETE /api/users/:id Test Suite @crud', () => {
     const response = await adminService.delete(record.payload.targetId);
 
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
   test('TC-DU-03: Idempotency Check', async ({ authService, adminService }) => {
     const record = ApiData.deleteUser['TC-DU-03']();
-    const targetUserId = await registerUserAndGetId(record, authService, expectations);
+    const { id: targetUserId } = await registerUserAndGetInfo(record, authService, expectations);
 
     // First deletion
     const res1 = await adminService.delete(targetUserId.toString());
@@ -53,26 +52,26 @@ test.describe('DELETE /api/users/:id Test Suite @crud', () => {
     // Second deletion of the same ID
     const res2 = await adminService.delete(targetUserId.toString());
     await expectations.expectStatus(res2, HttpStatus.INTERNAL_SERVER_ERROR);
-    await expectations.expectSchema(res2, authErrorResponseSchema);
+    await expectations.expectSchema(res2, crudErrorResponseSchema);
   });
 
   test('TC-DU-04: User Role Forbidden', async ({ authService, normalService }) => {
     const record = ApiData.deleteUser['TC-DU-04']();
-    const targetUserId = await registerUserAndGetId(record, authService, expectations);
+    const {id: targetUserId} = await registerUserAndGetInfo(record, authService, expectations);
 
     const response = await normalService.delete(targetUserId.toString());
 
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
   test('TC-DU-05: No Token', async ({ authService, anonymousService }) => {
     const record = ApiData.deleteUser['TC-DU-05']();
-    const targetUserId = await registerUserAndGetId(record, authService, expectations);
+    const {id: targetUserId} = await registerUserAndGetInfo(record, authService, expectations);
 
     const response = await anonymousService.delete(targetUserId.toString());
 
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 });

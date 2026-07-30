@@ -2,8 +2,7 @@ import { expect } from '@playwright/test';
 import { test } from '../../../src/api/helpers/fixtures/api.service.fixture';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
 import { HttpStatus } from '../../../src/api/config/httpStatus';
-import { createUserResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
-import { authErrorResponseSchema } from '../../../src/api/helpers/schemas/auth.schema';
+import { createUserResponseSchema, crudErrorResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
 import { ApiData } from '../../../src/data/test_data/api.test.data';
 import { cleanupTestData } from '../../../src/data/cleanup';
 
@@ -15,7 +14,7 @@ test.describe('POST /api/users Test Suite @crud', () => {
   });
 
   test.afterAll(async () => {
-    await cleanupTestData();
+    // await cleanupTestData();
   });
 
   test('TC-CU-01: Valid User Creation (Admin)', async ({ adminService }) => {
@@ -42,7 +41,7 @@ test.describe('POST /api/users Test Suite @crud', () => {
     const response = await adminService.create(record.payload as any);
     
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
   test('TC-CU-03: Missing Required Fields', async ({ adminService }) => {
@@ -51,7 +50,7 @@ test.describe('POST /api/users Test Suite @crud', () => {
     const response = await adminService.create(record.payload as any);
     
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
   test('TC-CU-04: Empty Payload', async ({ adminService }) => {
@@ -60,7 +59,7 @@ test.describe('POST /api/users Test Suite @crud', () => {
     const response = await adminService.create(record.payload as any);
     
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
   test('TC-CU-05: Invalid Data Types', async ({ adminService }) => {
@@ -69,7 +68,7 @@ test.describe('POST /api/users Test Suite @crud', () => {
     const response = await adminService.create(record.payload as any);
     
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
   test('TC-CU-06: Invalid Email Format', async ({ adminService }) => {
@@ -77,7 +76,7 @@ test.describe('POST /api/users Test Suite @crud', () => {
 
     const response = await adminService.create(record.payload as any);
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
   test('TC-CU-07: Standard User forbidden to create', async ({ normalService }) => {
@@ -86,7 +85,7 @@ test.describe('POST /api/users Test Suite @crud', () => {
     const response = await normalService.create(record.payload as any);
     
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
   test('TC-CU-08: No Token', async ({ anonymousService }) => {
@@ -95,6 +94,6 @@ test.describe('POST /api/users Test Suite @crud', () => {
     const response = await anonymousService.create(record.payload as any);
     
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 });

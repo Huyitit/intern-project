@@ -3,14 +3,11 @@ import { test } from '../../../src/api/helpers/fixtures/api.service.fixture';
 import { ApiClient } from '../../../src/api/clients/api.client';
 import { UserService } from '../../../src/api/services/user.service';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
-import { HttpStatus } from '../../../src/api/config/httpStatus';
-import { updateUserResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
-import { authErrorResponseSchema } from '../../../src/api/helpers/schemas/auth.schema';
+import { updateUserResponseSchema, crudErrorResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
 import { ApiData } from '../../../src/data/test_data/api.test.data';
 import { cleanupTestData } from '../../../src/data/cleanup';
-import { registerUserAndGetId } from '../../../src/api/helpers/actions/registerUserAndGetId';
-import { loginUser } from '../../../src/api/helpers/actions/login';
-import { createTargetUser } from '../../../src/api/helpers/actions/createTargetUser';
+import { registerUserAndGetInfo, loginUser, createTargetUser } from '../../../src/api/helpers/actions/actions';
+
 
 test.describe('PUT /api/users/:id Test Suite @crud', () => {
   let expectations: Expectations;
@@ -20,13 +17,13 @@ test.describe('PUT /api/users/:id Test Suite @crud', () => {
   });
 
   test.afterAll(async () => {
-    await cleanupTestData();
+    // await cleanupTestData();
   });
 
   test('TC-UU-01: Valid Update (Admin)', async ({ authService, adminService }) => {
     const record = ApiData.updateUser['TC-UU-01']();
 
-    const userId = await registerUserAndGetId(record, authService, expectations);
+    const { id: userId } = await registerUserAndGetInfo(record, authService, expectations);
 
     const updatePayload = { user: { id: userId, ...record.payload.user } };
     const response = await adminService.updateUser(userId, updatePayload);
@@ -40,7 +37,7 @@ test.describe('PUT /api/users/:id Test Suite @crud', () => {
 
   test('TC-UU-02: Valid Update (Owner)', async ({ request, authService }) => {
     const record = ApiData.updateUser['TC-UU-02']();
-    const userId = await registerUserAndGetId(record, authService, expectations);
+    const {id: userId} = await registerUserAndGetInfo(record, authService, expectations);
     const token = await loginUser(record, authService, expectations);
 
     const userService = new UserService(new ApiClient(request, token));
@@ -61,7 +58,7 @@ test.describe('PUT /api/users/:id Test Suite @crud', () => {
     const response = await adminService.updateUser(record.payload.targetId, updatePayload);
 
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
   test('TC-UU-04: Missing Body', async ({ authService, adminService }) => {
@@ -71,7 +68,7 @@ test.describe('PUT /api/users/:id Test Suite @crud', () => {
     const response = await adminService.updateUser(userId, record.payload as any);
 
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
   test('TC-UU-05: Validation Failure', async ({ authService, adminService }) => {
@@ -82,7 +79,7 @@ test.describe('PUT /api/users/:id Test Suite @crud', () => {
     const response = await adminService.updateUser(userId, updatePayload);
 
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
   test('TC-UU-06: User Updating Another User', async ({ normalService }) => {
@@ -92,7 +89,7 @@ test.describe('PUT /api/users/:id Test Suite @crud', () => {
     const response = await normalService.updateUser(record.payload.targetId, updatePayload);
 
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
   test('TC-UU-07: No Token', async ({ authService, anonymousService }) => {
@@ -103,7 +100,7 @@ test.describe('PUT /api/users/:id Test Suite @crud', () => {
     const response = await anonymousService.updateUser(userId, updatePayload);
 
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
   test('TC-UU-08: Expired Token', async ({ request, authService }) => {
@@ -115,6 +112,6 @@ test.describe('PUT /api/users/:id Test Suite @crud', () => {
     const response = await invalidService.updateUser(userId, updatePayload);
 
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 });

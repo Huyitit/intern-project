@@ -26,6 +26,6 @@ export interface RegisterRequest {
     password: string,
     phone: string,
     email: string,
-    role: 'user',
+    role: 'user' | 'admin',
   }
 }

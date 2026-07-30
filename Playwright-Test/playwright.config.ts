@@ -1,15 +1,15 @@
 import { defineConfig, devices } from '@playwright/test';
 import { env } from './src/api/config/env';
-import { TIMEOUTS } from './src/api/config/timeouts';
-
 export default defineConfig({
   /* Run data seeding file before run test */
   globalSetup: require.resolve('./src/data/seed.ts'),
+  // Delete all data after all tests
+  globalTeardown: require.resolve('./src/data/cleanup.ts'),
   // Test timeout from central TIMEOUTS config
-  timeout: TIMEOUTS.DEFAULT,
+  timeout: Number(process.env.TIMEOUT) || 30000,
 
   expect: {
-    timeout: TIMEOUTS.EXPECT,
+    timeout: Number(process.env.EXPECT_TIMEOUT) || 5000
   },
 
   testDir: '.',
@@ -20,7 +20,7 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 1,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : 1,
+  workers: process.env.CI ? 1 : 3,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['list'],

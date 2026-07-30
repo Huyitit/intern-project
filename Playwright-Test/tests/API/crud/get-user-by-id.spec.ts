@@ -3,13 +3,10 @@ import { test } from '../../../src/api/helpers/fixtures/api.service.fixture';
 import { ApiClient } from '../../../src/api/clients/api.client';
 import { UserService } from '../../../src/api/services/user.service';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
-import { HttpStatus } from '../../../src/api/config/httpStatus';
-import { getUserByIdResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
-import { authErrorResponseSchema } from '../../../src/api/helpers/schemas/auth.schema';
+import { getUserByIdResponseSchema, crudErrorResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
 import { ApiData } from '../../../src/data/test_data/api.test.data';
 import { cleanupTestData } from '../../../src/data/cleanup';
-import { registerUserAndGetId } from '../../../src/api/helpers/actions/registerUserAndGetId';
-import { createTargetUser } from '../../../src/api/helpers/actions/createTargetUser';
+import { registerUserAndGetInfo, createTargetUser } from '../../../src/api/helpers/actions/actions';
 
 test.describe('GET /api/users/:id Test Suite @crud', () => {
   let expectations: Expectations;
@@ -19,12 +16,12 @@ test.describe('GET /api/users/:id Test Suite @crud', () => {
   });
 
   test.afterAll(async () => {
-    await cleanupTestData();
+    // await cleanupTestData();
   });
 
   test('TC-GI-01: Admin fetches any user by ID', async ({ authService, adminService }) => {
     const record = ApiData.getUserById['TC-GI-01']();
-    const testUserId = await registerUserAndGetId(record, authService, expectations);
+    const {id: testUserId} = await registerUserAndGetInfo(record, authService, expectations);
 
     const response = await adminService.getById(testUserId.toString());
     await expectations.expectStatus(response, record.expectedStatus);
@@ -54,7 +51,7 @@ test.describe('GET /api/users/:id Test Suite @crud', () => {
     const response = await adminService.getById(record.payload.targetId);
     
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
   test('TC-GI-04: Invalid ID Format', async ({ adminService }) => {
@@ -66,19 +63,19 @@ test.describe('GET /api/users/:id Test Suite @crud', () => {
 
   test('TC-GI-05: User accessing another user profile', async ({ authService, normalService }) => {
     const record = ApiData.getUserById['TC-GI-05']();
-    const testUserId = await registerUserAndGetId(record, authService, expectations);
+    const {id: testUserId} = await registerUserAndGetInfo(record, authService, expectations);
 
     const response = await normalService.getById(testUserId.toString());
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
   test('TC-GI-06: No Token', async ({ authService, anonymousService }) => {
     const record = ApiData.getUserById['TC-GI-06']();
-    const testUserId = await registerUserAndGetId(record, authService, expectations);
+    const {id: testUserId} = await registerUserAndGetInfo(record, authService, expectations);
 
     const response = await anonymousService.getById(testUserId.toString());
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 });

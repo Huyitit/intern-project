@@ -4,8 +4,7 @@ import { ApiClient } from '../../../src/api/clients/api.client';
 import { UserService } from '../../../src/api/services/user.service';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
 import { HttpStatus } from '../../../src/api/config/httpStatus';
-import { getUsersResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
-import { authErrorResponseSchema } from '../../../src/api/helpers/schemas/auth.schema';
+import { getUsersResponseSchema, crudErrorResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
 import { ApiData } from '../../../src/data/test_data/api.test.data';
 
 test.describe('GET /api/users Test Suite @crud', () => {
@@ -96,7 +95,7 @@ test.describe('GET /api/users Test Suite @crud', () => {
     const response = await adminUserService.getUsers();
     
     if (response.status() === HttpStatus.INTERNAL_SERVER_ERROR) {
-      await expectations.expectSchema(response, authErrorResponseSchema);
+      await expectations.expectSchema(response, crudErrorResponseSchema);
     } else {
       await expectations.expectStatus(response, record.expectedStatus);
       await expectations.expectSchema(response, getUsersResponseSchema);
@@ -142,7 +141,7 @@ test.describe('GET /api/users Test Suite @crud', () => {
 
     const response = await unauthUserService.getUsers(record.payload);
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
   test('TC-GU-12: should reject requests with invalid token', async ({ request }) => {
@@ -151,7 +150,7 @@ test.describe('GET /api/users Test Suite @crud', () => {
 
     const response = await invalidService.getUsers(record.payload);
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
   test('TC-GU-13: should reject standard user requests', async ({ request, userToken }) => {
@@ -160,6 +159,6 @@ test.describe('GET /api/users Test Suite @crud', () => {
 
     const response = await normalUserService.getUsers(record.payload);
     await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, authErrorResponseSchema);
+    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 });

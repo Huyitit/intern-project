@@ -9,7 +9,7 @@ import {
   authErrorResponseSchema,
 } from '../../../src/api/helpers/schemas/auth.schema';
 import { ApiData } from '../../../src/data/test_data/api.test.data';
-import { registerUser } from '../../../src/api/helpers/actions/register';
+import { registerUser } from '../../../src/api/helpers/actions/actions';
 import { getLoginTestCases } from '../../../src/data/test_data/login.dataset';
 import cleanupTestData from '../../../src/data/cleanup';
 

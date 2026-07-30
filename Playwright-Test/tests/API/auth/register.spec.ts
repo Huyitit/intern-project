@@ -6,7 +6,7 @@ import {
   authErrorResponseSchema,
 } from '../../../src/api/helpers/schemas/auth.schema';
 import { ApiData } from '../../../src/data/test_data/api.test.data';
-import { registerUser } from '../../../src/api/helpers/actions/register';
+import { registerUser } from '../../../src/api/helpers/actions/actions';
 import cleanupTestData from '../../../src/data/cleanup';
 
 test.describe('POST /api/auth/register Test Suite @auth', () => {

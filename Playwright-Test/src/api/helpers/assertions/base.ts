@@ -141,4 +141,15 @@ export class Expectations {
       })
     );
   }
+
+  async expectBlahBlah(response: APIResponse, expectedFullName: string) {
+    const body = await response.json();
+    expect(body.success).toBe(true);
+    expect(body.user.full_name).toBe(expectedFullName);
+  }
+
+  async toBeArray(content: any)
+  {
+    expect(Array.isArray(content), 'The content should be an array').toBe(true);
+  }
 }

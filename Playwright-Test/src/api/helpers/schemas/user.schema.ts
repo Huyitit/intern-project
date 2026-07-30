@@ -59,3 +59,17 @@ export const deleteUserResponseSchema = z.object({
   success: z.boolean(),
   message: z.string(),
 });
+
+export const validationErrorItemSchema = z.object({
+  message: z.string(),
+  code: z.string(),
+});
+
+/**
+ * Error Schema for API authentication / validation failures (400, 401, 409, 422, 500)
+ */
+export const crudErrorResponseSchema = z.object({
+  success: z.boolean().optional(),
+  message: z.string().optional(),
+  errors: z.array(validationErrorItemSchema),
+});

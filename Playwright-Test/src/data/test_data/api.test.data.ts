@@ -10,6 +10,11 @@ export interface TestCaseRecord<T = any> {
   expectedStatus: number;
 }
 
+const dummyPngBuffer = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+  'base64'
+);
+
 function createValidUser(): User {
   return new UserBuilder()
     .setFull_name(UserDataGenerator.validFullname())
@@ -594,5 +599,202 @@ export class ApiData {
       payload: { user: { full_name: 'Invalid Update' } },
       expectedStatus: 403,
     }),
+  };
+
+  /**
+   * Upload Avatar API Test Datasets
+   */
+  static readonly uploadAvatar: Record<string, () => TestCaseRecord> = {
+    'TC-AVT-01': () => {
+      const user = createValidUser();
+      return {
+        tcId: 'TC-AVT-01',
+        description: 'Owner should successfully upload PNG avatar (200 OK)',
+        user,
+        payload: {
+          avatar: {
+            name: 'test_avatar.png',
+            mimeType: 'image/png',
+            buffer: dummyPngBuffer,
+          },
+        },
+        expectedStatus: 200,
+      };
+    },
+    'TC-AVT-02': () => {
+      const user = createValidUser();
+      return {
+        tcId: 'TC-AVT-02',
+        description: 'Admin should successfully upload avatar for any user (200 OK)',
+        user,
+        payload: {
+          avatar: {
+            name: 'admin_upload.png',
+            mimeType: 'image/png',
+            buffer: dummyPngBuffer,
+          },
+        },
+        expectedStatus: 200,
+      };
+    },
+    'TC-AVT-03': () => {
+      const user = createValidUser();
+      return {
+        tcId: 'TC-AVT-03',
+        description: 'Upload attempt with missing image payload should return client error (400/406)',
+        user,
+        payload: {},
+        expectedStatus: 400,
+      };
+    },
+    'TC-AVT-04': () => {
+      const user = createValidUser();
+      return {
+        tcId: 'TC-AVT-04',
+        description: 'Non-image file upload should be rejected safely (400/415/500)',
+        user,
+        payload: {
+          avatar: {
+            name: 'test_doc.txt',
+            mimeType: 'text/plain',
+            buffer: Buffer.from('This is a text file not an image'),
+          },
+        },
+        expectedStatus: 400,
+      };
+    },
+    'TC-AVT-05': () => {
+      const user = createValidUser();
+      return {
+        tcId: 'TC-AVT-05',
+        description: 'User should be forbidden from updating another user avatar (403 Forbidden)',
+        user,
+        payload: {
+          avatar: {
+            name: 'forbidden.png',
+            mimeType: 'image/png',
+            buffer: dummyPngBuffer,
+          },
+        },
+        expectedStatus: 403,
+      };
+    },
+    'TC-AVT-06': () => {
+      const user = createValidUser();
+      return {
+        tcId: 'TC-AVT-06',
+        description: 'Anonymous upload request without token should be rejected (401/406)',
+        user,
+        payload: {
+          avatar: {
+            name: 'anon.png',
+            mimeType: 'image/png',
+            buffer: dummyPngBuffer,
+          },
+        },
+        expectedStatus: 401,
+      };
+    },
+  };
+
+  /**
+   * Upload CSV API Test Datasets
+   */
+  static readonly uploadCsv: Record<string, () => TestCaseRecord> = {
+    'TC-CSV-01': () => {
+      const user = createValidUser();
+      const csvData = `full_name,username,phone,email\nTest CSV Updated,${user.username},0912345678,testcsv@example.com`;
+      return {
+        tcId: 'TC-CSV-01',
+        description: 'Owner should successfully update profile (Fullname) via CSV upload (200 OK)',
+        user,
+        payload: {
+          csv: {
+            name: 'profile_update.csv',
+            mimeType: 'text/csv',
+            buffer: Buffer.from(csvData, 'utf-8'),
+          },
+        },
+        expectedStatus: 200,
+      };
+    },
+    'TC-CSV-02': () => {
+      const user = createValidUser();
+      const csvData = `full_name,username,phone,email\nAdmin CSV Update,${user.username},0987654321,admincsv@example.com`;
+      return {
+        tcId: 'TC-CSV-02',
+        description: 'Admin should successfully update any user profile via CSV (200 OK)',
+        user,
+        payload: {
+          csv: {
+            name: 'admin_csv.csv',
+            mimeType: 'text/csv',
+            buffer: Buffer.from(csvData, 'utf-8'),
+          },
+        },
+        expectedStatus: 200,
+      };
+    },
+    'TC-CSV-03': () => {
+      const user = createValidUser();
+      return {
+        tcId: 'TC-CSV-03',
+        description: 'Upload attempt with missing CSV payload should return client error (400/406)',
+        user,
+        payload: {},
+        expectedStatus: 400,
+      };
+    },
+    'TC-CSV-04': () => {
+      const user = createValidUser();
+      const invalidCsvData = `bad_header1,bad_header2\nValue1,Value2`;
+      return {
+        tcId: 'TC-CSV-04',
+        description: 'Upload attempt with invalid CSV headers should be rejected (400/406)',
+        user,
+        payload: {
+          csv: {
+            name: 'invalid_headers.csv',
+            mimeType: 'text/csv',
+            buffer: Buffer.from(invalidCsvData, 'utf-8'),
+          },
+        },
+        expectedStatus: 400,
+      };
+    },
+    'TC-CSV-05': () => {
+      const user = createValidUser();
+      const csvData = `full_name,username,phone,email\nForbidden Update,${user.username},0912345678,forbidden@example.com`;
+      return {
+        tcId: 'TC-CSV-05',
+        description: 'User should be forbidden from updating another user profile via CSV (403 Forbidden)',
+        user,
+        payload: {
+          csv: {
+            name: 'forbidden.csv',
+            mimeType: 'text/csv',
+            buffer: Buffer.from(csvData, 'utf-8'),
+          },
+        },
+        expectedStatus: 403,
+      };
+    },
+    'TC-CSV-06': () => {
+      const user = createValidUser();
+      const csvData = `full_name,username,phone,email\nAnon Update,${user.username},0912345678,anon@example.com`;
+      return {
+        tcId: 'TC-CSV-06',
+        description: 'Anonymous upload request without token should be rejected (401/406)',
+        user,
+        payload: {
+          csv: {
+            name: 'anon.csv',
+            mimeType: 'text/csv',
+            buffer: Buffer.from(csvData, 'utf-8'),
+          },
+        },
+        expectedStatus: 401,
+      };
+    },
   };
 }

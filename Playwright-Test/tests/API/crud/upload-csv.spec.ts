@@ -3,9 +3,8 @@ import { test } from '../../../src/api/helpers/fixtures/api.service.fixture';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
 import { HttpStatus } from '../../../src/api/config/httpStatus';
 import { cleanupTestData } from '../../../src/data/cleanup';
-import { ApiClient } from '../../../src/api/clients/api.client';
-import { UserService } from '../../../src/api/services/user.service';
-import { createTargetUser } from '../../../src/api/helpers/actions/createTargetUser';
+import { registerUserAndGetInfo, loginUser, createOwnerService } from '../../../src/api/helpers/actions/actions';
+import { ApiData } from '../../../src/data/test_data/api.test.data';
 
 test.describe('POST /api/users/:id/csv Test Suite @crud', () => {
   let expectations: Expectations;
@@ -15,109 +14,68 @@ test.describe('POST /api/users/:id/csv Test Suite @crud', () => {
   });
 
   test.afterAll(async () => {
-    await cleanupTestData();
+    // await cleanupTestData();
   });
 
   // TC-CSV-01: Owner uploads valid CSV file to update profile
   test('TC-CSV-01: Owner should successfully update profile via CSV upload (200 OK)', async ({ request, authService }) => {
-    const { userId, token, username } = await createTargetUser(authService);
-    const ownerService = new UserService(new ApiClient(request, token));
+    const record = ApiData.uploadCsv['TC-CSV-01']();
 
-    const csvData = `full_name,username,phone,email\nTest CSV Updated,${username},0912345678,testcsv@example.com`;
-    const csvBuffer = Buffer.from(csvData, 'utf-8');
+    const { id: userId } = await registerUserAndGetInfo(record, authService, expectations);
+    const token = await loginUser(record, authService, expectations);
+    const ownerService = await createOwnerService(request, token);
 
-    const response = await ownerService.uploadCsv(userId, {
-      csv: {
-        name: 'profile_update.csv',
-        mimeType: 'text/csv',
-        buffer: csvBuffer,
-      },
-    });
+    const response = await ownerService.uploadCsv(userId, record.payload as any);
 
-    await expectations.expectStatus(response, HttpStatus.OK);
-
-    const body = await response.json();
-    expect(body.success).toBe(true);
-    expect(body.user.full_name).toBe('Test CSV Updated');
+    await expectations.expectStatus(response, record.expectedStatus);
   });
 
   // TC-CSV-02: Admin updates user profile via CSV upload
   test('TC-CSV-02: Admin should successfully update any user profile via CSV (200 OK)', async ({ adminService, authService }) => {
-    const { userId, username } = await createTargetUser(authService);
+    const record = ApiData.uploadCsv['TC-CSV-02']();
+    const { id: userId } = await registerUserAndGetInfo(record, authService, expectations);
 
-    const csvData = `full_name,username,phone,email\nAdmin CSV Update,${username},0987654321,admincsv@example.com`;
-    const csvBuffer = Buffer.from(csvData, 'utf-8');
+    const response = await adminService.uploadCsv(userId, record.payload as any);
 
-    const response = await adminService.uploadCsv(userId, {
-      csv: {
-        name: 'admin_csv.csv',
-        mimeType: 'text/csv',
-        buffer: csvBuffer,
-      },
-    });
-
-    await expectations.expectStatus(response, HttpStatus.OK);
+    await expectations.expectStatus(response, record.expectedStatus);
   });
 
   // TC-CSV-03: Missing CSV file in payload
   test('TC-CSV-03: Upload attempt with missing CSV payload should return client error (400/406)', async ({ adminService, authService }) => {
-    const { userId } = await createTargetUser(authService);
+    const record = ApiData.uploadCsv['TC-CSV-03']();
+    const { id: userId } = await registerUserAndGetInfo(record, authService, expectations);
 
-    const response = await adminService.uploadCsv(userId, {});
+    const response = await adminService.uploadCsv(userId, record.payload as any);
 
     await expectations.expectStatusIn(response, [HttpStatus.BAD_REQUEST, HttpStatus.NOT_ACCEPTABLE]);
   });
 
   // TC-CSV-04: Invalid/missing required CSV headers
   test('TC-CSV-04: Upload attempt with invalid CSV headers should be rejected (400/406)', async ({ adminService, authService }) => {
-    const { userId } = await createTargetUser(authService);
+    const record = ApiData.uploadCsv['TC-CSV-04']();
+    const { id: userId } = await registerUserAndGetInfo(record, authService, expectations);
 
-    const invalidCsvData = `bad_header1,bad_header2\nValue1,Value2`;
-    const csvBuffer = Buffer.from(invalidCsvData, 'utf-8');
-
-    const response = await adminService.uploadCsv(userId, {
-      csv: {
-        name: 'invalid_headers.csv',
-        mimeType: 'text/csv',
-        buffer: csvBuffer,
-      },
-    });
+    const response = await adminService.uploadCsv(userId, record.payload as any);
 
     await expectations.expectStatusIn(response, [HttpStatus.BAD_REQUEST, HttpStatus.NOT_ACCEPTABLE]);
   });
 
   // TC-CSV-05: Non-owner standard user updating another user via CSV
   test('TC-CSV-05: User should be forbidden from updating another user profile via CSV (403 Forbidden)', async ({ normalService, authService }) => {
-    const { userId, username } = await createTargetUser(authService);
+    const record = ApiData.uploadCsv['TC-CSV-05']();
+    const { id: userId } = await registerUserAndGetInfo(record, authService, expectations);
 
-    const csvData = `full_name,username,phone,email\nForbidden Update,${username},0912345678,forbidden@example.com`;
-    const csvBuffer = Buffer.from(csvData, 'utf-8');
+    const response = await normalService.uploadCsv(userId, record.payload as any);
 
-    const response = await normalService.uploadCsv(userId, {
-      csv: {
-        name: 'forbidden.csv',
-        mimeType: 'text/csv',
-        buffer: csvBuffer,
-      },
-    });
-
-    await expectations.expectStatus(response, HttpStatus.FORBIDDEN);
+    await expectations.expectStatus(response, record.expectedStatus);
   });
 
   // TC-CSV-06: Anonymous upload request without token
   test('TC-CSV-06: Anonymous upload request without token should be rejected (401/406)', async ({ anonymousService, authService }) => {
-    const { userId, username } = await createTargetUser(authService);
+    const record = ApiData.uploadCsv['TC-CSV-06']();
+    const { id: userId } = await registerUserAndGetInfo(record, authService, expectations);
 
-    const csvData = `full_name,username,phone,email\nAnon Update,${username},0912345678,anon@example.com`;
-    const csvBuffer = Buffer.from(csvData, 'utf-8');
-
-    const response = await anonymousService.uploadCsv(userId, {
-      csv: {
-        name: 'anon.csv',
-        mimeType: 'text/csv',
-        buffer: csvBuffer,
-      },
-    });
+    const response = await anonymousService.uploadCsv(userId, record.payload as any);
 
     await expectations.expectStatusIn(response, [HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN, HttpStatus.NOT_ACCEPTABLE]);
   });

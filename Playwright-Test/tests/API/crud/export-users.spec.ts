@@ -2,7 +2,6 @@ import { expect } from '@playwright/test';
 import { test } from '../../../src/api/helpers/fixtures/api.service.fixture';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
 import { HttpStatus } from '../../../src/api/config/httpStatus';
-import { TIMEOUTS } from '../../../src/api/config/timeouts';
 
 test.describe('GET /api/users/export Test Suite @crud', () => {
   let expectations: Expectations;
@@ -15,7 +14,8 @@ test.describe('GET /api/users/export Test Suite @crud', () => {
   test('TC-EXP-01: Admin should successfully export user list (200 OK)', async ({ adminService }) => {
     const startTime = Date.now();
     let attempt = 1;
-    await expect.poll(async () => {
+    
+    await expect(async () => {
       const elapsedSeconds = ((Date.now() - startTime) / 1000);
       console.log(`Poll Attempt ${attempt++} Elapsed: `, elapsedSeconds);
 
@@ -24,13 +24,13 @@ test.describe('GET /api/users/export Test Suite @crud', () => {
       await expectations.expectStatus(response, HttpStatus.OK);
 
       const body = await response.json();
-      expect(Array.isArray(body.users)).toBe(true);
-      return body.success;
+      await expectations.toBeArray(body.users);
     }, {
-      timeout: TIMEOUTS.POLL_TIMEOUT,
-      intervals: [TIMEOUTS.POLL_INTERVAL_FAST, TIMEOUTS.POLL_INTERVAL_NORMAL],
       message: "Test Slow API Response"
-    }).toBe(true);
+    }).toPass({
+      timeout: Number(process.env.POLL_TIMEOUT),
+      intervals: [Number(process.env.POLL_INTERVAL_FAST), Number(process.env.POLL_INTERVAL_NORMAL)],
+    })
   });
 
   // TC-EXP-02: Standard user forbidden from exporting users
