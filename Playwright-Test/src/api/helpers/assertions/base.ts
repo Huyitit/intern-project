@@ -169,11 +169,11 @@ export class Expectations {
     expect(role, `User should has role ${expectedRole}`).toBe(expectedRole);
   }
 
-  async expectBlahBlah(response: APIResponse, expectedFullName: string) {
-    const body = await response.json();
-    expect(body.success).toBe(true);
-    expect(body.user.full_name).toBe(expectedFullName);
-  }
+  // async expectBlahBlah(response: APIResponse, expectedFullName: string) {
+  //   const body = await response.json();
+  //   expect(body.success).toBe(true);
+  //   expect(body.user.full_name).toBe(expectedFullName);
+  // }
 
   async toBeArray(content: any)
   {

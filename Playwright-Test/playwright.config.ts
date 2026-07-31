@@ -8,9 +8,9 @@ export default defineConfig({
   // Test timeout from central TIMEOUTS config
   timeout: Number(process.env.TIMEOUT) || 30000,
 
-  expect: {
-    timeout: Number(process.env.EXPECT_TIMEOUT) || 5000
-  },
+  // expect: {
+  //   timeout: Number(process.env.EXPECT_TIMEOUT) || 5000
+  // },
 
   testDir: '.',
   /* Run tests in files in parallel */
@@ -20,7 +20,7 @@ export default defineConfig({
   /* Retry on CI only */
   retries: process.env.CI ? 2 : 1,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : 3,
+  workers: process.env.CI ? 1 : 1,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
   reporter: [
     ['list'],

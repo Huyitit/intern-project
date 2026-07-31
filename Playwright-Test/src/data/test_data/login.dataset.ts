@@ -1,4 +1,4 @@
-import { UserDataGenerator } from '../generators/user-data.generator';
+import { UserDataGenerator } from '../helpers/generators/user-data.generator';
 import { loginResponseSchema, authErrorResponseSchema } from '../../api/helpers/schemas/auth.schema';
 import { ZodTypeAny } from 'zod';
 

@@ -19,12 +19,13 @@ test.describe('Upload CSV Test Suite', { tag: ['@crud', '@regression'] }, () => 
 
   // TC-CSV-01: Owner uploads valid CSV file to update profile
   test('TC-CSV-01: Owner should successfully update profile via CSV upload (200 OK)', { tag: ['@smoke', '@regression'] }, async ({ request, authService }) => {
-    await expect( async () => {
-      const record = ApiData.uploadCsv['TC-CSV-01']();
+    const record = ApiData.uploadCsv['TC-CSV-01']();
 
-      const { id: userId } = await registerUserAndGetInfo(record, authService, expectations);
-      const token = await loginUser(record, authService, expectations);
-      const ownerService = await createOwnerService(request, token);
+    const { id: userId } = await registerUserAndGetInfo(record, authService, expectations);
+    const token = await loginUser(record, authService, expectations);
+    const ownerService = await createOwnerService(request, token);
+
+    await expect( async () => {
 
       const response = await ownerService.uploadCsv(userId, record.payload as any);
 
@@ -40,11 +41,12 @@ test.describe('Upload CSV Test Suite', { tag: ['@crud', '@regression'] }, () => 
 
   // TC-CSV-02: Admin updates user profile via CSV upload
   test('TC-CSV-02: Admin should successfully update any user profile via CSV (200 OK)', { tag: '@regression' }, async ({ adminService, authService }) => {
-    await expect( async () => {
     const record = ApiData.uploadCsv['TC-CSV-02']();
     const { id: userId } = await registerUserAndGetInfo(record, authService, expectations);
 
     const response = await adminService.uploadCsv(userId, record.payload as any);
+
+    await expect( async () => {
 
     await expectations.expectStatus(response, record.expectedStatus);
     } ,

@@ -1,5 +1,5 @@
 import { AuthService } from "../../services/auth.service";
-import { UserBuilder } from "../../../data/builders/user.builder";
+import { UserBuilder } from "../../../data/helpers/builders/user.builder";
 import { TestCaseRecord } from "../../../data/test_data/api.test.data";
 import { Expectations } from "../assertions/base";
 import { UserService } from "../../services/user.service";
@@ -58,14 +58,14 @@ export async function registerUserAndGetInfo(
   record: TestCaseRecord,
   authService: AuthService,
   expectations: Expectations
-): Promise<{ id: number, username: string }> {
+): Promise<{ id: number, username: string, full_name: string }> {
   if (record.user) {
     const registerRes = await authService.register({ user: record.user });
     await expectations.expectStatus(registerRes, 201);
     const body = await registerRes.json();
-    return { id: body.user.id, username: body.user.username };
+    return { id: body.user.id, username: body.user.username, full_name: body.user.full_name };
   }
-  return { id: 0, username: '' };
+  return { id: 0, username: '', full_name: '' };
 }
 
 export async function createOwnerService(request: APIRequestContext, token: string): Promise<UserService> {

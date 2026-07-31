@@ -1,5 +1,5 @@
-import { User } from "../../api/models/user.model";
-import { env } from '../../api/config/env';
+import { User } from "../../../api/models/user.model";
+import { env } from '../../../api/config/env';
 import { UserDataGenerator } from '../generators/user-data.generator';
 
 export class UserBuilder {

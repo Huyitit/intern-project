@@ -21,13 +21,14 @@ test.describe('Upload Avatar Test Suite', { tag: ['@crud', '@regression'] }, () 
 
   // TC-AVT-01: Owner uploads valid PNG avatar image
   test('TC-AVT-01: Owner should successfully upload PNG avatar (200 OK)', { tag: ['@smoke', '@regression'] }, async ({ request, authService }) => {
-    await expect(async () => {
-      const record = ApiData.uploadAvatar['TC-AVT-01']();
-      const { id: userId } = await registerUserAndGetInfo(record, authService, expectations);
-      const token = await loginUser(record, authService, expectations);
+    const record = ApiData.uploadAvatar['TC-AVT-01']();
+    const { id: userId } = await registerUserAndGetInfo(record, authService, expectations);
+    const token = await loginUser(record, authService, expectations);
 
-      const ownerService = await createOwnerService(request, token);
-      const response = await ownerService.uploadAvatar(userId, record.payload as any);
+    const ownerService = await createOwnerService(request, token);
+    const response = await ownerService.uploadAvatar(userId, record.payload as any);    
+
+    await expect(async () => {
 
       await expectations.expectStatus(response, record.expectedStatus);
 
@@ -38,18 +39,19 @@ test.describe('Upload Avatar Test Suite', { tag: ['@crud', '@regression'] }, () 
     }, {
       message: "TC-AVT-01: Owner should successfully upload PNG avatar (200 OK)",
     }).toPass({
-      timeout: Number(process.env.POLL_TIMEOUT),
+      timeout: Number(process.env.EXPECT_TIMEOUT),
       intervals: [Number(process.env.POLL_INTERVAL_FAST), Number(process.env.POLL_INTERVAL_NORMAL)],
     })
   });
 
   // TC-AVT-02: Admin uploads avatar for another user
   test('TC-AVT-02: Admin should successfully upload avatar for any user (200 OK)', { tag: '@regression' }, async ({ adminService, authService }) => {
-    await expect(async () => {
-      const record = ApiData.uploadAvatar['TC-AVT-02']();
-      const { id: userId } = await registerUserAndGetInfo(record, authService, expectations);
+    const record = ApiData.uploadAvatar['TC-AVT-02']();
+    const { id: userId } = await registerUserAndGetInfo(record, authService, expectations);
 
-      const response = await adminService.uploadAvatar(userId, record.payload as any);
+    const response = await adminService.uploadAvatar(userId, record.payload as any);
+        
+    await expect(async () => {
 
       await expectations.expectStatus(response, record.expectedStatus);
     }, {

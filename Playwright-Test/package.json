@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test:e2e": "playwright test tests/",
-    "test:e2e:ui": "playwright test tests/ --ui",
-    "test:api": "playwright test API/test-script/",
+    "test:e2e": "npx playwright test tests/",
+    "test:e2e:ui": "npx playwright test tests/ --ui",
+    "test:api": "npx playwright test API/",
     "seed": "npx tsx src/data/seed.ts"
   },
   "keywords": [],

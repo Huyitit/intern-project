@@ -1,5 +1,5 @@
-import { UserBuilder } from "../builders/user.builder";
-import { UserDataGenerator } from "../generators/user-data.generator";
+import { UserBuilder } from "../helpers/builders/user.builder";
+import { UserDataGenerator } from "../helpers/generators/user-data.generator";
 import { User } from "../../api/models/user.model";
 
 export interface TestCaseRecord<T = any> {
