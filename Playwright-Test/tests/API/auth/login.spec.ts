@@ -14,7 +14,7 @@ import { getLoginTestCases } from '../../../src/data/test_data/login.dataset';
 
 test.describe('Login Test Suite', { tag: ['@auth', '@regression'] }, () => {
   let expectations: Expectations;
-
+  console.log("Hello");
   test.beforeEach(({ request }) => {
     expectations = new Expectations();
   });
