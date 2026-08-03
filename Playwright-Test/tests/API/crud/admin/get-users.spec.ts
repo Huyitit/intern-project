@@ -1,13 +1,13 @@
 import { expect } from '@playwright/test';
-import { test } from '../../../src/api/helpers/fixtures/auth.fixture';
-import { ApiClient } from '../../../src/api/clients/api.client';
-import { UserService } from '../../../src/api/services/user.service';
-import { Expectations } from '../../../src/api/helpers/assertions/base';
-import { HttpStatus } from '../../../src/api/config/httpStatus';
-import { getUsersResponseSchema, crudErrorResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
-import { ApiData } from '../../../src/data/test_data/api.test.data';
+import { test } from '../../../../src/api/helpers/fixtures/auth.fixture';
+import { ApiClient } from '../../../../src/api/clients/api.client';
+import { UserService } from '../../../../src/api/services/user.service';
+import { Expectations } from '../../../../src/api/helpers/assertions/base';
+import { HttpStatus } from '../../../../src/api/config/httpStatus';
+import { getUsersResponseSchema, crudErrorResponseSchema } from '../../../../src/api/helpers/schemas/user.schema';
+import { ApiData } from '../../../../src/data/test_data/api.test.data';
 
-test.describe('Get Users Test Suite', { tag: ['@crud', '@regression'] }, () => {
+test.describe('Admin - Get Users List (GET /users)', { tag: ['@crud', '@admin', '@regression'] }, () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {
@@ -128,37 +128,10 @@ test.describe('Get Users Test Suite', { tag: ['@crud', '@regression'] }, () => {
     const users1 = (await p1.json()).users || [];
     const users2 = (await p2.json()).users || [];
     
-    const ids1 = users1.map((u:any) => u.id);
-    const ids2 = users2.map((u:any) => u.id);
+    const ids1 = users1.map((u: any) => u.id);
+    const ids2 = users2.map((u: any) => u.id);
     
-    const overlap = ids1.filter((id:any) => ids2.includes(id));
+    const overlap = ids1.filter((id: any) => ids2.includes(id));
     expect(overlap.length).toBe(0);
-  });
-
-  test('TC-GU-11: should reject requests with no token', { tag: '@regression' }, async ({ request }) => {
-    const record = ApiData.getUsers['TC-GU-11']();
-    const unauthUserService = new UserService(new ApiClient(request, ''));
-
-    const response = await unauthUserService.getUsers(record.payload);
-    await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, crudErrorResponseSchema);
-  });
-
-  test('TC-GU-12: should reject requests with invalid token', { tag: '@regression' }, async ({ request }) => {
-    const record = ApiData.getUsers['TC-GU-12']();
-    const invalidService = new UserService(new ApiClient(request, 'invalid.token'));
-
-    const response = await invalidService.getUsers(record.payload);
-    await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, crudErrorResponseSchema);
-  });
-
-  test('TC-GU-13: should reject standard user requests', { tag: '@regression' }, async ({ request, userToken }) => {
-    const record = ApiData.getUsers['TC-GU-13']();
-    const normalUserService = new UserService(new ApiClient(request, userToken));
-
-    const response = await normalUserService.getUsers(record.payload);
-    await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 });

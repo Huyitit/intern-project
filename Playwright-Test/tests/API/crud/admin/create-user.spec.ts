@@ -1,11 +1,10 @@
 import { expect } from '@playwright/test';
-import { test } from '../../../src/api/helpers/fixtures/api.service.fixture';
-import { Expectations } from '../../../src/api/helpers/assertions/base';
-import { HttpStatus } from '../../../src/api/config/httpStatus';
-import { createUserResponseSchema, crudErrorResponseSchema } from '../../../src/api/helpers/schemas/user.schema';
-import { ApiData } from '../../../src/data/test_data/api.test.data';
+import { test } from '../../../../src/api/helpers/fixtures/api.service.fixture';
+import { Expectations } from '../../../../src/api/helpers/assertions/base';
+import { createUserResponseSchema, crudErrorResponseSchema } from '../../../../src/api/helpers/schemas/user.schema';
+import { ApiData } from '../../../../src/data/test_data/api.test.data';
 
-test.describe('Create User Test Suite', { tag: ['@crud', '@regression'] }, () => {
+test.describe('Admin - Create User (POST /users)', { tag: ['@crud', '@admin', '@regression'] }, () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {
@@ -33,7 +32,7 @@ test.describe('Create User Test Suite', { tag: ['@crud', '@regression'] }, () =>
     }).toPass({
       timeout: Number(process.env.POLL_TIMEOUT),
       intervals: [(Number(process.env.POLL_INTERVAL_NORMAL))]
-    })
+    });
   });
 
   test('TC-CU-02: Duplicate Username', { tag: '@regression' }, async ({ adminService }) => {
@@ -41,7 +40,7 @@ test.describe('Create User Test Suite', { tag: ['@crud', '@regression'] }, () =>
 
     // Initial creation
     const res1 = await adminService.create({ user: record.user } as any);
-    await expectations.expectStatus(res1, HttpStatus.CREATED);
+    await expectations.expectStatus(res1, 201);
 
     // Duplicate creation attempt
     const response = await adminService.create(record.payload as any);
@@ -81,24 +80,6 @@ test.describe('Create User Test Suite', { tag: ['@crud', '@regression'] }, () =>
     const record = ApiData.createUser['TC-CU-06']();
 
     const response = await adminService.create(record.payload as any);
-    await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, crudErrorResponseSchema);
-  });
-
-  test('TC-CU-07: Standard User forbidden to create', { tag: '@regression' }, async ({ normalService }) => {
-    const record = ApiData.createUser['TC-CU-07']();
-
-    const response = await normalService.create(record.payload as any);
-    
-    await expectations.expectStatus(response, record.expectedStatus);
-    await expectations.expectSchema(response, crudErrorResponseSchema);
-  });
-
-  test('TC-CU-08: No Token', { tag: '@regression' }, async ({ anonymousService }) => {
-    const record = ApiData.createUser['TC-CU-08']();
-
-    const response = await anonymousService.create(record.payload as any);
-    
     await expectations.expectStatus(response, record.expectedStatus);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
