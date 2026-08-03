@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.DB_DATABASE || 'test_db' }}
+          MYSQL_USER: ${{ secrets.DB_USER || 'test_user' }}
+          MYSQL_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.18.0
+
+      - name: Install Dependencies
+        run: |
+          cd backend && npm ci
+          cd ../Playwright-Test && npm ci
+
+      - name: Build Backend
+        run: cd backend && npm run build
+
+      - name: Run Prisma Migration
+        run: cd backend && npx prisma db push
+        env:
+          DATABASE_URL: mysql://${{ secrets.DB_USER || 'test_user' }}:${{ secrets.DB_PASSWORD }}@127.0.0.1:3306/${{ secrets.DB_DATABASE || 'test_db' }}
+
+      - name: Start Backend
+        run: cd backend && npm start &
+        env:
+          DATABASE_URL: mysql://${{ secrets.DB_USER || 'test_user' }}:${{ secrets.DB_PASSWORD }}@127.0.0.1:3306/${{ secrets.DB_DATABASE || 'test_db' }}
+          PORT: 3000
+
+      - name: Wait for API to be ready
+        run: npx wait-on tcp:3000
+
+      - name: Seed Database
+        run: cd Playwright-Test && npm run seed
+        env:
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_USER: ${{ secrets.DB_USER || 'test_user' }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_DATABASE || 'test_db' }}
+
+      - name: Install Playwright browsers
+        run: cd Playwright-Test && npx playwright install --with-deps
+
+      - name: Run API Tests
+        run: cd Playwright-Test && npm run test:api -- --reporter=github
+        env:
+          BASE_URL: ${{ secrets.BASE_URL || 'http://127.0.0.1:3000' }}
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_USER: ${{ secrets.DB_USER || 'test_user' }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_DATABASE || 'test_db' }}
+
+      - name: Upload Playwright Report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: Playwright-Test/playwright-report/
+          retention-days: 30

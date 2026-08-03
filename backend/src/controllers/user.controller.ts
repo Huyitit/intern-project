@@ -91,7 +91,7 @@ export default class userController {
             const random = (Math.random() <= 0.5) ? true : false;
 
             return res.status(200).json({
-                success: random,
+                success: true,
                 users: result
             });
         } catch (error) {

@@ -1,10 +1,12 @@
 import { AuthService } from "../../services/auth.service";
 import { UserBuilder } from "../../../data/helpers/builders/user.builder";
-import { TestCaseRecord } from "../../../data/test_data/api.test.data";
+import { TestCaseRecord } from "../../../data/test_data/types";
 import { Expectations } from "../assertions/base";
 import { UserService } from "../../services/user.service";
 import { ApiClient } from "../../clients/api.client";
 import {APIRequestContext} from '@playwright/test'
+
+import { pool } from "../../config/db";
 
 export interface TargetUserInfo {
   userId: number;
@@ -20,6 +22,24 @@ export async function createTargetUser(authService: AuthService): Promise<Target
   const newUser = new UserBuilder().setValidNewUser().build();
   const registerRes = await authService.register({ user: newUser });
   const userId = (await registerRes.json()).user.id;
+
+  const loginRes = await authService.login({
+    user: { username: newUser.username, password: newUser.password },
+  });
+  const token = (await loginRes.json()).token;
+
+  return { userId, token, username: newUser.username };
+}
+
+/**
+ * Registers a new valid admin user and logs them in, returning their userId, session token, and username.
+ */
+export async function createTargetAdmin(authService: AuthService): Promise<TargetUserInfo> {
+  const newUser = new UserBuilder().setValidNewUser().setRole('admin').build();
+  const registerRes = await authService.register({ user: newUser });
+  const userId = (await registerRes.json()).user.id;
+
+  await pool.execute('UPDATE users SET role = ? WHERE id = ?', ['admin', userId]);
 
   const loginRes = await authService.login({
     user: { username: newUser.username, password: newUser.password },
