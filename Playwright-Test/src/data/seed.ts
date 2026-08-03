@@ -69,6 +69,7 @@ async function main() {
   }
 
   console.log('50 users seeded/verified successfully.');
+  return 1;
 }
 
 export default async function globalSetup() {
