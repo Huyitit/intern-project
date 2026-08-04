@@ -8,10 +8,47 @@ on:
   pull_request:
     branches:
       - main
-      - aicode
 
 jobs:
-  test:
+  start:
+    name: Setup & Cache Dependencies
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24.18.0
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/package-lock.json
+            Playwright-Test/package-lock.json
+
+      - name: Install Dependencies
+        run: |
+          cd backend && npm ci
+          cd ../Playwright-Test && npm ci
+
+      - name: Build Backend
+        run: cd backend && npm run build
+
+      - name: Cache Playwright Browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('Playwright-Test/package-lock.json') }}
+
+      - name: Install Playwright Browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: cd Playwright-Test && npx playwright install --with-deps
+
+  smoke:
+    name: Smoke Tests
+    needs: start
     runs-on: ubuntu-latest
 
     services:
@@ -41,7 +78,7 @@ jobs:
             backend/package-lock.json
             Playwright-Test/package-lock.json
 
-      - name: Install Dependencies
+      - name: Install Dependencies from Cache
         run: |
           cd backend && npm ci
           cd ../Playwright-Test && npm ci
@@ -72,19 +109,19 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: ${{ secrets.DB_DATABASE || 'test_db' }}
 
-      - name: Cache Playwright Browsers
+      - name: Restore Playwright Browsers Cache
         id: playwright-cache
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: ${{ runner.os }}-playwright-${{ hashFiles('Playwright-Test/package-lock.json') }}
 
-      - name: Install Playwright browsers
+      - name: Install Playwright Browsers if Cache Miss
         if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: cd Playwright-Test && npx playwright install --with-deps
 
-      - name: Run API Tests
-        run: cd Playwright-Test && npm run test:api
+      - name: Run Smoke API Tests
+        run: cd Playwright-Test && npx playwright test --grep="@smoke"
         env:
           BASE_URL: ${{ secrets.BASE_URL || 'http://127.0.0.1:3000' }}
           DB_HOST: 127.0.0.1
@@ -93,10 +130,105 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: ${{ secrets.DB_DATABASE || 'test_db' }}
 
-      - name: Upload Playwright HTML Report
+      - name: Upload Smoke Playwright HTML Report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-html-report
+          name: smoke-playwright-html-report
+          path: Playwright-Test/playwright-report/html/
+          retention-days: 30
+
+  regression:
+    name: Regression Tests
+    needs: [start, smoke]
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'pull_request' && github.base_ref == 'main')
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.DB_DATABASE || 'test_db' }}
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24.18.0
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/package-lock.json
+            Playwright-Test/package-lock.json
+
+      - name: Install Dependencies from Cache
+        run: |
+          cd backend && npm ci
+          cd ../Playwright-Test && npm ci
+
+      - name: Build Backend
+        run: cd backend && npm run build
+
+      - name: Run Prisma Migration
+        run: cd backend && npx prisma db push
+        env:
+          DATABASE_URL: mysql://${{ secrets.DB_USER || 'test_user' }}:${{ secrets.DB_PASSWORD }}@127.0.0.1:3306/${{ secrets.DB_DATABASE || 'test_db' }}
+
+      - name: Start Backend
+        run: cd backend && npm start &
+        env:
+          DATABASE_URL: mysql://${{ secrets.DB_USER || 'test_user' }}:${{ secrets.DB_PASSWORD }}@127.0.0.1:3306/${{ secrets.DB_DATABASE || 'test_db' }}
+          PORT: 3000
+
+      - name: Wait for API to be ready
+        run: npx wait-on tcp:3000
+
+      - name: Seed Database
+        run: cd Playwright-Test && npm run seed
+        env:
+          DB_HOST: ${{ vars.DB_HOST || '127.0.0.1' }}
+          DB_PORT: ${{ vars.DB_PORT || 3306 }}
+          DB_USER: ${{ secrets.DB_USER || 'test_user' }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_DATABASE || 'test_db' }}
+
+      - name: Restore Playwright Browsers Cache
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('Playwright-Test/package-lock.json') }}
+
+      - name: Install Playwright Browsers if Cache Miss
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: cd Playwright-Test && npx playwright install --with-deps
+
+      - name: Run Regression API Tests
+        run: cd Playwright-Test && npx playwright test --grep="@regression"
+        env:
+          BASE_URL: ${{ secrets.BASE_URL || 'http://127.0.0.1:3000' }}
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_USER: ${{ secrets.DB_USER || 'test_user' }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_DATABASE || 'test_db' }}
+
+      - name: Upload Regression Playwright HTML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: regression-playwright-html-report
           path: Playwright-Test/playwright-report/html/
           retention-days: 30
