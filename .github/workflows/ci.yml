@@ -61,8 +61,8 @@ jobs:
           - 3306:3306
         options: >-
           --health-cmd="mysqladmin ping -h localhost"
-          --health-interval=10s
-          --health-timeout=5s
+          --health-interval=3s
+          --health-timeout=2s
           --health-retries=5
 
     steps:
@@ -140,10 +140,8 @@ jobs:
 
   regression:
     name: Regression Tests
-    needs: [start, smoke]
-    if: >-
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      (github.event_name == 'pull_request' && github.base_ref == 'main')
+    needs: [start]
+    if:  (github.event.pull_request.merged == true && github.base_ref == 'main')
     runs-on: ubuntu-latest
 
     services:
