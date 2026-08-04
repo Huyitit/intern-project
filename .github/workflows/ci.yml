@@ -8,7 +8,6 @@ on:
   pull_request:
     branches:
       - main
-      - aicode
 
 jobs:
   start:
@@ -142,6 +141,9 @@ jobs:
   regression:
     name: Regression Tests
     needs: [start, smoke]
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      (github.event_name == 'pull_request' && github.base_ref == 'main')
     runs-on: ubuntu-latest
 
     services:
