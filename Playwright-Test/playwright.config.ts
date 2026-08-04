@@ -25,9 +25,9 @@ export default defineConfig({
   reporter: [
     ['list'],
     ['html', {
-      open: 'always'
+      open: 'always', outputFolder: "test-results/playwright-html"
     }],
-    ['json', {outputFile: 'test-results/api-results.json'}]
+    ['json', { outputFile: 'test-results/api-results.json' }]
 ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
