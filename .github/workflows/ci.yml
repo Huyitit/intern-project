@@ -139,7 +139,7 @@ jobs:
 
   regression:
     name: Regression Tests
-    if:  (github.event.pull_request.merged == true && github.base_ref == 'main')
+    # if:  (github.event.pull_request.merged == true && github.base_ref == 'main')
     runs-on: ubuntu-latest
 
     services:
@@ -212,7 +212,7 @@ jobs:
         run: cd Playwright-Test && npx playwright install --with-deps
 
       - name: Run Regression API Tests
-        run: cd Playwright-Test && npx playwright test --grep="@regression"
+        run: cd Playwright-Test && npx playwright test --repeat-each 5 --grep="@regression"
         env:
           BASE_URL: ${{ secrets.BASE_URL || 'http://127.0.0.1:3000' }}
           DB_HOST: 127.0.0.1
