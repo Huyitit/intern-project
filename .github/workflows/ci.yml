@@ -98,5 +98,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: playwright-html-report
-          path: Playwright-Test/test-results/playwright-html/
+          path: Playwright-Test/playwright-report/html/
           retention-days: 30
