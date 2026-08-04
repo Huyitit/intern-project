@@ -21,7 +21,7 @@ test.describe('User - Delete Authorization (DELETE /users/{id})', { tag: ['@crud
     const userService = isolatedUser.service;
     const response = await userService.delete(isolatedUser.userId.toString());
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 403);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
@@ -31,7 +31,7 @@ test.describe('User - Delete Authorization (DELETE /users/{id})', { tag: ['@crud
     const userService = anonymousUser.service;
     const response = await userService.delete(isolatedUser.userId.toString());
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 406);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 });

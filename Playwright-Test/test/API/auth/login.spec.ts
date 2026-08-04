@@ -1,6 +1,5 @@
 import { expect } from '@playwright/test';
 import { test } from "../../../src/api/helpers/fixtures/api.service.fixture";
-import { ApiClient } from '../../../src/api/clients/api.client';
 import { UserService } from '../../../src/api/services/user.service';
 import { Expectations } from '../../../src/api/helpers/assertions/base';
 import { HttpStatus } from '../../../src/api/config/httpStatus';
@@ -8,7 +7,7 @@ import {
   loginResponseSchema,
   authErrorResponseSchema,
 } from '../../../src/api/helpers/schemas/auth.schema';
-import { registerUser } from '../../../src/api/helpers/actions/actions';
+
 import {
   tcLOG01,
   tcLOG02,
@@ -33,11 +32,15 @@ test.describe('Login Test Suite', { tag: ['@auth', '@regression'] }, () => {
   // TC-LOG-01: Valid Login
   test('TC-LOG-01: should successfully login with valid credentials (200 OK)', { tag: ['@smoke', '@regression'] }, async ({ authService }) => {
     const record = tcLOG01();
-    await registerUser(record, authService, expectations);
+    
+    if (record.user) {
+      const registerRes = await authService.register({ user: record.user });
+      await expectations.expectStatus(registerRes, HttpStatus.CREATED);
+    }
 
     const response = await authService.login(record.payload);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 200);
     await expectations.expectSchema(response, loginResponseSchema);
     await expectations.expectToken(response, loginResponseSchema, true);
   });
@@ -45,11 +48,14 @@ test.describe('Login Test Suite', { tag: ['@auth', '@regression'] }, () => {
   // TC-LOG-02: Auth Failure (Wrong Password)
   test('TC-LOG-02: should return 401 Unauthorized for incorrect password', { tag: '@regression' }, async ({ authService }) => {
     const record = tcLOG02();
-    await registerUser(record, authService, expectations);
+    if (record.user) {
+      const registerRes = await authService.register({ user: record.user });
+      await expectations.expectStatus(registerRes, HttpStatus.CREATED);
+    }
 
     const response = await authService.login(record.payload);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 401);
     await expectations.expectSchema(response, authErrorResponseSchema);
   });
 
@@ -59,18 +65,21 @@ test.describe('Login Test Suite', { tag: ['@auth', '@regression'] }, () => {
 
     const response = await authService.login(record.payload);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 401);
     await expectations.expectSchema(response, authErrorResponseSchema);
   });
 
   // TC-LOG-04: Missing Fields
   test('TC-LOG-04: should return 400 Bad Request when missing password field', { tag: '@regression' }, async ({ authService }) => {
     const record = tcLOG04();
-    await registerUser(record, authService, expectations);
+    if (record.user) {
+      const registerRes = await authService.register({ user: record.user });
+      await expectations.expectStatus(registerRes, HttpStatus.CREATED);
+    }
 
     const response = await authService.login(record.payload as any);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 400);
     await expectations.expectSchema(response, authErrorResponseSchema);
   });
 
@@ -80,18 +89,21 @@ test.describe('Login Test Suite', { tag: ['@auth', '@regression'] }, () => {
 
     const response = await authService.login(record.payload as any);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 400);
     await expectations.expectSchema(response, authErrorResponseSchema);
   });
 
   // TC-LOG-06: Flat Payload
   test('TC-LOG-06: should return 400 Bad Request when payload is missing user wrapper', { tag: '@regression' }, async ({ authService }) => {
     const record = tcLOG06();
-    await registerUser(record, authService, expectations);
+    if (record.user) {
+      const registerRes = await authService.register({ user: record.user });
+      await expectations.expectStatus(registerRes, HttpStatus.CREATED);
+    }
 
     const response = await authService.login(record.payload as any);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 400);
     await expectations.expectSchema(response, authErrorResponseSchema);
   });
 
@@ -107,17 +119,20 @@ test.describe('Login Test Suite', { tag: ['@auth', '@regression'] }, () => {
   // TC-LOG-08: Multi-Device Login
   test('TC-LOG-08: should allow multi-device login and return valid tokens for both', { tag: '@regression' }, async ({ request, authService }) => {
     const record = tcLOG08();
-    await registerUser(record, authService, expectations);
+    if (record.user) {
+      const registerRes = await authService.register({ user: record.user });
+      await expectations.expectStatus(registerRes, HttpStatus.CREATED);
+    }
 
     // First device login
     const response1 = await authService.login(record.payload);
-    await expectations.expectStatus(response1, record.expectedStatus);
+    await expectations.expectStatus(response1, 200);
     const body1 = await response1.json();
     const token1 = body1.token;
 
     // Second device login
     const response2 = await authService.login(record.payload);
-    await expectations.expectStatus(response2, record.expectedStatus);
+    await expectations.expectStatus(response2, 200);
     const body2 = await response2.json();
     const token2 = body2.token;
 
@@ -125,8 +140,8 @@ test.describe('Login Test Suite', { tag: ['@auth', '@regression'] }, () => {
     expect(token2).toBeTruthy();
 
     // Verify both tokens are valid for subsequent API calls
-    const userService1 = new UserService(new ApiClient(request, token1));
-    const userService2 = new UserService(new ApiClient(request, token2));
+    const userService1 = new UserService(request, token1);
+    const userService2 = new UserService(request, token2);
 
     const userProfile1 = await userService1.getById(body1.user.id.toString());
     await expectations.expectStatus(userProfile1, HttpStatus.OK);
@@ -141,7 +156,7 @@ test.describe('Login Test Suite', { tag: ['@auth', '@regression'] }, () => {
 
     const response = await authService.login(record.payload);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 200);
     await expectations.expectUserRole(response, 'admin');
     await expectations.expectSchema(response, loginResponseSchema);
   });
@@ -152,7 +167,7 @@ test.describe('Login Test Suite', { tag: ['@auth', '@regression'] }, () => {
 
     const response = await authService.login(record.payload);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 200);
     await expectations.expectUserRole(response, 'user');
     await expectations.expectSchema(response, loginResponseSchema);
   });

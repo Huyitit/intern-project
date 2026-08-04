@@ -17,30 +17,30 @@ function createValidUser(): User {
 export function tcDU01(): TestCaseRecord {
   const newUser = createValidUser();
   return {
-    tcId: 'TC-DU-01',
+
     description: 'Valid Deletion (Admin)',
     user: newUser,
     payload: {},
-    expectedStatus: 200,
+
   };
 }
 
 export function tcDU02(): TestCaseRecord {
   return {
-    tcId: 'TC-DU-02',
+
     description: 'Delete Non-Existent User',
     payload: { targetId: '999999' },
-    expectedStatus: 500,
+
   };
 }
 
 export function tcDU03(): TestCaseRecord {
   const newUser = createValidUser();
   return {
-    tcId: 'TC-DU-03',
+
     description: 'Idempotency Check',
     user: newUser,
     payload: {},
-    expectedStatus: 200,
+
   };
 }

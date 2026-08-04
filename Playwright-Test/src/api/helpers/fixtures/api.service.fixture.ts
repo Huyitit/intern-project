@@ -1,9 +1,6 @@
 import { test as base } from './auth.fixture';
-import { ApiClient } from '../../clients/api.client';
 import { UserService } from '../../services/user.service';
-import { AuthClient } from '../../clients/auth.client';
-import { AuthService } from '../../services/auth.service';
-import { createTargetUser, createTargetAdmin, TargetUserInfo } from '../actions/actions';
+import { AuthService, TargetUserInfo } from '../../services/auth.service';
 import { pool } from '../../config/db';
 
 export interface IsolatedUserSession extends TargetUserInfo {
@@ -11,30 +8,13 @@ export interface IsolatedUserSession extends TargetUserInfo {
 }
 
 export const test = base.extend<{ 
-  // adminService: UserService; 
-  // normalService: UserService;
   anonymousUser: IsolatedUserSession;
   authService: AuthService;
   isolatedUser: IsolatedUserSession;
   isolatedAdmin: IsolatedUserSession;
 }>({
-  // adminService: async ({ adminToken, request }, use) => {
-  //   const client = new ApiClient(request, adminToken);
-  //   const service = new UserService(client);
-
-  //   await use(service);
-  // },
-
-  // normalService: async ({ userToken, request }, use) => {
-  //   const client = new ApiClient(request, userToken);
-  //   const service = new UserService(client);
-
-  //   await use(service);
-  // },
-
   anonymousUser: async ({ request }, use) => {
-    const client = new ApiClient(request, '');
-    const service = new UserService(client);
+    const service = new UserService(request);
 
     const session: IsolatedUserSession = {
       token: '',
@@ -47,15 +27,13 @@ export const test = base.extend<{
   },
 
   authService: async ({ request }, use) => {
-    const client = new AuthClient(request);
-    const service = new AuthService(client);
-
+    const service = new AuthService(request);
     await use(service);
   },
 
   isolatedUser: async ({ authService, request }, use) => {
-    const userInfo = await createTargetUser(authService);
-    const service = new UserService(new ApiClient(request, userInfo.token));
+    const userInfo = await authService.createTargetUser();
+    const service = new UserService(request, userInfo.token);
 
     const session: IsolatedUserSession = {
       ...userInfo,
@@ -72,8 +50,8 @@ export const test = base.extend<{
   },
 
   isolatedAdmin: async ({ authService, request }, use) => {
-    const userInfo = await createTargetAdmin(authService);
-    const service = new UserService(new ApiClient(request, userInfo.token));
+    const userInfo = await authService.createTargetAdmin();
+    const service = new UserService(request, userInfo.token);
 
     const session: IsolatedUserSession = {
       ...userInfo,

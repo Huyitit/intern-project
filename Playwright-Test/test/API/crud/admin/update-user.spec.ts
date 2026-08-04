@@ -3,7 +3,7 @@ import { test } from '../../../../src/api/helpers/fixtures/api.service.fixture';
 import { Expectations } from '../../../../src/api/helpers/assertions/base';
 import { updateUserResponseSchema, crudErrorResponseSchema } from '../../../../src/api/helpers/schemas/user.schema';
 import { tcUU01, tcUU03, tcUU04, tcUU05 } from '../../../../src/data/test_data/crud/admin/update-user.data';
-
+import { HttpStatus } from '../../../../src/api/config/httpStatus';
 test.describe('Admin - Update User (PUT /users/{id})', { tag: ['@crud', '@admin', '@regression'] }, () => {
   let expectations: Expectations;
 
@@ -17,7 +17,7 @@ test.describe('Admin - Update User (PUT /users/{id})', { tag: ['@crud', '@admin'
     const userService = isolatedAdmin.service;
     const response = await userService.updateUser(isolatedUser.userId, record.payload);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, HttpStatus.OK);
     await expectations.expectSchema(response, updateUserResponseSchema);
 
     const body = await response.json();
@@ -35,7 +35,7 @@ test.describe('Admin - Update User (PUT /users/{id})', { tag: ['@crud', '@admin'
       }
     });
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, HttpStatus.NOT_FOUND);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
@@ -45,7 +45,7 @@ test.describe('Admin - Update User (PUT /users/{id})', { tag: ['@crud', '@admin'
     const userService = isolatedAdmin.service;
     const response = await userService.updateUser(isolatedUser.userId, record.payload as any);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, HttpStatus.BAD_REQUEST);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
@@ -55,7 +55,7 @@ test.describe('Admin - Update User (PUT /users/{id})', { tag: ['@crud', '@admin'
     const userService = isolatedAdmin.service;
     const response = await userService.updateUser(isolatedUser.userId, record.payload);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, HttpStatus.BAD_REQUEST);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 });

@@ -17,7 +17,7 @@ test.describe('User - Create User Authorization (POST /users)', { tag: ['@crud',
     const userService = isolatedUser.service;
     const response = await userService.create(record.payload as any);
     
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 403);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
@@ -27,7 +27,7 @@ test.describe('User - Create User Authorization (POST /users)', { tag: ['@crud',
     const userService = anonymousUser.service;
     const response = await userService.create(record.payload as any);
     
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 406);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 });

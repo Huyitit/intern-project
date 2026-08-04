@@ -22,7 +22,7 @@ function createValidUser(): User {
 export function tcAVT01(): TestCaseRecord {
   const user = createValidUser();
   return {
-    tcId: 'TC-AVT-01',
+
     description: 'Owner should successfully upload PNG avatar (200 OK)',
     user,
     payload: {
@@ -32,14 +32,14 @@ export function tcAVT01(): TestCaseRecord {
         buffer: dummyPngBuffer,
       },
     },
-    expectedStatus: 200,
+
   };
 }
 
 export function tcAVT05(): TestCaseRecord {
   const user = createValidUser();
   return {
-    tcId: 'TC-AVT-05',
+
     description: 'User should be forbidden from updating another user avatar (403 Forbidden)',
     user,
     payload: {
@@ -49,14 +49,14 @@ export function tcAVT05(): TestCaseRecord {
         buffer: dummyPngBuffer,
       },
     },
-    expectedStatus: 403,
+
   };
 }
 
 export function tcAVT06(): TestCaseRecord {
   const user = createValidUser();
   return {
-    tcId: 'TC-AVT-06',
+
     description: 'Anonymous upload request without token should be rejected (401/406)',
     user,
     payload: {
@@ -66,7 +66,7 @@ export function tcAVT06(): TestCaseRecord {
         buffer: dummyPngBuffer,
       },
     },
-    expectedStatus: 401,
+
   };
 }
 
@@ -74,7 +74,7 @@ export function tcCSV01(): TestCaseRecord {
   const user = createValidUser();
   const csvData = `full_name,username,phone,email\nTest CSV Updated,${user.username},0912345678,${user.email}`;
   return {
-    tcId: 'TC-CSV-01',
+
     description: 'Owner should successfully update profile via CSV upload (200 OK)',
     user,
     payload: {
@@ -84,7 +84,7 @@ export function tcCSV01(): TestCaseRecord {
         buffer: Buffer.from(csvData, 'utf-8'),
       },
     },
-    expectedStatus: 200,
+
   };
 }
 
@@ -92,7 +92,7 @@ export function tcCSV05(): TestCaseRecord {
   const user = createValidUser();
   const csvData = `full_name,username,phone,email\nForbidden Update,${user.username},0912345678,forbidden@example.com`;
   return {
-    tcId: 'TC-CSV-05',
+
     description: 'User should be forbidden from updating another user profile via CSV (403 Forbidden)',
     user,
     payload: {
@@ -102,7 +102,7 @@ export function tcCSV05(): TestCaseRecord {
         buffer: Buffer.from(csvData, 'utf-8'),
       },
     },
-    expectedStatus: 403,
+
   };
 }
 
@@ -110,7 +110,7 @@ export function tcCSV06(): TestCaseRecord {
   const user = createValidUser();
   const csvData = `full_name,username,phone,email\nAnon Update,${user.username},0912345678,anon@example.com`;
   return {
-    tcId: 'TC-CSV-06',
+
     description: 'Anonymous upload request without token should be rejected (401/406)',
     user,
     payload: {
@@ -120,6 +120,6 @@ export function tcCSV06(): TestCaseRecord {
         buffer: Buffer.from(csvData, 'utf-8'),
       },
     },
-    expectedStatus: 401,
+
   };
 }

@@ -40,10 +40,10 @@ export function tcUU03(): TestCaseRecord {
   const user = createValidUser();
   user.full_name = 'Non Existent';
   return {
-    tcId: 'TC-UU-03',
+
     description: 'User Not Found',
     payload: { id: 99999, user },
-    expectedStatus: 409,
+
   };
 }
 

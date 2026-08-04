@@ -24,7 +24,7 @@ test.describe('Admin - Create User (POST /users)', { tag: ['@crud', '@admin', '@
     const userService = isolatedAdmin.service;
     const response = await userService.create(record.payload as any);
     
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 201);
     await expectations.expectSchema(response, createUserResponseSchema);
     
     const body = await response.json();
@@ -49,7 +49,7 @@ test.describe('Admin - Create User (POST /users)', { tag: ['@crud', '@admin', '@
     // Duplicate creation attempt
     const response = await userService.create(record.payload as any);
     
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 409);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
@@ -59,7 +59,7 @@ test.describe('Admin - Create User (POST /users)', { tag: ['@crud', '@admin', '@
     const userService = isolatedAdmin.service;
     const response = await userService.create(record.payload as any);
     
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 400);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
@@ -69,7 +69,7 @@ test.describe('Admin - Create User (POST /users)', { tag: ['@crud', '@admin', '@
     const userService = isolatedAdmin.service;
     const response = await userService.create(record.payload as any);
     
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 400);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
@@ -79,7 +79,7 @@ test.describe('Admin - Create User (POST /users)', { tag: ['@crud', '@admin', '@
     const userService = isolatedAdmin.service;
     const response = await userService.create(record.payload as any);
     
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 400);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
@@ -88,7 +88,7 @@ test.describe('Admin - Create User (POST /users)', { tag: ['@crud', '@admin', '@
 
     const userService = isolatedAdmin.service;
     const response = await userService.create(record.payload as any);
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 400);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 });

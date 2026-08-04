@@ -1,16 +1,15 @@
-import { APIResponse } from '@playwright/test';
+import { APIRequestContext, APIResponse } from '@playwright/test';
 import { BaseService } from './base.service';
 import { User } from '../models/user.model';
 import { endpoints } from '../config/endpoints';
-import { ApiClient } from '../clients/api.client';
 
 export class UserService extends BaseService<User> {
-  constructor(client: ApiClient) {
-    super(client, endpoints.users);
+  constructor(request: APIRequestContext, token?: string) {
+    super(request, endpoints.users, token);
   }
 
   async getHealth(): Promise<APIResponse> {
-    return this.client.get(endpoints.health);
+    return this.get(endpoints.health);
   }
 
   /**
@@ -18,8 +17,8 @@ export class UserService extends BaseService<User> {
    * @param params Query parameters (page, limit, keyword, sortBy, order)
    */
   async getUsers(params?: Record<string, string | number>): Promise<APIResponse> {
-    // The ApiClient's get method supports passing params via options.params
-    return this.client.get(this.endpoint, { params: params as any });
+    // The base service's get method supports passing params via options.params
+    return this.get(this.endpoint, { params: params as any });
   }
 
   /**
@@ -28,14 +27,14 @@ export class UserService extends BaseService<User> {
    * @param payload User data to update
    */
   async updateUser(id: number | string, payload: { user: Partial<User> }): Promise<APIResponse> {
-    return this.client.put(endpoints.userById(id.toString()), payload);
+    return this.put(endpoints.userById(id.toString()), payload);
   }
 
   /**
    * Export users list (slow endpoint)
    */
   async exportUsers(): Promise<APIResponse> {
-    return this.client.get(endpoints.exportUsers);
+    return this.get(endpoints.exportUsers);
   }
 
   /**
@@ -44,7 +43,7 @@ export class UserService extends BaseService<User> {
    * @param multipart Multipart file payload object
    */
   async uploadAvatar(id: number | string, multipart?: Record<string, any>): Promise<APIResponse> {
-    return this.client.put(endpoints.userAvatar(id.toString()), undefined, { multipart });
+    return this.put(endpoints.userAvatar(id.toString()), undefined, { multipart });
   }
 
   /**
@@ -53,6 +52,6 @@ export class UserService extends BaseService<User> {
    * @param multipart Multipart CSV file payload object
    */
   async uploadCsv(id: number | string, multipart?: Record<string, any>): Promise<APIResponse> {
-    return this.client.post(endpoints.userCsv(id.toString()), undefined, { multipart });
+    return this.post(endpoints.userCsv(id.toString()), undefined, { multipart });
   }
 }

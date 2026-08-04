@@ -27,7 +27,7 @@ test.describe('Admin - Upload Operations (POST Avatar / CSV)', { tag: ['@crud', 
       const response = await userService.uploadAvatar(isolatedUser.userId, record.payload as any);
           
       await expect(async () => {
-        await expectations.expectStatus(response, record.expectedStatus);
+        await expectations.expectStatus(response, 200);
       }, {
         message: "TC-AVT-02: Admin should successfully upload avatar for any user (200 OK)",
       }).toPass({
@@ -66,7 +66,7 @@ test.describe('Admin - Upload Operations (POST Avatar / CSV)', { tag: ['@crud', 
       const response = await userService.uploadCsv(isolatedUser.userId, record.payload as any);
 
       await expect(async () => {
-        await expectations.expectStatus(response, record.expectedStatus);
+        await expectations.expectStatus(response, 200);
       }, {
         message: "TC-CSV-02: Admin should successfully update any user profile via CSV (200 OK)",
       }).toPass({

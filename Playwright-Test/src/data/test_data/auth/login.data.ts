@@ -31,7 +31,7 @@ function createValidUser(): User {
 export function tcLOG01(): TestCaseRecord {
   const user = createValidUser();
   return {
-    tcId: 'TC-LOG-01',
+
     description: 'Valid login with correct credentials',
     user,
     payload: {
@@ -40,14 +40,14 @@ export function tcLOG01(): TestCaseRecord {
         password: user.password,
       },
     },
-    expectedStatus: 200,
+
   };
 }
 
 export function tcLOG02(): TestCaseRecord {
   const user = createValidUser();
   return {
-    tcId: 'TC-LOG-02',
+
     description: 'Auth failure with incorrect password',
     user,
     payload: {
@@ -56,13 +56,13 @@ export function tcLOG02(): TestCaseRecord {
         password: 'wrong_password_123!',
       },
     },
-    expectedStatus: 401,
+
   };
 }
 
 export function tcLOG03(): TestCaseRecord {
   return {
-    tcId: 'TC-LOG-03',
+
     description: 'Auth failure for non-existent user',
     payload: {
       user: {
@@ -70,14 +70,14 @@ export function tcLOG03(): TestCaseRecord {
         password: UserDataGenerator.validPassword(),
       },
     },
-    expectedStatus: 401,
+
   };
 }
 
 export function tcLOG04(): TestCaseRecord {
   const user = createValidUser();
   return {
-    tcId: 'TC-LOG-04',
+
     description: 'Missing password field in payload',
     user,
     payload: {
@@ -85,38 +85,38 @@ export function tcLOG04(): TestCaseRecord {
         username: user.username,
       },
     },
-    expectedStatus: 400,
+
   };
 }
 
 export function tcLOG05(): TestCaseRecord {
   return {
-    tcId: 'TC-LOG-05',
+
     description: 'Empty user payload object',
     payload: {
       user: {},
     },
-    expectedStatus: 400,
+
   };
 }
 
 export function tcLOG06(): TestCaseRecord {
   const user = createValidUser();
   return {
-    tcId: 'TC-LOG-06',
+
     description: 'Missing root user wrapper in body',
     user,
     payload: {
       username: user.username,
       password: user.password,
     },
-    expectedStatus: 400,
+
   };
 }
 
 export function tcLOG07(): TestCaseRecord {
   return {
-    tcId: 'TC-LOG-07',
+
     description: 'SQL Injection attempt in credentials',
     payload: {
       user: {
@@ -124,14 +124,14 @@ export function tcLOG07(): TestCaseRecord {
         password: "' OR '1'='1",
       },
     },
-    expectedStatus: 401,
+
   };
 }
 
 export function tcLOG08(): TestCaseRecord {
   const user = createValidUser();
   return {
-    tcId: 'TC-LOG-08',
+
     description: 'Multi-device login for same user',
     user,
     payload: {
@@ -140,7 +140,7 @@ export function tcLOG08(): TestCaseRecord {
         password: user.password,
       },
     },
-    expectedStatus: 200,
+
   };
 }
 
@@ -150,7 +150,7 @@ export function tcLOG09(): TestCaseRecord {
     .setPassword(UserDataGenerator.adminPassword())
     .build();
   return {
-    tcId: 'TC-LOG-09',
+
     description: 'Admin login',
     user,
     payload: {
@@ -159,7 +159,7 @@ export function tcLOG09(): TestCaseRecord {
         password: user.password,
       },
     },
-    expectedStatus: 200,
+
   };
 }
 
@@ -169,7 +169,7 @@ export function tcLOG10(): TestCaseRecord {
     .setPassword(UserDataGenerator.userPassword())
     .build();
   return {
-    tcId: 'TC-LOG-10',
+
     description: 'User login',
     user,
     payload: {
@@ -178,7 +178,7 @@ export function tcLOG10(): TestCaseRecord {
         password: user.password,
       },
     },
-    expectedStatus: 200,
+
   };
 }
 

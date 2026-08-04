@@ -17,10 +17,10 @@ function createValidUser(): User {
 export function tcREG01(): TestCaseRecord {
   const newUser = createValidUser();
   return {
-    tcId: 'TC-REG-01',
+
     description: 'Valid dynamic user registration',
     payload: { user: newUser },
-    expectedStatus: 201,
+
   };
 }
 
@@ -35,11 +35,11 @@ export function tcREG02(): TestCaseRecord {
     .setRole('user')
     .build();
   return {
-    tcId: 'TC-REG-02',
+
     description: 'Duplicate Username Registration',
     user: existingUser,
     payload: { user: duplicateUser },
-    expectedStatus: 409,
+
   };
 }
 
@@ -50,10 +50,10 @@ export function tcREG03(): TestCaseRecord {
     .setRole('user')
     .build();
   return {
-    tcId: 'TC-REG-03',
+
     description: 'Register with Missing Required Fields',
     payload: { user: incompleteUser },
-    expectedStatus: 400,
+
   };
 }
 
@@ -65,10 +65,10 @@ export function tcREG04(): TestCaseRecord {
     .setRole('user')
     .build();
   return {
-    tcId: 'TC-REG-04',
+
     description: 'Register with Field Length Violations (<6 chars)',
     payload: { user: shortFieldsUser },
-    expectedStatus: 400,
+
   };
 }
 
@@ -81,16 +81,16 @@ export function tcREG05(): TestCaseRecord {
     .setRole('user')
     .build();
   return {
-    tcId: 'TC-REG-05',
+
     description: 'Register with Invalid Email Format',
     payload: { user: invalidEmailUser },
-    expectedStatus: 400,
+
   };
 }
 
 export function tcREG06(): TestCaseRecord {
   return {
-    tcId: 'TC-REG-06',
+
     description: 'Register with Flat JSON Body (Unwrapped)',
     payload: {
       full_name: UserDataGenerator.validFullname(),
@@ -98,7 +98,7 @@ export function tcREG06(): TestCaseRecord {
       password: UserDataGenerator.validPassword(),
       role: 'user',
     },
-    expectedStatus: 400,
+
   };
 }
 
@@ -110,10 +110,10 @@ export function tcREG07(): TestCaseRecord {
     .setRole('admin' as any)
     .build();
   return {
-    tcId: 'TC-REG-07',
+
     description: 'Register with Role Escalation Attempt',
     payload: { user: adminEscalationUser },
-    expectedStatus: 201,
+
   };
 }
 
@@ -125,9 +125,9 @@ export function tcREG08(): TestCaseRecord {
     .setRole('user')
     .build();
   return {
-    tcId: 'TC-REG-08',
+
     description: 'Register with SQL Injection Input String',
     payload: { user: sqlInjectionUser },
-    expectedStatus: 201,
+
   };
 }
