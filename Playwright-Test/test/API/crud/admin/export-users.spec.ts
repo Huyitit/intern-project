@@ -41,6 +41,6 @@ test.describe('Admin - Export CSV (GET /users/export)', { tag: ['@crud', '@admin
   test('TC-EXP-03: Anonymous request without token should be rejected (401/406)', { tag: '@regression' }, async ({ anonymousUser }) => {
     const response = await anonymousUser.service.exportUsers();
 
-    await expectations.expectStatusIn(response, [HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN, HttpStatus.NOT_ACCEPTABLE]);
+    await expectations.expectStatus(response, HttpStatus.UNAUTHORIZED);
   });
 });

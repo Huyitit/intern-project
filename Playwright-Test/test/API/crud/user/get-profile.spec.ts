@@ -1,6 +1,7 @@
 import { expect } from '@playwright/test';
 import { test } from '../../../../src/api/helpers/fixtures/api.service.fixture';
 import { Expectations } from '../../../../src/api/helpers/assertions/base';
+import { HttpStatus } from '../../../../src/api/config/httpStatus';
 import { getUserByIdResponseSchema, crudErrorResponseSchema } from '../../../../src/api/helpers/schemas/user.schema';
 
 import {
@@ -51,7 +52,7 @@ test.describe('User - Profile & User List Access (GET)', { tag: ['@crud', '@user
 
     const userService = anonymousUser.service;
     const response = await userService.getById(isolatedUser.userId.toString());
-    await expectations.expectStatus(response, 406);
+    await expectations.expectStatus(response, HttpStatus.UNAUTHORIZED);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
@@ -60,7 +61,7 @@ test.describe('User - Profile & User List Access (GET)', { tag: ['@crud', '@user
 
     const userService = anonymousUser.service;
     const response = await userService.getUsers(record.payload);
-    await expectations.expectStatus(response, 406);
+    await expectations.expectStatus(response, HttpStatus.UNAUTHORIZED);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
@@ -68,7 +69,7 @@ test.describe('User - Profile & User List Access (GET)', { tag: ['@crud', '@user
     const record = tcGU12();
 
     const response = await request.get('/api/users', { headers: { Authorization: 'Bearer invalid.token' } });
-    await expectations.expectStatus(response, 403);
+    await expectations.expectStatus(response, HttpStatus.UNAUTHORIZED);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 

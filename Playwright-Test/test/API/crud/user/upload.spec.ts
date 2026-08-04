@@ -64,7 +64,7 @@ test.describe('User - Upload Operations & Authorization (POST Avatar / CSV)', { 
       const userService = anonymousUser.service;
       const response = await userService.uploadAvatar(isolatedUser.userId, record.payload as any);
 
-      await expectations.expectStatusIn(response, [HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN, HttpStatus.NOT_ACCEPTABLE]);
+      await expectations.expectStatus(response, HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -103,7 +103,7 @@ test.describe('User - Upload Operations & Authorization (POST Avatar / CSV)', { 
       const userService = anonymousUser.service;
       const response = await userService.uploadCsv(isolatedUser.userId, record.payload as any);
 
-      await expectations.expectStatusIn(response, [HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN, HttpStatus.NOT_ACCEPTABLE]);
+      await expectations.expectStatus(response, HttpStatus.UNAUTHORIZED);
     });
   });
 });

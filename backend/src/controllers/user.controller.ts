@@ -217,7 +217,7 @@ export default class userController {
         });
 
         if (!currentUser) {
-            return res.status(409).json({
+            return res.status(404).json({
                 success: false,
                 message: "Cannot find user",
                 errors: [{ code: "not_found", message: "Cannot find user" }]

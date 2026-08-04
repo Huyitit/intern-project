@@ -26,6 +26,6 @@ test.describe('User - Export CSV Authorization (GET /users/export)', { tag: ['@c
     const userService = anonymousUser.service;
     const response = await userService.exportUsers();
 
-    await expectations.expectStatusIn(response, [HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN, HttpStatus.NOT_ACCEPTABLE]);
+    await expectations.expectStatus(response, HttpStatus.UNAUTHORIZED);
   });
 });
