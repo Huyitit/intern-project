@@ -18,7 +18,7 @@ test.describe('Admin - Delete User (DELETE /users/{id})', { tag: ['@crud', '@adm
     const adminService = isolatedAdmin.service;
     const response = await adminService.delete(isolatedUser.userId.toString());
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 200);
     await expectations.expectSchema(response, deleteUserResponseSchema);
 
     // Verify it's actually deleted
@@ -32,7 +32,7 @@ test.describe('Admin - Delete User (DELETE /users/{id})', { tag: ['@crud', '@adm
     const adminService = isolatedAdmin.service;
     const response = await adminService.delete(record.payload.targetId);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 500);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
@@ -51,7 +51,7 @@ test.describe('Admin - Delete User (DELETE /users/{id})', { tag: ['@crud', '@adm
 
     // First deletion
     const res1 = await adminService.delete(userId.toString());
-    await expectations.expectStatus(res1, record.expectedStatus);
+    await expectations.expectStatus(res1, 200);
     await expectations.expectSchema(res1, deleteUserResponseSchema);
 
     // Second deletion of the same ID

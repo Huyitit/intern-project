@@ -1,6 +1,6 @@
 import { test as base } from "@playwright/test";
 import { AuthService } from "../../services/auth.service";
-import { AuthClient } from "../../clients/auth.client";
+
 import { env } from "../../config/env";
 
 export const test = base.extend<
@@ -12,8 +12,7 @@ export const test = base.extend<
       const requestContext = await playwright.request.newContext({
         baseURL: env.baseUrl,
       });
-      const apiClient = new AuthClient(requestContext);
-      const authService = new AuthService(apiClient);
+      const authService = new AuthService(requestContext);
       console.log("Creating admin token (worker scope)...");
 
       const credentials = {
@@ -37,8 +36,7 @@ export const test = base.extend<
       const requestContext = await playwright.request.newContext({
         baseURL: env.baseUrl,
       });
-      const apiClient = new AuthClient(requestContext);
-      const authService = new AuthService(apiClient);
+      const authService = new AuthService(requestContext);
       console.log("Creating user token (worker scope)...");
 
       const credentials = {

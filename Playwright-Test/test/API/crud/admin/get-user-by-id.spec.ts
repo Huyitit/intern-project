@@ -24,7 +24,7 @@ test.describe('Admin - Get User By Id (GET /users/{id})', { tag: ['@crud', '@adm
 
     const response = await userService.getById(registerBody!.user.id.toString());
     
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 200);
     await expectations.expectSchema(response, getUserByIdResponseSchema);
     
     const body = await response.json();
@@ -37,7 +37,7 @@ test.describe('Admin - Get User By Id (GET /users/{id})', { tag: ['@crud', '@adm
     const userService = isolatedAdmin.service;
     const response = await userService.getById(record.payload.targetId);
     
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 409);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
@@ -46,6 +46,6 @@ test.describe('Admin - Get User By Id (GET /users/{id})', { tag: ['@crud', '@adm
 
     const userService = isolatedAdmin.service;
     const response = await userService.getById(record.payload.targetId);
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 500);
   });
 });

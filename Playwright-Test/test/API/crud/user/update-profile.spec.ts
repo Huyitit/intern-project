@@ -3,7 +3,7 @@ import { test } from '../../../../src/api/helpers/fixtures/api.service.fixture';
 import { Expectations } from '../../../../src/api/helpers/assertions/base';
 import { updateUserResponseSchema, crudErrorResponseSchema } from '../../../../src/api/helpers/schemas/user.schema';
 import { tcUU02, tcUU06, tcUU07, tcUU08 } from '../../../../src/data/test_data/crud/user/update-profile.data';
-
+import { HttpStatus } from '../../../../src/api/config/httpStatus';
 test.describe('User - Update Profile & Authorization (PUT /users/{id})', { tag: ['@crud', '@user', '@regression'] }, () => {
   let expectations: Expectations;
 
@@ -21,7 +21,7 @@ test.describe('User - Update Profile & Authorization (PUT /users/{id})', { tag: 
     const userService = isolatedUser.service;
     const response = await userService.updateUser(isolatedUser.userId, record.payload);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, HttpStatus.OK);
     await expectations.expectSchema(response, updateUserResponseSchema);
 
     const body = await response.json();
@@ -34,7 +34,7 @@ test.describe('User - Update Profile & Authorization (PUT /users/{id})', { tag: 
     const userService = isolatedUser.service;
     const response = await userService.updateUser(record.payload.targetId, record.payload);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 403);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
@@ -44,7 +44,7 @@ test.describe('User - Update Profile & Authorization (PUT /users/{id})', { tag: 
     const userService = anonymousUser.service;
     const response = await userService.updateUser(isolatedUser.userId, record.payload as any);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, HttpStatus.UNAUTHORIZED);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 
@@ -56,7 +56,7 @@ test.describe('User - Update Profile & Authorization (PUT /users/{id})', { tag: 
       headers: { Authorization: 'Bearer invalid.token' },
     });
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, HttpStatus.UNAUTHORIZED);
     await expectations.expectSchema(response, crudErrorResponseSchema);
   });
 });

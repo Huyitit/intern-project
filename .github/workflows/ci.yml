@@ -30,12 +30,16 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
           node-version: 24.18.0
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/package-lock.json
+            Playwright-Test/package-lock.json
 
       - name: Install Dependencies
         run: |
@@ -68,11 +72,19 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: ${{ secrets.DB_DATABASE || 'test_db' }}
 
+      - name: Cache Playwright Browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('Playwright-Test/package-lock.json') }}
+
       - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: cd Playwright-Test && npx playwright install --with-deps
 
       - name: Run API Tests
-        run: cd Playwright-Test && npm run test:api -- --reporter=github
+        run: cd Playwright-Test && npm run test:api
         env:
           BASE_URL: ${{ secrets.BASE_URL || 'http://127.0.0.1:3000' }}
           DB_HOST: 127.0.0.1
@@ -81,10 +93,10 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: ${{ secrets.DB_DATABASE || 'test_db' }}
 
-      - name: Upload Playwright Report
-        if: failure()
+      - name: Upload Playwright HTML Report
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
-          path: Playwright-Test/playwright-report/
+          name: playwright-html-report
+          path: Playwright-Test/playwright-report/html/
           retention-days: 30

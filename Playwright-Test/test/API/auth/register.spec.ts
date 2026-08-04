@@ -4,7 +4,7 @@ import {
   registerResponseSchema,
   authErrorResponseSchema,
 } from '../../../src/api/helpers/schemas/auth.schema';
-import { registerUser } from '../../../src/api/helpers/actions/actions';
+
 import {
   tcREG01,
   tcREG02,
@@ -32,7 +32,7 @@ test.describe('Register Test Suite', { tag: ['@auth', '@regression'] }, () => {
     const record = tcREG01();
     const response = await authService.register(record.payload);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 201);
     await expectations.expectSchema(response, registerResponseSchema);
   });
 
@@ -40,12 +40,15 @@ test.describe('Register Test Suite', { tag: ['@auth', '@regression'] }, () => {
   test('TC-REG-02: should return 409 Conflict when attempting to register duplicate username', { tag: '@regression' }, async ({ authService }) => {
     const record = tcREG02();
     // Register initial user
-    await registerUser(record, authService, expectations);
+    if (record.user) {
+      const registerRes = await authService.register({ user: record.user });
+      await expectations.expectStatus(registerRes, 201);
+    }
 
     // Attempt registering duplicate user
     const response = await authService.register(record.payload);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 409);
     await expectations.expectSchema(response, authErrorResponseSchema);
   });
 
@@ -54,7 +57,7 @@ test.describe('Register Test Suite', { tag: ['@auth', '@regression'] }, () => {
     const record = tcREG03();
     const response = await authService.register(record.payload);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 400);
     await expectations.expectSchema(response, authErrorResponseSchema);
   });
 
@@ -63,7 +66,7 @@ test.describe('Register Test Suite', { tag: ['@auth', '@regression'] }, () => {
     const record = tcREG04();
     const response = await authService.register(record.payload);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 400);
     await expectations.expectSchema(response, authErrorResponseSchema);
   });
 
@@ -72,7 +75,7 @@ test.describe('Register Test Suite', { tag: ['@auth', '@regression'] }, () => {
     const record = tcREG05();
     const response = await authService.register(record.payload);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 400);
     await expectations.expectSchema(response, authErrorResponseSchema);
   });
 
@@ -81,7 +84,7 @@ test.describe('Register Test Suite', { tag: ['@auth', '@regression'] }, () => {
     const record = tcREG06();
     const response = await authService.register(record.payload);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 400);
     await expectations.expectSchema(response, authErrorResponseSchema);
   });
 
@@ -90,7 +93,7 @@ test.describe('Register Test Suite', { tag: ['@auth', '@regression'] }, () => {
     const record = tcREG07();
     const response = await authService.register(record.payload);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 201);
     await expectations.expectSchema(response, registerResponseSchema);
   });
 
@@ -99,7 +102,7 @@ test.describe('Register Test Suite', { tag: ['@auth', '@regression'] }, () => {
     const record = tcREG08();
     const response = await authService.register(record.payload);
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 201);
     await expectations.expectSchema(response, registerResponseSchema);
   });
 });

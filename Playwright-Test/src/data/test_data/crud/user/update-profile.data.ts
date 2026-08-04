@@ -29,10 +29,10 @@ export function tcUU02(targetUserId?: number): TestCaseRecord {
 
 export function tcUU06(): TestCaseRecord {
   return {
-    tcId: 'TC-UU-06',
+
     description: 'User Updating Another User',
     payload: { targetId: 7, user: { full_name: 'Hacked' } },
-    expectedStatus: 403,
+
   };
 }
 

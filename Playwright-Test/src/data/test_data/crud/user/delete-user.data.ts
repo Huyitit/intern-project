@@ -17,21 +17,21 @@ function createValidUser(): User {
 export function tcDU04(): TestCaseRecord {
   const newUser = createValidUser();
   return {
-    tcId: 'TC-DU-04',
+
     description: 'User Role Forbidden',
     user: newUser,
     payload: {},
-    expectedStatus: 403,
+
   };
 }
 
 export function tcDU05(): TestCaseRecord {
   const newUser = createValidUser();
   return {
-    tcId: 'TC-DU-05',
+
     description: 'No Token',
     user: newUser,
     payload: {},
-    expectedStatus: 406,
+
   };
 }

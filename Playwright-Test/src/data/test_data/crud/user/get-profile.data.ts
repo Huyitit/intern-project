@@ -17,7 +17,7 @@ function createValidUser(): User {
 export function tcGI02(): TestCaseRecord {
   const newUser = createValidUser();
   return {
-    tcId: 'TC-GI-02',
+
     description: 'User fetches their own profile',
     user: newUser,
     payload: {
@@ -26,51 +26,51 @@ export function tcGI02(): TestCaseRecord {
         password: newUser.password,
       },
     },
-    expectedStatus: 200,
+
   };
 }
 
 export function tcGI05(): TestCaseRecord {
   return {
-    tcId: 'TC-GI-05',
+
     description: 'User accessing another user profile',
     payload: {},
-    expectedStatus: 403,
+
   };
 }
 
 export function tcGI06(): TestCaseRecord {
   return {
-    tcId: 'TC-GI-06',
+
     description: 'No Token',
     payload: {},
-    expectedStatus: 406,
+
   };
 }
 
 export function tcGU11(): TestCaseRecord {
   return {
-    tcId: 'TC-GU-11',
+
     description: 'No token provided',
     payload: { page: 1, limit: 10 },
-    expectedStatus: 406,
+
   };
 }
 
 export function tcGU12(): TestCaseRecord {
   return {
-    tcId: 'TC-GU-12',
+
     description: 'Invalid token provided',
     payload: { page: 1, limit: 10 },
-    expectedStatus: 403,
+
   };
 }
 
 export function tcGU13(): TestCaseRecord {
   return {
-    tcId: 'TC-GU-13',
+
     description: 'Standard user request',
     payload: { page: 1, limit: 10 },
-    expectedStatus: 403,
+
   };
 }

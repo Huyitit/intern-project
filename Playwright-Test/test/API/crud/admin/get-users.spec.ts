@@ -28,7 +28,7 @@ test.describe('Admin - Get Users List (GET /users)', { tag: ['@crud', '@admin', 
     const userService = isolatedAdmin.service;
 
     const response = await userService.getUsers(record.payload);
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 200);
     await expectations.expectSchema(response, getUsersResponseSchema);
     
     await expectations.expectArrayItemProperty(response, 'users', 'role', 'user', 1);
@@ -39,7 +39,7 @@ test.describe('Admin - Get Users List (GET /users)', { tag: ['@crud', '@admin', 
     const userService = isolatedAdmin.service;
 
     const response = await userService.getUsers(record.payload);
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 200);
     await expectations.expectSchema(response, getUsersResponseSchema);
     
     const body = await response.json();
@@ -52,7 +52,7 @@ test.describe('Admin - Get Users List (GET /users)', { tag: ['@crud', '@admin', 
     const userService = isolatedAdmin.service;
 
     const response = await userService.getUsers(record.payload);
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 200);
     
     const body = await response.json();
     for (const user of body.users) {
@@ -65,7 +65,7 @@ test.describe('Admin - Get Users List (GET /users)', { tag: ['@crud', '@admin', 
     const userService = isolatedAdmin.service;
 
     const response = await userService.getUsers(record.payload);
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 200);
     
     const body = await response.json();
     const usernames = body.users.map((u: any) => u.username.toLowerCase());
@@ -78,7 +78,7 @@ test.describe('Admin - Get Users List (GET /users)', { tag: ['@crud', '@admin', 
     const userService = isolatedAdmin.service;
 
     const response = await userService.getUsers(record.payload);
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 200);
     
     const body = await response.json();
     const ids = body.users.map((u: any) => u.id);
@@ -91,7 +91,7 @@ test.describe('Admin - Get Users List (GET /users)', { tag: ['@crud', '@admin', 
     const userService = isolatedAdmin.service;
 
     const response = await userService.getUsers(record.payload);
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 200);
     
     const body = await response.json();
     expect(body.users.length).toBeLessThanOrEqual(2);
@@ -106,7 +106,7 @@ test.describe('Admin - Get Users List (GET /users)', { tag: ['@crud', '@admin', 
     if (response.status() === HttpStatus.INTERNAL_SERVER_ERROR) {
       await expectations.expectSchema(response, crudErrorResponseSchema);
     } else {
-      await expectations.expectStatus(response, record.expectedStatus);
+      await expectations.expectStatus(response, 200);
       await expectations.expectSchema(response, getUsersResponseSchema);
     }
   });
@@ -124,7 +124,7 @@ test.describe('Admin - Get Users List (GET /users)', { tag: ['@crud', '@admin', 
     const userService = isolatedAdmin.service;
 
     const response = await userService.getUsers(record.payload);
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 500);
   });
 
   test('TC-GU-10: should not overlap pages', { tag: '@regression' }, async ({ isolatedAdmin }) => {

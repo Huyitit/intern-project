@@ -2,7 +2,7 @@ import { expect } from '@playwright/test';
 import { test } from '../../../../src/api/helpers/fixtures/api.service.fixture';
 import { Expectations } from '../../../../src/api/helpers/assertions/base';
 import { HttpStatus } from '../../../../src/api/config/httpStatus';
-import { createTargetUser } from '../../../../src/api/helpers/actions/actions';
+
 import {
   tcAVT01,
   tcAVT05,
@@ -32,7 +32,7 @@ test.describe('User - Upload Operations & Authorization (POST Avatar / CSV)', { 
       const response = await userService.uploadAvatar(isolatedUser.userId, record.payload as any);    
 
       await expect(async () => {
-        await expectations.expectStatus(response, record.expectedStatus);
+        await expectations.expectStatus(response, 200);
 
         const body = await response.json();
         expect(body.success).toBe(true);
@@ -49,12 +49,12 @@ test.describe('User - Upload Operations & Authorization (POST Avatar / CSV)', { 
     // TC-AVT-05: Non-owner standard user updating another user's avatar
     test('TC-AVT-05: User should be forbidden from updating another user avatar (403 Forbidden)', { tag: '@regression' }, async ({ authService, isolatedUser }) => {
       const record = tcAVT05();
-      const otherUser = await createTargetUser(authService);
+      const otherUser = await authService.createTargetUser();
 
       const userService = isolatedUser.service;
       const response = await userService.uploadAvatar(otherUser.userId, record.payload as any);
 
-      await expectations.expectStatus(response, record.expectedStatus);
+      await expectations.expectStatus(response, 403);
     });
 
     // TC-AVT-06: Anonymous request without token
@@ -64,7 +64,7 @@ test.describe('User - Upload Operations & Authorization (POST Avatar / CSV)', { 
       const userService = anonymousUser.service;
       const response = await userService.uploadAvatar(isolatedUser.userId, record.payload as any);
 
-      await expectations.expectStatusIn(response, [HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN, HttpStatus.NOT_ACCEPTABLE]);
+      await expectations.expectStatus(response, HttpStatus.UNAUTHORIZED);
     });
   });
 
@@ -76,7 +76,7 @@ test.describe('User - Upload Operations & Authorization (POST Avatar / CSV)', { 
       await expect(async () => {
         const userService = isolatedUser.service;
         const response = await userService.uploadCsv(isolatedUser.userId, record.payload as any);
-        await expectations.expectStatus(response, record.expectedStatus);
+        await expectations.expectStatus(response, 200);
       }, {
         message: "TC-CSV-01: Owner should successfully update profile via CSV upload (200 OK)",
       }).toPass({
@@ -88,12 +88,12 @@ test.describe('User - Upload Operations & Authorization (POST Avatar / CSV)', { 
     // TC-CSV-05: Non-owner standard user updating another user via CSV
     test('TC-CSV-05: User should be forbidden from updating another user profile via CSV (403 Forbidden)', { tag: '@regression' }, async ({ authService, isolatedUser }) => {
       const record = tcCSV05();
-      const otherUser = await createTargetUser(authService);
+      const otherUser = await authService.createTargetUser();
 
       const userService = isolatedUser.service;
       const response = await userService.uploadCsv(otherUser.userId, record.payload as any);
 
-      await expectations.expectStatus(response, record.expectedStatus);
+      await expectations.expectStatus(response, 403);
     });
 
     // TC-CSV-06: Anonymous upload request without token
@@ -103,7 +103,7 @@ test.describe('User - Upload Operations & Authorization (POST Avatar / CSV)', { 
       const userService = anonymousUser.service;
       const response = await userService.uploadCsv(isolatedUser.userId, record.payload as any);
 
-      await expectations.expectStatusIn(response, [HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN, HttpStatus.NOT_ACCEPTABLE]);
+      await expectations.expectStatus(response, HttpStatus.UNAUTHORIZED);
     });
   });
 });

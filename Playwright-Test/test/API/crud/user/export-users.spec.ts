@@ -17,7 +17,7 @@ test.describe('User - Export CSV Authorization (GET /users/export)', { tag: ['@c
     const userService = isolatedUser.service;
     const response = await userService.exportUsers();
 
-    await expectations.expectStatus(response, record.expectedStatus);
+    await expectations.expectStatus(response, 403);
   });
 
   // TC-EXP-03: Anonymous request without token rejected
@@ -26,6 +26,6 @@ test.describe('User - Export CSV Authorization (GET /users/export)', { tag: ['@c
     const userService = anonymousUser.service;
     const response = await userService.exportUsers();
 
-    await expectations.expectStatusIn(response, [HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN, HttpStatus.NOT_ACCEPTABLE]);
+    await expectations.expectStatus(response, HttpStatus.UNAUTHORIZED);
   });
 });

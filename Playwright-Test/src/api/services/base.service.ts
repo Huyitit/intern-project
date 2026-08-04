@@ -1,20 +1,41 @@
-import { APIResponse } from '@playwright/test';
-import { ApiClient } from '../clients/api.client';
+import { APIRequestContext, APIResponse } from '@playwright/test';
 
 export abstract class BaseService<T> {
-  constructor(protected client: ApiClient, protected endpoint: string) {}
+  constructor(protected request: APIRequestContext, protected endpoint: string, protected token?: string) {}
 
-  async create(payload: Partial<T>): Promise<APIResponse> {
-    const res = await this.client.post(this.endpoint, payload);
-    return res;
+  private mergeHeaders(options: any = {}) {
+    const headers = options.headers || {};
+    if (this.token) {
+      headers['Authorization'] = `Bearer ${this.token}`;
+    }
+    return { ...options, headers };
   }
 
-  async getById(id: string): Promise<APIResponse> {
-    const res = await this.client.get(`${this.endpoint}/${id}`);
-    return res;
+  async get(url: string, options: any = {}): Promise<APIResponse> {
+    return this.request.get(url, this.mergeHeaders(options));
   }
-  async delete(id: string): Promise<APIResponse> {
-    const res = await this.client.delete(`${this.endpoint}/${id}`);
-    return res;
+
+  async post(url: string, payload?: any, options: any = {}): Promise<APIResponse> {
+    return this.request.post(url, { data: payload, ...this.mergeHeaders(options) });
+  }
+
+  async put(url: string, payload?: any, options: any = {}): Promise<APIResponse> {
+    return this.request.put(url, { data: payload, ...this.mergeHeaders(options) });
+  }
+
+  // async deleteUrl(url: string, options: any = {}): Promise<APIResponse> {
+  //   return this.request.delete(url, this.mergeHeaders(options));
+  // }
+
+  async create(payload: Partial<T>, options: any = {}): Promise<APIResponse> {
+    return this.post(this.endpoint, payload, options);
+  }
+
+  async getById(id: string, options: any = {}): Promise<APIResponse> {
+    return this.get(`${this.endpoint}/${id}`, options);
+  }
+
+  async delete(id: string, options: any = {}): Promise<APIResponse> {
+    return this.request.delete(`${this.endpoint}/${id}`, this.mergeHeaders(options));
   }
 }

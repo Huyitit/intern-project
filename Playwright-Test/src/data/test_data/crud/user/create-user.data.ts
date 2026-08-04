@@ -17,19 +17,19 @@ function createValidUser(): User {
 export function tcCU07(): TestCaseRecord {
   const newUser = createValidUser();
   return {
-    tcId: 'TC-CU-07',
+
     description: 'Standard User forbidden to create',
     payload: { user: newUser },
-    expectedStatus: 403,
+
   };
 }
 
 export function tcCU08(): TestCaseRecord {
   const newUser = createValidUser();
   return {
-    tcId: 'TC-CU-08',
+
     description: 'No Token',
     payload: { user: newUser },
-    expectedStatus: 406,
+
   };
 }
