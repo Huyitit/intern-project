@@ -69,6 +69,7 @@ async function main() {
   }
 
   console.log('50 users seeded/verified successfully.');
+  return 1;
 }
 
 export default async function globalSetup() {
@@ -77,8 +78,20 @@ export default async function globalSetup() {
 
 if (require.main === module) {
   main()
-    .catch((e) => {
+    .then(() => {
+      console.log('Seed finished, closing pool...');
+      return pool.end();          // gracefully close all connections in the pool
+    })
+    .then(() => {
+      process.exit(0);            // force-exit so the CLI process actually terminates
+    })
+    .catch(async (e) => {
       console.error('Error seeding database:', e);
+      try {
+        await pool.end();
+      } catch {
+        // ignore close errors, we're exiting anyway
+      }
       process.exit(1);
     });
 }

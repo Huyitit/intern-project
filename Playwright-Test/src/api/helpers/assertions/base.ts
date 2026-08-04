@@ -142,26 +142,6 @@ export class Expectations {
     );
   }
 
-  // async expectUserCreatedOnDatabase(payload: any) {
-  //   const sql = "SELECT * FROM users WHERE username = ?";
-
-  //   await expect.poll(async () => {
-      
-  //     const [rows] = await pool.query<RowDataPacket[]>(sql, [payload.user.username]);
-  //     console.log(rows[0]);
-  //     expect(rows[0], `Database user record for '${payload.user.username}' should match creation payload fields`).toEqual(
-  //       expect.objectContaining({
-  //         username: payload.user.username,
-  //         full_name: payload.user.full_name,
-  //       }))
-  //     return rows.length;
-  //   }, {
-  //     message: `User with username '${payload.user.username}' should exist in local MySQL database and match fields`,
-  //     timeout: Number(process.env.POLL_TIMEOUT),
-  //     intervals: [1000, 3000],
-  //   }).toBe(1);
-  // }
-
   async expectUserRole(response: APIResponse, expectedRole: string){
     const body = await response.json();
     const role = body.user.role;
@@ -169,11 +149,11 @@ export class Expectations {
     expect(role, `User should has role ${expectedRole}`).toBe(expectedRole);
   }
 
-  async expectBlahBlah(response: APIResponse, expectedFullName: string) {
-    const body = await response.json();
-    expect(body.success).toBe(true);
-    expect(body.user.full_name).toBe(expectedFullName);
-  }
+  // async expectBlahBlah(response: APIResponse, expectedFullName: string) {
+  //   const body = await response.json();
+  //   expect(body.success).toBe(true);
+  //   expect(body.user.full_name).toBe(expectedFullName);
+  // }
 
   async toBeArray(content: any)
   {

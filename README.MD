@@ -2,6 +2,8 @@
 
 This project consists of a Node.js backend using Express and Prisma, and a React frontend built with Vite.
 
+[![CI](https://github.com/Huyitit/intern-project/actions/workflows/ci.yml/badge.svg)](https://github.com/Huyitit/intern-project/actions/workflows/ci.yml)
+
 ## Prerequisites
 
 - Node.js (v18+ recommended)
