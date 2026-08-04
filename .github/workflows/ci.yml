@@ -36,6 +36,10 @@ jobs:
         uses: actions/setup-node@v5
         with:
           node-version: 24.18.0
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/package-lock.json
+            Playwright-Test/package-lock.json
 
       - name: Install Dependencies
         run: |
@@ -68,7 +72,15 @@ jobs:
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: ${{ secrets.DB_DATABASE || 'test_db' }}
 
+      - name: Cache Playwright Browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('Playwright-Test/package-lock.json') }}
+
       - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: cd Playwright-Test && npx playwright install --with-deps
 
       - name: Run API Tests
