@@ -259,7 +259,7 @@ jobs:
           pattern: blob-report-*
           merge-multiple: true
       - name: Merge reports
-        run: cd Playwright-Test && npx playwright merge-reports --reporter html ./playwright-report/blob
+        run: cd Playwright-Test && PLAYWRIGHT_HTML_REPORT=playwright-report/html npx playwright merge-reports --reporter html ./playwright-report/blob
       - name: Upload merged report
         uses: actions/upload-artifact@v4
         with:
