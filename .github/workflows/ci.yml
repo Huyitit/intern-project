@@ -251,7 +251,7 @@ jobs:
       - name: Install dependencies from cache
         run: |
           # cd backend && npm ci
-          cd ../Playwright-Test && npm ci
+          cd Playwright-Test && npm ci
       - name: Download blob reports
         uses: actions/download-artifact@v4
         with:
