@@ -49,7 +49,21 @@ jobs:
   smoke:
     name: Smoke Tests
     runs-on: ubuntu-latest
-    
+
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          MYSQL_DATABASE: ${{ secrets.DB_DATABASE || 'test_db' }}
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -62,60 +76,6 @@ jobs:
           cache-dependency-path: |
             backend/package-lock.json
             Playwright-Test/package-lock.json
-
-
-      - name: Cache MySQL Docker Image
-        id: cache-mysql-image
-        uses: actions/cache@v4
-        with:
-          path: ~/.docker-mysql-image
-          key: ${{ runner.os }}-docker-mysql-8
-
-      - name: Load or Pull MySQL Docker Image
-        run: |
-          if [ -f ~/.docker-mysql-image/mysql8.tar ]; then
-            echo "Loading cached MySQL Docker image..."
-            docker load -i ~/.docker-mysql-image/mysql8.tar
-          else
-            echo "Pulling fresh MySQL Docker image..."
-            docker pull mysql:8
-            mkdir -p ~/.docker-mysql-image
-            docker save mysql:8 -o ~/.docker-mysql-image/mysql8.tar
-          fi
-
-      - name: Start MySQL Container Manually
-        run: |
-          docker run -d \
-            --name mysql \
-            -p 3306:3306 \
-            -e MYSQL_ROOT_PASSWORD="${{ secrets.DB_PASSWORD }}" \
-            -e MYSQL_DATABASE="${{ secrets.DB_DATABASE || 'test_db' }}" \
-            mysql:8 \
-            --innodb-flush-log-at-trx-commit=2 \
-            --innodb-doublewrite=0 \
-            --sync-binlog=0
-
-      - name: Wait for MySQL Readiness
-        run: |
-          echo "Waiting for MySQL container readiness..."
-          until docker exec mysql mysqladmin ping -h 127.0.0.1 --silent; do
-            echo "MySQL starting..."
-            sleep 1
-          done
-          echo "MySQL container is ready!"
-
-      - name: Install Dependencies from Cache
-        run: |
-          cd backend && npm ci
-          cd ../Playwright-Test && npm ci
-
-      - name: Build Backend
-        run: cd backend && npm run build
-
-      - name: Run Prisma Migration
-        run: cd backend && npx prisma db push
-        env:
-          DATABASE_URL: mysql://${{ secrets.DB_USER || 'test_user' }}:${{ secrets.DB_PASSWORD }}@127.0.0.1:3306/${{ secrets.DB_DATABASE || 'test_db' }}
 
       - name: Start Backend
         run: cd backend && npm start &
@@ -175,20 +135,6 @@ jobs:
         shardIndex: [1,2,3]
         shardTotal: [3]      
 
-    services:
-      mysql:
-        image: mysql:8
-        env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          MYSQL_DATABASE: ${{ secrets.DB_DATABASE || 'test_db' }}
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h localhost"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
@@ -206,6 +152,59 @@ jobs:
         run: |
           cd backend && npm ci
           cd ../Playwright-Test && npm ci
+
+      - name: Cache MySQL Docker Image
+        id: cache-mysql-image
+        uses: actions/cache@v4
+        with:
+          path: ~/.docker-mysql-image
+          key: ${{ runner.os }}-docker-mysql-8
+
+      - name: Load or Pull MySQL Docker Image
+        run: |
+          if [ -f ~/.docker-mysql-image/mysql8.tar ]; then
+            echo "Loading cached MySQL Docker image..."
+            docker load -i ~/.docker-mysql-image/mysql8.tar
+          else
+            echo "Pulling fresh MySQL Docker image..."
+            docker pull mysql:8
+            mkdir -p ~/.docker-mysql-image
+            docker save mysql:8 -o ~/.docker-mysql-image/mysql8.tar
+          fi
+
+      - name: Start MySQL Container Manually
+        run: |
+          docker run -d \
+            --name mysql \
+            -p 3306:3306 \
+            -e MYSQL_ROOT_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+            -e MYSQL_DATABASE="${{ secrets.DB_DATABASE || 'test_db' }}" \
+            mysql:8 \
+            --innodb-flush-log-at-trx-commit=2 \
+            --innodb-doublewrite=0 \
+            --sync-binlog=0
+
+      - name: Wait for MySQL Readiness
+        run: |
+          echo "Waiting for MySQL container readiness..."
+          until docker exec mysql mysqladmin ping -h 127.0.0.1 --silent; do
+            echo "MySQL starting..."
+            sleep 1
+          done
+          echo "MySQL container is ready!"
+
+      - name: Install Dependencies from Cache
+        run: |
+          cd backend && npm ci
+          cd ../Playwright-Test && npm ci
+
+      - name: Build Backend
+        run: cd backend && npm run build
+
+      - name: Run Prisma Migration
+        run: cd backend && npx prisma db push
+        env:
+          DATABASE_URL: mysql://${{ secrets.DB_USER || 'test_user' }}:${{ secrets.DB_PASSWORD }}@127.0.0.1:3306/${{ secrets.DB_DATABASE || 'test_db' }}
 
       - name: Build Backend
         run: cd backend && npm run build
