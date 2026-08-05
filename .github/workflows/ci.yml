@@ -246,11 +246,11 @@ jobs:
           node-version: 24.18.0
           cache: 'npm'
           cache-dependency-path: |
-            backend/package-lock.json
+            # backend/package-lock.json
             Playwright-Test/package-lock.json
       - name: Install dependencies from cache
         run: |
-          cd backend && npm ci
+          # cd backend && npm ci
           cd ../Playwright-Test && npm ci
       - name: Download blob reports
         uses: actions/download-artifact@v4
@@ -259,7 +259,7 @@ jobs:
           pattern: blob-report-*
           merge-multiple: true
       - name: Merge reports
-        run: npx playwright merge-reports --reporter html ./Playwright-Test/playwright-report/blob
+        run: cd Playwright-Test && npx playwright merge-reports --reporter html ./playwright-report/blob
       - name: Upload merged report
         uses: actions/upload-artifact@v4
         with:
