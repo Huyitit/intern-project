@@ -97,7 +97,7 @@ jobs:
           PORT: 3000
 
       - name: Wait for API to be ready
-        run: npx wait-on tcp:3000
+        run: npx wait-on tcp:3000 --timeout 15000
 
       - name: Seed Database
         run: cd Playwright-Test && npm run seed
@@ -141,6 +141,12 @@ jobs:
     name: Regression Tests
     # if:  (github.event.pull_request.merged == true && github.base_ref == 'main')
     runs-on: ubuntu-latest
+
+    strategy: 
+      fail-fast: false
+      matrix: 
+        shardIndex: [1,2,3]
+        shardTotal: [3]      
 
     services:
       mysql:
@@ -189,7 +195,7 @@ jobs:
           PORT: 3000
 
       - name: Wait for API to be ready
-        run: npx wait-on tcp:3000
+        run: npx wait-on tcp:3000 --timeout 15000
 
       - name: Seed Database
         run: cd Playwright-Test && npm run seed
@@ -212,7 +218,7 @@ jobs:
         run: cd Playwright-Test && npx playwright install --with-deps
 
       - name: Run Regression API Tests
-        run: cd Playwright-Test && npx playwright test --repeat-each 5 --grep="@regression"
+        run: cd Playwright-Test && npx playwright test --repeat-each 5 --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }} --grep="@regression"
         env:
           BASE_URL: ${{ secrets.BASE_URL || 'http://127.0.0.1:3000' }}
           DB_HOST: 127.0.0.1
@@ -220,9 +226,41 @@ jobs:
           DB_USER: ${{ secrets.DB_USER || 'test_user' }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: ${{ secrets.DB_DATABASE || 'test_db' }}
+      
+      - name: Upload blob report
+        uses: actions/upload-artifact@v4
+        if: ${{!cancelled()}}
+        with: 
+          name: blob-report-${{matrix.shardIndex}}
+          path: Playwright-Test/playwright-report/blob
+          retention-days: 1
 
-      - name: Upload Regression Playwright HTML Report
-        if: always()
+  merge-reports:
+      if: ${{ !cancelled() }}
+      needs: regression
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24.18.0
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/package-lock.json
+            Playwright-Test/package-lock.json
+      - name: Install dependencies from cache
+        run: |
+          cd backend && npm ci
+          cd ../Playwright-Test && npm ci
+      - name: Download blob reports
+        uses: actions/download-artifact@v4
+        with:
+          path: Playwright-Test/playwright-report/blob
+          pattern: blob-report-*
+          merge-multiple: true
+      - name: Merge reports
+        run: npx playwright merge-reports --reporter html ./Playwright-Test/playwright-report/blob
+      - name: Upload merged report
         uses: actions/upload-artifact@v4
         with:
           name: regression-playwright-html-report
