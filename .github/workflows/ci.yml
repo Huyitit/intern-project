@@ -77,6 +77,20 @@ jobs:
             backend/package-lock.json
             Playwright-Test/package-lock.json
 
+      - name: Install Dependencies from Cache
+        run: |
+          cd backend && npm ci
+          cd ../Playwright-Test && npm ci
+
+      - name: Build Backend
+        run: cd backend && npm run build
+
+      - name: Run Prisma Migration
+        run: cd backend && npx prisma db push
+        env:
+          DATABASE_URL: mysql://${{ secrets.DB_USER || 'test_user' }}:${{ secrets.DB_PASSWORD }}@127.0.0.1:3306/${{ secrets.DB_DATABASE || 'test_db' }}
+
+
       - name: Start Backend
         run: cd backend && npm start &
         env:
@@ -192,19 +206,6 @@ jobs:
             sleep 1
           done
           echo "MySQL container is ready!"
-
-      - name: Install Dependencies from Cache
-        run: |
-          cd backend && npm ci
-          cd ../Playwright-Test && npm ci
-
-      - name: Build Backend
-        run: cd backend && npm run build
-
-      - name: Run Prisma Migration
-        run: cd backend && npx prisma db push
-        env:
-          DATABASE_URL: mysql://${{ secrets.DB_USER || 'test_user' }}:${{ secrets.DB_PASSWORD }}@127.0.0.1:3306/${{ secrets.DB_DATABASE || 'test_db' }}
 
       - name: Build Backend
         run: cd backend && npm run build
