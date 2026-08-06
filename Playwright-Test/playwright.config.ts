@@ -27,7 +27,7 @@ export default defineConfig({
       ["blob", {outputDir: "playwright-report/blob"}],
       ['html', { outputFolder: "playwright-report/html"}],
       ['./custom-reporter.ts']
-    ] 
+    ]
   : [
       ['dot'],
       ['html', {open: 'always', outputFolder: "playwright-report/html"}],
@@ -50,17 +50,32 @@ export default defineConfig({
     //   use: { ...devices['Desktop Chrome'] },
     // },
 
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+    // },
+
+    // @smoke tagged tests
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-      grepInvert: /@hard/,
+      name: 'smoke-test',
+      use: { ...devices['Desktop Firefox']},
+      grep: /@smoke/,
+      repeatEach: 5,
     },
 
+    // @regression tests
+    {
+      name: 'regression-test',
+      // dependencies: [ 'firefox' ],
+      use: { ...devices['Desktop Firefox']},
+      grep: /@regression/,
+      grepInvert: /@hard/,
+    },
     // @hard tagged tests 
 
     {
       name: 'hard-test',
-      dependencies: [ 'firefox' ],
+      dependencies: [ 'regression-test' ],
       use: { ...devices['Desktop Firefox']},
       grep: /@hard/,
       repeatEach: 200,
