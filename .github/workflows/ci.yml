@@ -10,41 +10,6 @@ on:
       - main
 
 jobs:
-  # start:
-  #   name: Setup & Cache Dependencies
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v5
-
-  #     - name: Setup Node.js
-  #       uses: actions/setup-node@v5
-  #       with:
-  #         node-version: 24.18.0
-  #         cache: 'npm'
-  #         cache-dependency-path: |
-  #           backend/package-lock.json
-  #           Playwright-Test/package-lock.json
-
-  #     - name: Install Dependencies
-  #       run: |
-  #         cd backend && npm ci
-  #         cd ../Playwright-Test && npm ci
-
-  #     - name: Build Backend
-  #       run: cd backend && npm run build
-
-  #     - name: Cache Playwright Browsers
-  #       id: playwright-cache
-  #       uses: actions/cache@v4
-  #       with:
-  #         path: ~/.cache/ms-playwright
-  #         key: ${{ runner.os }}-playwright-${{ hashFiles('Playwright-Test/package-lock.json') }}
-
-  #     - name: Install Playwright Browsers
-  #       if: steps.playwright-cache.outputs.cache-hit != 'true'
-  #       run: cd Playwright-Test && npx playwright install --with-deps
 
   smoke:
     name: Smoke Tests
@@ -293,3 +258,39 @@ jobs:
           name: regression-playwright-html-report
           path: Playwright-Test/playwright-report/html/
           retention-days: 30
+
+  # start:
+  #   name: Setup & Cache Dependencies
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v5
+
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v5
+  #       with:
+  #         node-version: 24.18.0
+  #         cache: 'npm'
+  #         cache-dependency-path: |
+  #           backend/package-lock.json
+  #           Playwright-Test/package-lock.json
+
+  #     - name: Install Dependencies
+  #       run: |
+  #         cd backend && npm ci
+  #         cd ../Playwright-Test && npm ci
+
+  #     - name: Build Backend
+  #       run: cd backend && npm run build
+
+  #     - name: Cache Playwright Browsers
+  #       id: playwright-cache
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: ~/.cache/ms-playwright
+  #         key: ${{ runner.os }}-playwright-${{ hashFiles('Playwright-Test/package-lock.json') }}
+
+  #     - name: Install Playwright Browsers
+  #       if: steps.playwright-cache.outputs.cache-hit != 'true'
+  #       run: cd Playwright-Test && npx playwright install --with-deps

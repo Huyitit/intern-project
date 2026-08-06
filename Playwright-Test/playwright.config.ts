@@ -18,22 +18,21 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 1,
+  retries: process.env.CI ? 0 : 1,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : 1,
+  workers: process.env.CI ? 1 : 5,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: process.env.CI ? [
-      ["blob", {
-        outputDir: "playwright-report/blob"
-      }],
-      ['html', {
-        outputFolder: "playwright-report/html"
-    }]] : [
-      ['html', {
-        open: 'always', outputFolder: "playwright-report/html"
-      }],
-      ['json', { outputFile: 'playwright-report/json/api-results.json' }]
-],
+  reporter: process.env.CI 
+  ? [
+      ["blob", {outputDir: "playwright-report/blob"}],
+      ['html', { outputFolder: "playwright-report/html"}],
+      ['./custom-reporter.ts']
+    ] 
+  : [
+      ['dot'],
+      ['html', {open: 'always', outputFolder: "playwright-report/html"}],
+      ['./custom-reporter.ts']
+    ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
@@ -54,8 +53,20 @@ export default defineConfig({
     {
       name: 'firefox',
       use: { ...devices['Desktop Firefox'] },
+      grepInvert: /@hard/,
     },
 
+    // @hard tagged tests 
+
+    {
+      name: 'hard-test',
+      dependencies: [ 'firefox' ],
+      use: { ...devices['Desktop Firefox']},
+      grep: /@hard/,
+      repeatEach: 200,
+      ...(process.env.CI ? {} : { workers: 6 }),
+      retries: 0,
+    },
     // {
     //   name: 'webkit',
     //   use: { ...devices['Desktop Safari'] },
