@@ -26,7 +26,7 @@ export default defineConfig({
   ? [
       ["blob", {outputDir: "playwright-report/blob"}],
       ['html', { outputFolder: "playwright-report/html"}],
-      ['line'],
+      ['dot'],
       ['./custom-reporter.ts']
     ]
   : [
