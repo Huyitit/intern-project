@@ -68,7 +68,7 @@ export default class userController {
     // Intentionally slow endpoint for dev testing
     static exportUsersSlow = async (req: Request, res: Response) => {
         // Simulate 3 seconds delay
-        await new Promise((resolve) => setTimeout(resolve, 3000));
+        // await new Promise((resolve) => setTimeout(resolve, 3000));
 
         try {
             const result = await prisma.users.findMany({
@@ -86,12 +86,14 @@ export default class userController {
                 },
                 // Use a high limit or just fetch all
                 take: 10000
-            });
-
-            const random = (Math.random() <= 0.5) ? true : false;
+            }); 
+             
+            // We know it could exactly happen, but we do not know when
+            // Tools which we can use to test bugs: loop / toPass, repeat-each, retry 
+            const random = (Math.random() <= 0.95) ? true : false;
 
             return res.status(200).json({
-                success: true,
+                success: random,
                 users: result
             });
         } catch (error) {

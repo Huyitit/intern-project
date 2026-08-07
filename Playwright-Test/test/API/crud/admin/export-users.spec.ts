@@ -10,7 +10,7 @@ test.describe('Admin - Export CSV (GET /users/export)', { tag: ['@crud', '@admin
   });
 
   // TC-EXP-01: Admin exports user list
-  test('TC-EXP-01: Admin should successfully export user list (200 OK)', { tag: ['@smoke', '@regression'] }, async ({ isolatedAdmin }) => {
+  test('TC-EXP-01: Admin should successfully export user list (200 OK)', { tag: ['@hard', '@smoke', '@regression'] }, async ({ isolatedAdmin }) => {
     let attempt = 1;
     const startTime = Date.now();
 

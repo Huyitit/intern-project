@@ -4,51 +4,15 @@ on:
   push:
     branches:
       - main
-      - aicode
+      # - aicode
   pull_request:
     branches:
       - main
 
 jobs:
-  start:
-    name: Setup & Cache Dependencies
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v5
-        with:
-          node-version: 24.18.0
-          cache: 'npm'
-          cache-dependency-path: |
-            backend/package-lock.json
-            Playwright-Test/package-lock.json
-
-      - name: Install Dependencies
-        run: |
-          cd backend && npm ci
-          cd ../Playwright-Test && npm ci
-
-      - name: Build Backend
-        run: cd backend && npm run build
-
-      - name: Cache Playwright Browsers
-        id: playwright-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ hashFiles('Playwright-Test/package-lock.json') }}
-
-      - name: Install Playwright Browsers
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: cd Playwright-Test && npx playwright install --with-deps
 
   smoke:
     name: Smoke Tests
-    needs: start
     runs-on: ubuntu-latest
 
     services:
@@ -91,14 +55,15 @@ jobs:
         env:
           DATABASE_URL: mysql://${{ secrets.DB_USER || 'test_user' }}:${{ secrets.DB_PASSWORD }}@127.0.0.1:3306/${{ secrets.DB_DATABASE || 'test_db' }}
 
+
       - name: Start Backend
-        run: cd backend && npm start &
+        run: cd backend && npm start &  
         env:
           DATABASE_URL: mysql://${{ secrets.DB_USER || 'test_user' }}:${{ secrets.DB_PASSWORD }}@127.0.0.1:3306/${{ secrets.DB_DATABASE || 'test_db' }}
           PORT: 3000
 
       - name: Wait for API to be ready
-        run: npx wait-on tcp:3000
+        run: npx wait-on tcp:3000 --timeout 15000
 
       - name: Seed Database
         run: cd Playwright-Test && npm run seed
@@ -121,7 +86,7 @@ jobs:
         run: cd Playwright-Test && npx playwright install --with-deps
 
       - name: Run Smoke API Tests
-        run: cd Playwright-Test && npx playwright test --grep="@smoke"
+        run: cd Playwright-Test && npx playwright test --project="smoke-test"
         env:
           BASE_URL: ${{ secrets.BASE_URL || 'http://127.0.0.1:3000' }}
           DB_HOST: 127.0.0.1
@@ -140,25 +105,14 @@ jobs:
 
   regression:
     name: Regression Tests
-    needs: [start, smoke]
-    if: >-
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      (github.event_name == 'pull_request' && github.base_ref == 'main')
+    if:  (github.event.pull_request.merged == true && github.base_ref == 'main')
     runs-on: ubuntu-latest
 
-    services:
-      mysql:
-        image: mysql:8
-        env:
-          MYSQL_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD }}
-          MYSQL_DATABASE: ${{ secrets.DB_DATABASE || 'test_db' }}
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="mysqladmin ping -h localhost"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=5
+    strategy: 
+      fail-fast: false
+      matrix: 
+        shardIndex: [1,2,3]
+        shardTotal: [3]      
 
     steps:
       - name: Checkout code
@@ -178,6 +132,46 @@ jobs:
           cd backend && npm ci
           cd ../Playwright-Test && npm ci
 
+      - name: Cache MySQL Docker Image
+        id: cache-mysql-image
+        uses: actions/cache@v4
+        with:
+          path: ~/.docker-mysql-image
+          key: ${{ runner.os }}-docker-mysql-8
+
+      - name: Load or Pull MySQL Docker Image
+        run: |
+          if [ -f ~/.docker-mysql-image/mysql8.tar ]; then
+            echo "Loading cached MySQL Docker image..."
+            docker load -i ~/.docker-mysql-image/mysql8.tar
+          else
+            echo "Pulling fresh MySQL Docker image..."
+            docker pull mysql:8
+            mkdir -p ~/.docker-mysql-image
+            docker save mysql:8 -o ~/.docker-mysql-image/mysql8.tar
+          fi
+
+      - name: Start MySQL Container Manually
+        run: |
+          docker run -d \
+            --name mysql \
+            -p 3306:3306 \
+            -e MYSQL_ROOT_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+            -e MYSQL_DATABASE="${{ secrets.DB_DATABASE || 'test_db' }}" \
+            mysql:8 \
+            --innodb-flush-log-at-trx-commit=2 \
+            --innodb-doublewrite=0 \
+            --sync-binlog=0
+
+      - name: Wait for MySQL Readiness
+        run: |
+          echo "Waiting for MySQL container readiness..."
+          until docker exec mysql mysqladmin ping -h 127.0.0.1 --silent; do
+            echo "MySQL starting..."
+            sleep 1
+          done
+          echo "MySQL container is ready!"
+
       - name: Build Backend
         run: cd backend && npm run build
 
@@ -193,7 +187,7 @@ jobs:
           PORT: 3000
 
       - name: Wait for API to be ready
-        run: npx wait-on tcp:3000
+        run: npx wait-on tcp:3000 --timeout 15000
 
       - name: Seed Database
         run: cd Playwright-Test && npm run seed
@@ -216,7 +210,7 @@ jobs:
         run: cd Playwright-Test && npx playwright install --with-deps
 
       - name: Run Regression API Tests
-        run: cd Playwright-Test && npx playwright test --grep="@regression"
+        run: cd Playwright-Test && npx playwright test --project="hard-test" --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         env:
           BASE_URL: ${{ secrets.BASE_URL || 'http://127.0.0.1:3000' }}
           DB_HOST: 127.0.0.1
@@ -224,11 +218,79 @@ jobs:
           DB_USER: ${{ secrets.DB_USER || 'test_user' }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
           DB_NAME: ${{ secrets.DB_DATABASE || 'test_db' }}
+      
+      - name: Upload blob report
+        uses: actions/upload-artifact@v4
+        if: ${{!cancelled()}}
+        with: 
+          name: blob-report-${{matrix.shardIndex}}
+          path: Playwright-Test/playwright-report/blob
+          retention-days: 1
 
-      - name: Upload Regression Playwright HTML Report
-        if: always()
+  merge-reports:
+      if: ${{ !cancelled() && needs.regression.result != 'skipped' }}
+      needs: regression
+      runs-on: ubuntu-latest
+      steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24.18.0
+          cache: 'npm'
+          cache-dependency-path: |
+            # backend/package-lock.json
+            Playwright-Test/package-lock.json
+      - name: Install dependencies from cache
+        run: |
+          # cd backend && npm ci
+          cd Playwright-Test && npm ci
+      - name: Download blob reports
+        uses: actions/download-artifact@v4
+        with:
+          path: Playwright-Test/playwright-report/blob
+          pattern: blob-report-*
+          merge-multiple: true
+      - name: Merge reports
+        run: cd Playwright-Test && PLAYWRIGHT_HTML_REPORT=playwright-report/html npx playwright merge-reports --reporter html ./playwright-report/blob
+      - name: Upload merged report
         uses: actions/upload-artifact@v4
         with:
           name: regression-playwright-html-report
           path: Playwright-Test/playwright-report/html/
           retention-days: 30
+
+  # start:
+  #   name: Setup & Cache Dependencies
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v5
+
+  #     - name: Setup Node.js
+  #       uses: actions/setup-node@v5
+  #       with:
+  #         node-version: 24.18.0
+  #         cache: 'npm'
+  #         cache-dependency-path: |
+  #           backend/package-lock.json
+  #           Playwright-Test/package-lock.json
+
+  #     - name: Install Dependencies
+  #       run: |
+  #         cd backend && npm ci
+  #         cd ../Playwright-Test && npm ci
+
+  #     - name: Build Backend
+  #       run: cd backend && npm run build
+
+  #     - name: Cache Playwright Browsers
+  #       id: playwright-cache
+  #       uses: actions/cache@v4
+  #       with:
+  #         path: ~/.cache/ms-playwright
+  #         key: ${{ runner.os }}-playwright-${{ hashFiles('Playwright-Test/package-lock.json') }}
+
+  #     - name: Install Playwright Browsers
+  #       if: steps.playwright-cache.outputs.cache-hit != 'true'
+  #       run: cd Playwright-Test && npx playwright install --with-deps

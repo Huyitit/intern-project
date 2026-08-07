@@ -18,17 +18,22 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 2 : 1,
+  retries: process.env.CI ? 0 : 1,
   /* Opt out of parallel tests on CI. */
-  workers: process.env.CI ? 1 : 1,
+  workers: process.env.CI ? 1 : 5,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [
-    // ['list'],
-    ['html', {
-      open: 'always', outputFolder: "playwright-report/html"
-    }],
-    ['json', { outputFile: 'playwright-report/json/api-results.json' }]
-],
+  reporter: process.env.CI 
+  ? [
+      ["blob", {outputDir: "playwright-report/blob"}],
+      ['html', { outputFolder: "playwright-report/html"}],
+      ['dot'],
+      ['./custom-reporter.ts']
+    ]
+  : [
+      ['dot'],
+      ['html', {open: 'always', outputFolder: "playwright-report/html"}],
+      ['./custom-reporter.ts']
+    ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Base URL to use in actions like `await page.goto('')`. */
@@ -46,11 +51,38 @@ export default defineConfig({
     //   use: { ...devices['Desktop Chrome'] },
     // },
 
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+    // },
+
+    // @smoke tagged tests
     {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
+      name: 'smoke-test',
+      use: { ...devices['Desktop Firefox']},
+      grep: /@smoke/,
+      repeatEach: 5,
     },
 
+    // @regression tests
+    {
+      name: 'regression-test',
+      // dependencies: [ 'firefox' ],
+      use: { ...devices['Desktop Firefox']},
+      grep: /@regression/,
+      grepInvert: /@hard/,
+    },
+    // @hard tagged tests 
+
+    {
+      name: 'hard-test',
+      dependencies: [ 'regression-test' ],
+      use: { ...devices['Desktop Firefox']},
+      grep: /@hard/,
+      repeatEach: 200,
+      ...(process.env.CI ? {} : { workers: 6 }),
+      retries: 0,
+    },
     // {
     //   name: 'webkit',
     //   use: { ...devices['Desktop Safari'] },
