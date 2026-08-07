@@ -24,7 +24,7 @@ test.describe('Admin - Create User (POST /users)', { tag: ['@crud', '@admin', '@
     const userService = isolatedAdmin.service;
     const response = await userService.create(record.payload as any);
     
-    await expectations.expectStatus(response, 203);
+    await expectations.expectStatus(response, 201);
     await expectations.expectSchema(response, createUserResponseSchema);
     
     const body = await response.json();
