@@ -105,7 +105,7 @@ jobs:
 
   regression:
     name: Regression Tests
-    if:  (github.event.pull_request.merged == true && github.base_ref == 'main')
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
 
     strategy: 
