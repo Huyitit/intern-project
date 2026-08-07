@@ -228,7 +228,7 @@ jobs:
           retention-days: 1
 
   merge-reports:
-      if: ${{ !cancelled() }}
+      if: ${{ !cancelled() }} && needs.regression.result != 'skipped'
       needs: regression
       runs-on: ubuntu-latest
       steps:
