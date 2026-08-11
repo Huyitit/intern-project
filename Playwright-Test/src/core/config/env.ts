@@ -16,7 +16,3 @@ export const env = {
     }
   }
 };
-
-if (!env.baseUrl) {
-  throw new Error('BASE_URL is not set. Did you create a .env file?');
-}

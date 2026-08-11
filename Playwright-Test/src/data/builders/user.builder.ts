@@ -20,6 +20,18 @@ export class UserBuilder {
     return this;
   }
 
+  setValidNewAdmin() {
+    this.user = {
+      full_name: UserDataGenerator.validFullname(),
+      username: UserDataGenerator.validUsername(),
+      password: UserDataGenerator.validPassword(),
+      email: UserDataGenerator.validEmail(),
+      phone: UserDataGenerator.validPhone(false, false),
+      role: 'admin',
+    };
+    return this;
+  }
+
   setExistedAdmin() {
     this.user = {
       username: env.User.admin.username,

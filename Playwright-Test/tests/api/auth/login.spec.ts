@@ -154,9 +154,11 @@ test.describe('Login Test Suite', { tag: ['@auth', '@regression'] }, () => {
   test('TC-LOG-09: Admin login', { tag: ['@smoke', '@regression'] }, async ({ authService }) => {
     const record = tcLOG09();
 
+    await authService.register({ user: record.user });
+
     const response = await authService.login(record.payload);
 
-    await expectations.expectStatus(response, 200);
+    await expectations.expectStatus(response, HttpStatus.OK);
     await expectations.expectUserRole(response, 'admin');
     await expectations.expectSchema(response, loginResponseSchema);
   });
@@ -165,9 +167,11 @@ test.describe('Login Test Suite', { tag: ['@auth', '@regression'] }, () => {
   test('TC-LOG-10: User login', { tag: ['@smoke', '@regression'] }, async ({ authService }) => {
     const record = tcLOG10();
 
+    await authService.register({ user: record.user });
+
     const response = await authService.login(record.payload);
 
-    await expectations.expectStatus(response, 200);
+    await expectations.expectStatus(response, HttpStatus.OK);
     await expectations.expectUserRole(response, 'user');
     await expectations.expectSchema(response, loginResponseSchema);
   });

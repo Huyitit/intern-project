@@ -145,12 +145,8 @@ export function tcLOG08(): TestCaseRecord {
 }
 
 export function tcLOG09(): TestCaseRecord {
-  const user = new UserBuilder()
-    .setUserName(UserDataGenerator.adminUsername())
-    .setPassword(UserDataGenerator.adminPassword())
-    .build();
+  const user = new UserBuilder().setValidNewAdmin().build();
   return {
-
     description: 'Admin login',
     user,
     payload: {
@@ -159,17 +155,12 @@ export function tcLOG09(): TestCaseRecord {
         password: user.password,
       },
     },
-
   };
 }
 
 export function tcLOG10(): TestCaseRecord {
-  const user = new UserBuilder()
-    .setUserName(UserDataGenerator.userUsername())
-    .setPassword(UserDataGenerator.userPassword())
-    .build();
+  const user = new UserBuilder().setValidNewUser().build();
   return {
-
     description: 'User login',
     user,
     payload: {
@@ -178,7 +169,6 @@ export function tcLOG10(): TestCaseRecord {
         password: user.password,
       },
     },
-
   };
 }
 
