@@ -1,9 +1,9 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
 import { BaseService } from "./base.service";
 import { User, LoginRequest, RegisterRequest } from "../models/user.model";
-import { endpoints } from "../config/endpoints";
-import { UserBuilder } from "../../data/helpers/builders/user.builder";
-import { pool } from "../config/db";
+import { endpoints } from "../../core/config/endpoints";
+import { UserBuilder } from "../../data/builders/user.builder";
+import { pool } from "../../core/config/db";
 
 export interface TargetUserInfo {
   userId: number;

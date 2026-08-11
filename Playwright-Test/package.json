@@ -4,10 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test:e2e": "npx playwright test tests/",
-    "test:e2e:ui": "npx playwright test tests/ --ui",
-    "test:api": "npx playwright test API/",
-    "seed": "npx tsx src/data/seed.ts"
+    "test:e2e": "npx playwright test tests/e2e/",
+    "test:e2e:ui": "npx playwright test tests/e2e/ --ui",
+    "test:api": "npx playwright test tests/api/",
+    "seed": "npx tsx src/data/seeders/seed.ts"
   },
   "keywords": [],
   "author": "",

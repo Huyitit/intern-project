@@ -1,10 +1,10 @@
 import { defineConfig, devices } from '@playwright/test';
-import { env } from './src/api/config/env';
+import { env } from './src/core/config/env';
 export default defineConfig({
   /* Run data seeding file before run test */
-  globalSetup: require.resolve('./src/data/seed.ts'),
+  globalSetup: require.resolve('./src/data/seeders/seed.ts'),
   // Delete all data after all tests
-  globalTeardown: require.resolve('./src/data/cleanup.ts'),
+  globalTeardown: require.resolve('./src/data/seeders/cleanup.ts'),
   // Test timeout from central TIMEOUTS config
   timeout: Number(process.env.TIMEOUT) || 30000,
 
@@ -12,7 +12,7 @@ export default defineConfig({
   //   timeout: Number(process.env.EXPECT_TIMEOUT) || 5000
   // },
 
-  testDir: '.',
+  testDir: './tests',
   /* Run tests in files in parallel */
   fullyParallel: true,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -71,6 +71,7 @@ export default defineConfig({
       use: { ...devices['Desktop Firefox']},
       grep: /@regression/,
       grepInvert: /@hard/,
+      repeatEach: 5,
     },
     // @hard tagged tests 
 
