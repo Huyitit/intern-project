@@ -11,7 +11,7 @@ import {
   tcCSV04,
 } from '../../../../src/data/datasets/crud/admin/upload.data';
 
-test.describe('Admin - Upload Operations (POST Avatar / CSV)', { tag: ['@crud', '@admin', '@regression'] }, () => {
+test.describe('Admin - Upload Operations (POST Avatar / CSV)', { tag: ['@api', '@crud', '@admin', '@regression'] }, () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {

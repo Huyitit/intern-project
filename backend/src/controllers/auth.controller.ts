@@ -13,9 +13,14 @@ export default class authController {
         console.log("req comes");
         let { user } = req.body;
 
-        //find existed user
-        const existedUser = await prisma.users.findUnique({
-            where: { username: user.username },
+        //find existed user by username or email
+        const existedUser = await prisma.users.findFirst({
+            where: {
+                OR: [
+                    { username: user.username },
+                    ...(user.email ? [{ email: user.email }] : [])
+                ]
+            },
         });
 
         if (existedUser) {

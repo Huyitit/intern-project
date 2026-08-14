@@ -5,7 +5,7 @@ import { getUserByIdResponseSchema, crudErrorResponseSchema, createUserResponseS
 import { tcGI01, tcGI03, tcGI04 } from '../../../../src/data/datasets/crud/admin/get-user-by-id.data';
 import { HttpStatus } from '../../../../src/core/config/httpStatus';
 
-test.describe('Admin - Get User By Id (GET /users/{id})', { tag: ['@crud', '@admin', '@regression'] }, () => {
+test.describe('Admin - Get User By Id (GET /users/{id})', { tag: ['@api', '@crud', '@admin', '@regression'] }, () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {

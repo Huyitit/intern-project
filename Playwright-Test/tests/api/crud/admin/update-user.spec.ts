@@ -4,7 +4,7 @@ import { Expectations } from '../../../../src/core/assertions/base';
 import { updateUserResponseSchema, crudErrorResponseSchema } from '../../../../src/api/schemas/user.schema';
 import { tcUU01, tcUU03, tcUU04, tcUU05 } from '../../../../src/data/datasets/crud/admin/update-user.data';
 import { HttpStatus } from '../../../../src/core/config/httpStatus';
-test.describe('Admin - Update User (PUT /users/{id})', { tag: ['@crud', '@admin', '@regression'] }, () => {
+test.describe('Admin - Update User (PUT /users/{id})', { tag: ['@api', '@crud', '@admin', '@regression'] }, () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {

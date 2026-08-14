@@ -5,7 +5,7 @@ import { HttpStatus } from '../../../../src/core/config/httpStatus';
 import { deleteUserResponseSchema, crudErrorResponseSchema, createUserResponseSchema } from '../../../../src/api/schemas/user.schema';
 import { tcDU01, tcDU02, tcDU03 } from '../../../../src/data/datasets/crud/admin/delete-user.data';
 
-test.describe('Admin - Delete User (DELETE /users/{id})', { tag: ['@crud', '@admin', '@regression'] }, () => {
+test.describe('Admin - Delete User (DELETE /users/{id})', { tag: ['@api', '@crud', '@admin', '@regression'] }, () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {

@@ -30,7 +30,7 @@ export const Register = () => {
         navigate("/login");
       } else {
         if (response.errors && response.errors.length > 0) {
-          response.errors.forEach(err => toast.error(err.error_message));
+          response.errors.forEach((err: any) => toast.error(err.message || err.error_message || response.message || "Registration failed"));
         } else {
           toast.error(response.message || "Registration failed");
         }
@@ -46,7 +46,7 @@ export const Register = () => {
     <div className={styles.container} data-testid="register-page">
       <div className={styles.glassCard}>
         <h2 data-testid="register-heading">Register</h2>
-        <form data-testid="register-form" onSubmit={handleRegister}>
+        <form data-testid="register-form" onSubmit={handleRegister} noValidate>
           <div className={styles.formGrid}>
             <div className={`${styles.formGroup} ${styles.fullWidth}`} data-testid="register-full_name-group">
               <label data-testid="register-full_name-label">Full Name:</label>

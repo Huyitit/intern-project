@@ -3,6 +3,7 @@ dotenv.config();
 
 export const env = {
   baseUrl: process.env.BASE_URL ?? '',
+  uiBaseUrl: process.env.UI_BASE_URL ?? 'http://localhost:5173',
   logLevel: process.env.LOG_LEVEL ?? 'info',
   User:
   {

@@ -8,9 +8,9 @@ export default defineConfig({
   // Test timeout from central TIMEOUTS config
   timeout: Number(process.env.TIMEOUT) || 30000,
 
-  // expect: {
-  //   timeout: Number(process.env.EXPECT_TIMEOUT) || 5000
-  // },
+  expect: {
+    timeout: Number(process.env.EXPECT_TIMEOUT) || 5000
+  },
 
   testDir: './tests',
   /* Run tests in files in parallel */
@@ -18,67 +18,69 @@ export default defineConfig({
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
-  retries: process.env.CI ? 0 : 1,
+  retries: process.env.CI ? 2 : 0,
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : 5,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: process.env.CI 
-  ? [
-      ["blob", {outputDir: "playwright-report/blob"}],
-      ['html', { outputFolder: "playwright-report/html"}],
+  reporter: process.env.CI
+    ? [
+      ["blob", { outputDir: "playwright-report/blob" }],
+      ['html', { outputFolder: "playwright-report/html" }],
       ['dot'],
       ['./custom-reporter.ts']
     ]
-  : [
+    : [
       ['dot'],
-      ['html', {open: 'always', outputFolder: "playwright-report/html"}],
+      ['html', { open: 'always', outputFolder: "playwright-report/html" }],
       ['./custom-reporter.ts']
     ],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    /* Base URL to use in actions like `await page.goto('')`. */
-    baseURL: env.baseUrl || 'http://localhost:3000',
-
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on',
-
+    trace: 'on-first-retry',
   },
 
-  /* Configure projects for major browsers */
   projects: [
-    // {
-    //   name: 'chromium',
-    //   use: { ...devices['Desktop Chrome'] },
-    // },
-
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
-
-    // @smoke tagged tests
     {
-      name: 'smoke-test',
-      use: { ...devices['Desktop Firefox']},
-      grep: /@smoke/,
+      name: 'e2e-test',
+      testDir: './tests/e2e',
+      use: { 
+        baseURL: env.uiBaseUrl || "http://localhost:5273",
+        ...devices['Desktop Firefox'],
+        trace: 'on' 
+      },
+    },
+
+    {
+      name: 'api-smoke-test',
+      testDir: './tests/api',
+      use: { 
+        baseURL: env.baseUrl || 'http://localhost:3000',
+        ...devices['Desktop Firefox'] },
+      grep: [/@smoke/],
       repeatEach: 5,
     },
 
     // @regression tests
     {
-      name: 'regression-test',
-      // dependencies: [ 'firefox' ],
-      use: { ...devices['Desktop Firefox']},
-      grep: /@regression/,
-      grepInvert: /@hard/,
+      name: 'api-regression-test',
+      testDir: './tests/api',
+      use: { 
+        baseURL: env.baseUrl || 'http://localhost:3000',
+        ...devices['Desktop Firefox'] },
+      grep: [/@regression/],
+      grepInvert: [/@hard/],
       repeatEach: 5,
     },
     // @hard tagged tests 
 
     {
-      name: 'hard-test',
-      dependencies: [ 'regression-test' ],
-      use: { ...devices['Desktop Firefox']},
+      name: 'api-hard-test',
+      dependencies: ['api-regression-test'],
+      testDir: './tests/api',
+      use: { 
+        baseURL: env.baseUrl || 'http://localhost:3000',
+        ...devices['Desktop Firefox'] },
       grep: /@hard/,
       repeatEach: 200,
       ...(process.env.CI ? {} : { workers: 6 }),

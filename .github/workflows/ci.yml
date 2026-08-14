@@ -86,7 +86,7 @@ jobs:
         run: cd Playwright-Test && npx playwright install --with-deps
 
       - name: Run Smoke API Tests
-        run: cd Playwright-Test && npx playwright test --project="smoke-test"
+        run: cd Playwright-Test && npx playwright test --project="api-smoke-test"
         env:
           BASE_URL: ${{ secrets.BASE_URL || 'http://127.0.0.1:3000' }}
           DB_HOST: 127.0.0.1
@@ -210,7 +210,7 @@ jobs:
         run: cd Playwright-Test && npx playwright install --with-deps
 
       - name: Run Regression API Tests
-        run: cd Playwright-Test && npx playwright test --project="hard-test" --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
+        run: cd Playwright-Test && npx playwright test --project="api-hard-test" --shard=${{ matrix.shardIndex }}/${{ matrix.shardTotal }}
         env:
           BASE_URL: ${{ secrets.BASE_URL || 'http://127.0.0.1:3000' }}
           DB_HOST: 127.0.0.1

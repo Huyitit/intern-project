@@ -16,7 +16,7 @@ import {
   tcREG08,
 } from '../../../src/data/datasets/auth/register.data';
 
-test.describe('Register Test Suite', { tag: ['@auth', '@regression'] }, () => {
+test.describe('Register Test Suite', { tag: ['@api', '@auth', '@regression'] }, () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {

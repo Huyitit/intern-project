@@ -22,7 +22,7 @@ import {
   getLoginTestCases,
 } from '../../../src/data/datasets/auth/login.data';
 
-test.describe('Login Test Suite', { tag: ['@auth', '@regression'] }, () => {
+test.describe('Login Test Suite', { tag: ['@api', '@auth', '@regression'] }, () => {
   let expectations: Expectations;
 
   test.beforeEach(({ request }) => {

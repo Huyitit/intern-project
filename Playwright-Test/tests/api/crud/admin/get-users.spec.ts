@@ -16,7 +16,7 @@ import {
   tcGU10,
 } from '../../../../src/data/datasets/crud/admin/get-users.data';
 
-test.describe('Admin - Get Users List (GET /users)', { tag: ['@crud', '@admin', '@regression'] }, () => {
+test.describe('Admin - Get Users List (GET /users)', { tag: ['@api', '@crud', '@admin', '@regression'] }, () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {

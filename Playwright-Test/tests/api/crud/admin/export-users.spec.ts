@@ -2,7 +2,7 @@ import { expect } from '@playwright/test';
 import { test } from '../../../../src/api/fixtures/api.service.fixture';
 import { Expectations } from '../../../../src/core/assertions/base';
 import { HttpStatus } from '../../../../src/core/config/httpStatus'
-test.describe('Admin - Export CSV (GET /users/export)', { tag: ['@crud', '@admin', '@regression'] }, () => {
+test.describe('Admin - Export CSV (GET /users/export)', { tag: ['@api', '@crud', '@admin', '@regression'] }, () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {

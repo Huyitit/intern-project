@@ -11,7 +11,7 @@ import {
   tcCU06,
 } from '../../../../src/data/datasets/crud/admin/create-user.data';
 
-test.describe('Admin - Create User (POST /users)', { tag: ['@crud', '@admin', '@regression'] }, () => {
+test.describe('Admin - Create User (POST /users)', { tag: ['@api', '@crud', '@admin', '@regression'] }, () => {
   let expectations: Expectations;
 
   test.beforeEach(() => {
