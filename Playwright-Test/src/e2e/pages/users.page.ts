@@ -12,9 +12,12 @@ export class UsersPage extends BasePage {
   readonly loadingIndicator: Locator;
   readonly errorMessage: Locator;
   readonly noUsersFoundRow: Locator;
+  readonly sortHeaderId: Locator;
+  readonly sortHeaderUsername: Locator;
+  readonly firstUserViewButton: Locator;
   constructor(page: Page) {
     super(page, '/admin/users');
-    this.heading = page.getByRole('heading', { name: 'User Management' });
+    this.heading = page.getByTestId('user-list-heading');
     this.searchInput = page.getByPlaceholder('Search Username...');
     this.searchButton = page.getByRole('button', { name: 'Search' });
     this.exportButton = page.getByRole('button', { name: /Export/i });
@@ -25,6 +28,9 @@ export class UsersPage extends BasePage {
     this.loadingIndicator = page.getByTestId('user-list-loading');
     this.errorMessage = page.getByTestId('user-list-error');
     this.noUsersFoundRow = page.getByTestId('user-list-tr-no-users');
+    this.sortHeaderId = page.getByTestId('user-list-th-id');
+    this.sortHeaderUsername = page.getByTestId('user-list-th-username');
+    this.firstUserViewButton = page.locator('[data-testid^="user-list-view-btn-"]').first();
   }
   userRow(id: number | string): Locator {
     return this.page.getByTestId(`user-list-tr-${id}`);
@@ -42,6 +48,13 @@ export class UsersPage extends BasePage {
     await this.searchInput.fill(keyword);
     await this.searchButton.click();
   }
+  async sortBy(column: 'id' | 'username'): Promise<void> {
+    if (column === 'id') {
+      await this.sortHeaderId.click();
+    } else {
+      await this.sortHeaderUsername.click();
+    }
+  }
   async exportCSV(): Promise<void> {
     await this.exportButton.click();
   }
@@ -53,5 +66,10 @@ export class UsersPage extends BasePage {
   }
   async viewUserProfile(id: number | string): Promise<void> {
     await this.userViewButton(id).click();
+  }
+  async viewFirstUserProfile(): Promise<void> {
+    if (await this.firstUserViewButton.isVisible()) {
+      await this.firstUserViewButton.click();
+    }
   }
 }

@@ -10,4 +10,25 @@ export class DashboardPage extends BasePage {
     this.welcomeText = page.getByTestId('dashboard-welcome-text');
     this.container = page.getByTestId('dashboard-page');
   }
+
+  gotoManageUsers(){
+    this.page.getByRole('link', { name: 'Manage Users' }).click();
+  }
+
+  gotoCreateUser(){
+    this.page.getByRole('link', { name: 'Create User' }).click();
+  }
+
+  gotoProfile(){
+    this.page.getByRole('link', { name: 'Profile' }).click();
+  }
+
+  gotoUploadAvatar(){
+    this.page.getByRole('link', { name: 'Upload Avatar' }).click();
+  }
+
+  logout(){
+    this.page.getByRole('button', { name: 'Logout' }).click();
+  }
+
 }
