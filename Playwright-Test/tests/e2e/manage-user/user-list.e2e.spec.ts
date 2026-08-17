@@ -77,7 +77,10 @@ test.describe('E2E: User List Feature Suite', { tag: ['@e2e', '@user-list'] }, (
         route.fulfill({
           status: 500,
           contentType: 'application/json',
-          body: JSON.stringify({ success: false, message: 'Server error' }),
+          body: JSON.stringify({                 
+            success: false,
+            message: "Internal Server Error",
+            errors: [{ code: "server_error", message: "Internal Server Error" }] }),
         })
       );
       await usersPage.navigate();
@@ -100,13 +103,13 @@ test.describe('E2E: User List Feature Suite', { tag: ['@e2e', '@user-list'] }, (
     test('TC_UL_09: Partial Keyword Search by Username', { tag: ['@regression', '@search'] }, async ({ usersPage }) => {
       const data = tcUL09();
       await usersPage.search(data.payload.searchKeyword);
-      await expect(usersPage.userTable).toBeVisible();
+      await expect(usersPage.userTable).toContainText(data.payload.searchKeyword);
     });
 
     test('TC_UL_10: Case-Insensitive Search Handling', { tag: ['@regression', '@search'] }, async ({ usersPage }) => {
       const data = tcUL10();
       await usersPage.search(data.payload.searchKeyword);
-      await expect(usersPage.userTable).toBeVisible();
+      await expect(usersPage.tableBody).toContainText(data.payload.expectedUsername);
     });
 
     test('TC_UL_11: Non-Matching Search Keyword Handling', { tag: ['@regression', '@search'] }, async ({ usersPage }) => {
@@ -182,6 +185,7 @@ test.describe('E2E: User List Feature Suite', { tag: ['@e2e', '@user-list'] }, (
 
     // ── Row Actions & Navigation ────────────────────────────────
     test('TC_UL_20: Navigate to User Detail Profile Page', { tag: ['@smoke', '@regression', '@navigation'] }, async ({ usersPage }) => {
+      await expect(usersPage.loadingIndicator).toBeHidden();
       await usersPage.viewFirstUserProfile();
       await expect(usersPage.page).toHaveURL(/\/admin\/users\/\d+/);
     });

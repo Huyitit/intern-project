@@ -71,7 +71,11 @@ export async function createAuthSession(
  * Clean up context and database record after test.
  */
 export async function destroyAuthSession(session: AuthenticatedUserSession): Promise<void> {
-  await session.context.close();
+  try {
+    await session.context.close();
+  } catch (error) {
+    console.error(`[Teardown Error] Failed to clean up test user context ${session.id}:`, error);
+  }
   try {
     await pool.execute('DELETE FROM users WHERE id = ?', [session.id]);
   } catch (error) {

@@ -1,128 +1,185 @@
-In an enterprise environment, the recommended way to split API test cases is to prioritize **user role (authorization)** first, then **API method (HTTP verb)**, and finally **business scenarios**. This structure improves maintainability, traceability, and security coverage.
+# E2E Auth Test Structure Analysis and Reusable Blueprint
 
-A common hierarchy is:
+This report analyzes the structure, patterns, and conventions of the E2E Auth test suite located at [tests/e2e/auth](file:///home/huycao/Desktop/intern-project/Playwright-Test/tests/e2e/auth). It provides a standardized blueprint and template that can be reused to write future E2E tests across the project.
 
-```text
-API
-└── Endpoint
-    ├── User Role
-    │   ├── GET
-    │   ├── POST
-    │   ├── PUT/PATCH
-    │   ├── DELETE
-    │   └── Other Methods (OPTIONS, HEAD, etc.)
-    │
-    └── Business Scenarios
-        ├── Positive cases
-        ├── Negative cases
-        ├── Boundary cases
-        ├── Validation cases
-        ├── Security cases
-        └── Performance cases
-```
+## Architecture Overview
 
-### Example
-
-API: `/users`
-
-#### 1. Admin Role
-
-| API Method         | Test Cases                                          |
-| ------------------ | --------------------------------------------------- |
-| GET /users         | View all users, pagination, filtering               |
-| POST /users        | Create valid user, duplicate email, invalid payload |
-| PUT /users/{id}    | Update user successfully, invalid data              |
-| DELETE /users/{id} | Delete existing user, delete non-existing user      |
-
-#### 2. Manager Role
-
-| API Method         | Test Cases                     |
-| ------------------ | ------------------------------ |
-| GET /users         | Can view department users      |
-| POST /users        | Can create employee            |
-| PUT /users/{id}    | Can update department employee |
-| DELETE /users/{id} | Forbidden (403)                |
-
-#### 3. Regular User
-
-| API Method    | Test Cases         |
-| ------------- | ------------------ |
-| GET /users/me | View own profile   |
-| PUT /users/me | Update own profile |
-| GET /users    | Forbidden (403)    |
-| DELETE /users | Forbidden (403)    |
-
----
-
-## Enterprise test execution order
-
-Most enterprise QA teams execute tests in this order:
-
-| Priority | Category                   | Purpose                               |
-| -------- | -------------------------- | ------------------------------------- |
-| 1        | Authentication             | Verify login/token/API key            |
-| 2        | Authorization (User Roles) | Verify access permissions             |
-| 3        | HTTP Method                | Verify CRUD operations                |
-| 4        | Input Validation           | Required fields, formats, lengths     |
-| 5        | Business Rules             | Business logic correctness            |
-| 6        | Error Handling             | 400, 401, 403, 404, 409, 422, 500     |
-| 7        | Security                   | Injection, IDOR, privilege escalation |
-| 8        | Performance                | Response time, load, stress           |
-| 9        | Audit & Logging            | Logs, trace IDs, audit trails         |
-
----
-
-## Recommended folder structure
+The E2E Auth test suite uses a clean, layered architecture separating test scenarios, page abstractions, data generation, fixtures, and authentication helpers.
 
 ```text
-User API
-│
-├── Admin
-│   ├── GET
-│   │   ├── TC001_Get_All_Users
-│   │   ├── TC002_Filter_Users
-│   │   └── TC003_Pagination
-│   │
-│   ├── POST
-│   ├── PUT
-│   └── DELETE
-│
-├── Manager
-│   ├── GET
-│   ├── POST
-│   ├── PUT
-│   └── DELETE
-│
-└── User
-    ├── GET
-    ├── PUT
-    └── Negative
+Playwright-Test/
+├── tests/e2e/auth/                  # Test Spec Layer
+│   ├── login.e2e.spec.ts
+│   └── register.e2e.spec.ts
+├── src/
+│   ├── e2e/
+│   │   ├── pages/                  # Page Object Model (POM) Layer
+│   │   │   ├── base.page.ts
+│   │   │   ├── login.page.ts
+│   │   │   └── register.page.ts
+│   │   ├── helpers/                # Helper & Teardown Layer
+│   │   │   └── auth.helper.ts
+│   │   └── fixtures.ts             # Custom Fixtures Extension Layer
+│   └── data/
+│       ├── builders/               # Dynamic Data Builders
+│       │   └── user.builder.ts
+│       └── e2e-dataset/auth/       # Test Case Datasets
+│           ├── login.data.ts
+│           └── register.data.ts
 ```
 
 ---
 
-## Why split by **Role → Method** instead of **Method → Role**?
+## Layer Breakdown
 
-For enterprise systems, **Role → Method** is generally preferred because:
+### 1. Test Spec Layer
 
-* **Security-first**: Authorization is one of the highest-risk areas and is easier to validate when grouped by role.
-* **Clear ownership**: Business permissions are usually defined by role (Admin, Manager, User, Guest).
-* **Easier maintenance**: When permissions change for a role, all related tests are in one place.
-* **Better traceability**: Requirements and access-control matrices are typically organized by role, making it straightforward to map tests back to requirements.
+Location: `tests/e2e/auth/*.e2e.spec.ts`
 
-### Recommended hierarchy
+- Imports `test` and `expect` from custom fixtures (`src/e2e/fixtures`) instead of `@playwright/test`.
+- Uses `test.describe()` to group feature test suites with tags (e.g., `{ tag: ['@e2e', '@auth'] }`).
+- Defines individual test cases with scenario tags (e.g., `{ tag: ['@smoke', '@regression'] }`).
+- Leverages Page Object Model fixtures (`loginPage`, `registerPage`) directly in test parameters.
+- Uses data factory functions (e.g., `tcLOG01()`, `tcREG01()`) to supply predictable payloads.
+- Keeps test bodies clean by delegating UI interactions to POM methods and asserting UI outcomes (toasts, URLs, visible elements).
 
-```text
-Role
- ├── GET
- ├── POST
- ├── PUT/PATCH
- ├── DELETE
-      ├── Positive
-      ├── Negative
-      ├── Boundary
-      ├── Security
-      └── Performance
+### 2. Page Object Model Layer
+
+Location: `src/e2e/pages/`
+
+- Extends `BasePage` which handles navigation (`this.page.goto(path)`), base URL routing, and common layout locators.
+- Declares element locators as `readonly` class properties initialized in the constructor via `getByTestId()` or `getByText()`.
+- Exposes high-level action methods (`login()`, `register()`) to encapsulate form fills and submit clicks.
+- Exposes reusable helper methods (e.g., `getToast(message)`) for flexible assertions.
+
+### 3. Data Layer
+
+Location: `src/data/e2e-dataset/auth/` and `src/data/builders/`
+
+- Dataset functions (`tcLOG01()`, `tcREG01()`) return `TestCaseRecord` objects containing metadata (`tcId`, `description`), optional database seed specifications (`user`), and request/form payload data (`payload`).
+- Uses `UserBuilder` for generating dynamic user credentials to avoid collisions.
+
+### 4. Custom Fixtures Layer
+
+Location: `src/e2e/fixtures.ts`
+
+- Extends `@playwright/test` `base.extend<E2EFixtures>()`.
+- Provides an option fixture `userRole` (`'admin' | 'user' | 'none'`).
+- Auto-injects page instances (`loginPage`, `registerPage`, `dashboardPage`, `usersPage`) into tests.
+- Provides `loginAs` dynamic helper for multi-role parallel browser context scenarios.
+
+### 5. Helper and Teardown Layer
+
+Location: `src/e2e/helpers/auth.helper.ts`
+
+- `createAuthSession`: Handles API-based user registration, direct DB role updates, API login, and JWT/localStorage context injection.
+- `destroyAuthSession`: Automatically cleans up browser contexts and deletes seeded user records from the database post-test.
+
+---
+
+## Conventions and Tagging Rules
+
+- File Naming: `<feature_action>.e2e.spec.ts` inside `tests/e2e/<feature_folder>/`.
+- Test ID Naming: Prefix with test case ID matching the dataset function (e.g., `TC_LOG_01: User Login - Successful`).
+- Metadata Tags:
+  - Suite Level: `{ tag: ['@e2e', '@<feature_name>'] }`
+  - Case Level: `{ tag: ['@smoke', '@regression'] }` or `{ tag: '@regression' }`
+- Locators: Prefer `page.getByTestId(...)` for resilient element selection.
+
+---
+
+## Reusable Blueprint for Future E2E Tests
+
+Follow this 4-step workflow when building a new E2E test module (e.g., `profile` or `settings`).
+
+### Step 1: Create Dataset File
+
+Create `src/data/e2e-dataset/<feature>/<feature>.data.ts`:
+
+```typescript
+import { TestCaseRecord } from '../types';
+
+export function tcFEAT01(): TestCaseRecord {
+  return {
+    tcId: 'TC_FEAT_01',
+    description: 'Successful action scenario',
+    payload: {
+      field: 'sample-value',
+    },
+  };
+}
 ```
 
-This structure aligns well with enterprise testing practices and RBAC (Role-Based Access Control) systems, making it easier to manage comprehensive API test suites over time.
+### Step 2: Create Page Object Model
+
+Create `src/e2e/pages/<feature>.page.ts`:
+
+```typescript
+import { Page, Locator } from '@playwright/test';
+import { BasePage } from './base.page';
+
+export class FeaturePage extends BasePage {
+  readonly inputField: Locator;
+  readonly saveButton: Locator;
+
+  constructor(page: Page) {
+    super(page, '/feature-url');
+    this.inputField = page.getByTestId('feature-input');
+    this.saveButton = page.getByTestId('feature-save-btn');
+  }
+
+  async performAction(value: string): Promise<void> {
+    await this.inputField.fill(value);
+    await this.saveButton.click();
+  }
+}
+```
+
+### Step 3: Register POM in Custom Fixture
+
+In `src/e2e/fixtures.ts`, register the new page object:
+
+```typescript
+import { FeaturePage } from './pages/feature.page';
+
+type E2EFixtures = {
+  // ... existing fixtures
+  featurePage: FeaturePage;
+};
+
+export const test = base.extend<E2EFixtures>({
+  // ... existing fixtures
+  featurePage: async ({ page }, use) => {
+    await use(new FeaturePage(page));
+  },
+});
+```
+
+### Step 4: Write Feature E2E Test Spec
+
+Create `tests/e2e/<feature>/<feature>.e2e.spec.ts`:
+
+```typescript
+import { test, expect } from '../../../src/e2e/fixtures';
+import { tcFEAT01 } from '../../../src/data/e2e-dataset/<feature>/<feature>.data';
+
+test.describe('E2E: Feature Test Suite', { tag: ['@e2e', '@feature'] }, () => {
+  test('TC_FEAT_01: Perform feature action successfully', { tag: ['@smoke', '@regression'] }, async ({ featurePage, page }) => {
+    const data = tcFEAT01();
+    await featurePage.navigate();
+    await featurePage.performAction(data.payload.field);
+
+    await expect(page).toHaveURL(/\/expected-path/);
+  });
+});
+```
+
+---
+
+## Summary Checklist for New E2E Tests
+
+- Keep tests isolated by using dataset factories or dynamic builders.
+- Use Playwright custom fixtures (`src/e2e/fixtures`) instead of raw imports.
+- Interact with elements exclusively through POM classes extending `BasePage`.
+- Assign descriptive test IDs (`TC_XXX_01`) matching dataset records.
+- Apply consistent tags (`@e2e`, `@<feature>`, `@smoke`, `@regression`).

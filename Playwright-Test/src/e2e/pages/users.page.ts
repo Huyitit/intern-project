@@ -15,6 +15,7 @@ export class UsersPage extends BasePage {
   readonly sortHeaderId: Locator;
   readonly sortHeaderUsername: Locator;
   readonly firstUserViewButton: Locator;
+
   constructor(page: Page) {
     super(page, '/admin/users');
     this.heading = page.getByTestId('user-list-heading');
@@ -58,6 +59,11 @@ export class UsersPage extends BasePage {
   async exportCSV(): Promise<void> {
     await this.exportButton.click();
   }
+  async triggerExportCSV(): Promise<import('@playwright/test').Download> {
+    const downloadPromise = this.page.waitForEvent('download');
+    await this.exportButton.click();
+    return await downloadPromise;
+  }
   async nextPage(): Promise<void> {
     await this.nextButton.click();
   }
@@ -71,5 +77,8 @@ export class UsersPage extends BasePage {
     if (await this.firstUserViewButton.isVisible()) {
       await this.firstUserViewButton.click();
     }
+  }
+  getToast(message: string | RegExp): Locator {
+    return this.page.getByText(message);
   }
 }

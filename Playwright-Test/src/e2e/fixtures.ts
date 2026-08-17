@@ -4,6 +4,7 @@ import { RegisterPage } from './pages/register.page';
 import { DashboardPage } from './pages/dashboad.page';
 import { UsersPage } from './pages/users.page';
 import { ProfilePage } from './pages/profile.page';
+import { AvatarUploadPage } from './pages/avatar-upload.page';
 import {
   createAuthSession,
   destroyAuthSession,
@@ -26,6 +27,7 @@ type E2EFixtures = {
   dashboardPage: DashboardPage;
   usersPage: UsersPage;
   profilePage: ProfilePage;
+  avatarUploadPage: AvatarUploadPage;
 
   // Helper fixture for multi-user/multi-role tests
   loginAs: (role: 'admin' | 'user') => Promise<{ page: Page; session: AuthenticatedUserSession }>;
@@ -57,15 +59,17 @@ export const test = base.extend<E2EFixtures>({
   },
 
   // ── 4. Override default page fixture ───────────────────────────
-  page: async ({ page, authUser }, use) => {
-    if (!authUser) {
-      await use(page);
-      return;
-    }
+    page: async ({ context, authUser }, use) => {
+      if (!authUser) {
+        const defaultPage = await context.newPage();
+        await use(defaultPage);
+        return;
+      }
 
-    const authPage = await authUser.context.newPage();
-    await use(authPage);
-  },
+      const authPage = await authUser.context.newPage();
+      await use(authPage);
+    },
+
 
   // ── 5. Standard POM fixtures (automatically inherit auth) ──────
   loginPage: async ({ page }, use) => {
@@ -82,6 +86,9 @@ export const test = base.extend<E2EFixtures>({
   },
   profilePage: async ({ page }, use) => {
     await use(new ProfilePage(page));
+  },
+  avatarUploadPage: async ({ page }, use) => {
+    await use(new AvatarUploadPage(page));
   },
 
   // ── 6. Multi-role dynamic helper ───────────────────────────────

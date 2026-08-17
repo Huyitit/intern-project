@@ -68,7 +68,7 @@ export function tcUL09(): TestCaseRecord {
   return {
     tcId: 'TC_UL_09',
     description: 'Partial keyword search by username',
-    payload: { searchKeyword: 'alpha' },
+    payload: { searchKeyword: 'user' },
   };
 }
 
@@ -76,9 +76,13 @@ export function tcUL10(): TestCaseRecord {
   return {
     tcId: 'TC_UL_10',
     description: 'Case-insensitive search handling',
-    payload: { seedUsername: 'MixedCaseUser', searchKeyword: 'mixedcaseuser' },
+    payload: { 
+      searchKeyword: 'USERNAME01', 
+      expectedUsername: 'username01' 
+    },
   };
 }
+
 
 export function tcUL11(): TestCaseRecord {
   return {

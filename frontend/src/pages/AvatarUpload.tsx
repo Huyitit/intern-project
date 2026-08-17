@@ -22,7 +22,6 @@ export const AvatarUpload = () => {
     if (!selectedFile) return;
     console.log(selectedFile.name);
     setUploading(true);
-    toast.info("Uploading avatar...");
     try {
       const response = await uploadAvatar(selectedFile);
       if (response.success && response.avatar_url) {
