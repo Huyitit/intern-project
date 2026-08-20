@@ -31,13 +31,13 @@ export async function verifyAvatarInDb(userId: number, expectedSubstring: string
   return avatarUrl.includes(expectedSubstring);
 }
 
-export async function dbVerify(userId: number, field: string, expectedValue: string): Promise<boolean> {
-  const rows = await query<UserRecord[]>(
-    `SELECT * FROM users WHERE id = ? AND ${field} = ?`,
-    [userId, expectedValue]
-  );
-  if (rows && Array.isArray(rows) && rows.length > 0) {
-    return true;
-  }
-  return false;
-}
+// export async function dbVerify(userId: number, field: string, expectedValue: string): Promise<boolean> {
+//   const rows = await query<UserRecord[]>(
+//     `SELECT * FROM users WHERE id = ? AND ${field} = ?`,
+//     [userId, expectedValue]
+//   );
+//   if (rows && Array.isArray(rows) && rows.length > 0) {
+//     return true;
+//   }
+//   return false;
+// }

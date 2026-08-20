@@ -28,4 +28,5 @@ export interface UserResponse {
   success: boolean;
   user?: User;
   message?: string;
+  errors?: { message?: string; error_message?: string; code: string }[];
 }

@@ -5,6 +5,7 @@ import { DashboardPage } from './pages/dashboad.page';
 import { UsersPage } from './pages/users.page';
 import { ProfilePage } from './pages/profile.page';
 import { AvatarUploadPage } from './pages/avatar-upload.page';
+import { UserCreatePage } from './pages/user-create.page';
 import {
   createAuthSession,
   destroyAuthSession,
@@ -28,6 +29,7 @@ type E2EFixtures = {
   usersPage: UsersPage;
   profilePage: ProfilePage;
   avatarUploadPage: AvatarUploadPage;
+  userCreatePage: UserCreatePage;
 
   // Helper fixture for multi-user/multi-role tests
   loginAs: (role: 'admin' | 'user') => Promise<{ page: Page; session: AuthenticatedUserSession }>;
@@ -89,6 +91,9 @@ export const test = base.extend<E2EFixtures>({
   },
   avatarUploadPage: async ({ page }, use) => {
     await use(new AvatarUploadPage(page));
+  },
+  userCreatePage: async ({ page }, use) => {
+    await use(new UserCreatePage(page));
   },
 
   // ── 6. Multi-role dynamic helper ───────────────────────────────

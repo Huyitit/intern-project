@@ -182,4 +182,4 @@ test.describe('E2E: Feature Test Suite', { tag: ['@e2e', '@feature'] }, () => {
 - Use Playwright custom fixtures (`src/e2e/fixtures`) instead of raw imports.
 - Interact with elements exclusively through POM classes extending `BasePage`.
 - Assign descriptive test IDs (`TC_XXX_01`) matching dataset records.
-- Apply consistent tags (`@e2e`, `@<feature>`, `@smoke`, `@regression`).
+- Apply consistent tags (`@e2e`, `@smoke`, `@regression`).
