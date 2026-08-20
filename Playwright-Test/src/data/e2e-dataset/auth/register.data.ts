@@ -334,3 +334,25 @@ export function tcREG20(): TestCaseRecord {
     },
   };
 }
+
+export function tcREG21(): TestCaseRecord {
+  const user = new UserBuilder().setValidNewUser().setRole('user').build();
+  return {
+    tcId: 'TC_REG_21',
+    description: 'User registration with role User selected',
+    payload: {
+      user,
+    },
+  };
+}
+
+export function tcREG22(): TestCaseRecord {
+  const user = new UserBuilder().setValidNewUser().setRole('admin').build();
+  return {
+    tcId: 'TC_REG_22',
+    description: 'User registration with role Admin selected',
+    payload: {
+      user,
+    },
+  };
+}

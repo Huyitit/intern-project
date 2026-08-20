@@ -10,6 +10,7 @@ export class RegisterPage extends BasePage {
   readonly submitButton: Locator;
   readonly loginLink: Locator;
   readonly successToast: Locator;
+  readonly roleSelect: Locator;
 
   constructor(page: Page) {
     super(page, '/register');
@@ -21,6 +22,7 @@ export class RegisterPage extends BasePage {
     this.submitButton = page.getByTestId('register-submit-btn');
     this.loginLink = page.getByTestId('register-login-link');
     this.successToast = page.getByText('Registration successful! Please login.');
+    this.roleSelect = page.getByTestId('register-role-select');
   }
 
   async register(data: {
@@ -30,18 +32,21 @@ export class RegisterPage extends BasePage {
     password?: string;
     phone?: string;
     email?: string;
+    role?: string;
   }): Promise<void> {
     const fullNameVal = data.full_name ?? data.fullName ?? '';
     const usernameVal = data.username ?? '';
     const passwordVal = data.password ?? '';
     const phoneVal = data.phone ?? '';
     const emailVal = data.email ?? '';
+    const roleVal = data.role ?? 'user';
 
     await this.fullNameInput.fill(fullNameVal);
     await this.usernameInput.fill(usernameVal);
     await this.passwordInput.fill(passwordVal);
     await this.phoneInput.fill(phoneVal);
     await this.emailInput.fill(emailVal);
+    await this.roleSelect.selectOption(roleVal);
     await this.submitButton.click();
   }
 

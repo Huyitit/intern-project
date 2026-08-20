@@ -20,6 +20,8 @@ import {
   tcREG18,
   tcREG19,
   tcREG20,
+  tcREG21,
+  tcREG22,
 } from '../../../src/data/e2e-dataset/auth/register.data';
 
 test.describe('E2E: Register Feature Test Suite', { tag: ['@e2e', '@auth'] }, () => {
@@ -235,6 +237,26 @@ test.describe('E2E: Register Feature Test Suite', { tag: ['@e2e', '@auth'] }, ()
     await registerPage.navigate();
     await registerPage.loginLink.click();
 
+    await expect(page).toHaveURL(/\/login/);
+  });
+
+  // TC_REG_21: User Register - Choose Role User
+  test('TC_REG_21: User Register - Choose Role User', { tag: '@regression' }, async ({ registerPage, page }) => {
+    const data = tcREG21();
+    await registerPage.navigate();
+    await registerPage.register(data.payload.user);
+
+    await expect(registerPage.getToast('Registration successful! Please login.')).toBeVisible();
+    await expect(page).toHaveURL(/\/login/);
+  });
+
+  // TC_REG_22: User Register - Choose Role Admin
+  test('TC_REG_22: User Register - Choose Role Admin', { tag: '@regression' }, async ({ registerPage, page }) => {
+    const data = tcREG22();
+    await registerPage.navigate();
+    await registerPage.register(data.payload.user);
+
+    await expect(registerPage.getToast('Registration successful! Please login.')).toBeVisible();
     await expect(page).toHaveURL(/\/login/);
   });
 });

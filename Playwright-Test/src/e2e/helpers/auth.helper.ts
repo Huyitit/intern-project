@@ -33,12 +33,7 @@ export async function createAuthSession(
   const registerJson = await registerRes.json();
   const createdUser = registerJson.user;
 
-  // 3. Update DB role if admin
-  if (role === 'admin') {
-    await pool.execute('UPDATE users SET role = ? WHERE id = ?', ['admin', createdUser.id]);
-  }
-
-  // 4. Authenticate via API and inject JWT token + user into context localStorage
+  // 3. Authenticate via API and inject JWT token + user into context localStorage
   const loginRes = await context.request.post(`${apiBaseUrl}/api/auth/login`, {
     data: {
       user: {

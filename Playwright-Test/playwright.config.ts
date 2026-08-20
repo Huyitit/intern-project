@@ -7,7 +7,6 @@ export default defineConfig({
   globalTeardown: require.resolve('./src/data/seeders/cleanup.ts'),
   // Test timeout from central TIMEOUTS config
   timeout: Number(process.env.TIMEOUT) || 30000,
-
   expect: {
     timeout: Number(process.env.EXPECT_TIMEOUT) || 5000
   },
