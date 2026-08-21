@@ -44,10 +44,25 @@ export default defineConfig({
       name: 'e2e-test',
       testDir: './tests/e2e',
       use: { 
-        baseURL: env.uiBaseUrl || "http://localhost:5273",
+        baseURL: env.uiBaseUrl || "http://localhost:5173",
         ...devices['Desktop Firefox'],
         trace: 'on' 
       },
+      grepInvert: [/@hard/]
+    },
+
+    {
+      name: 'e2e-hard-test',
+      dependencies: ['e2e-test'],
+      testDir: './tests/e2e',
+      use: {
+        baseURL: env.uiBaseUrl || 'http://localhost:5173',
+        ...devices['Desktop Firefox'] },
+      grep: /@hard/,
+      repeatEach: 100,
+      ...(process.env.CI ? {} : { workers: 6 }),
+      retries: 0,
+      timeout: 10000
     },
 
     {
