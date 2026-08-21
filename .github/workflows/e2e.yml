@@ -6,7 +6,7 @@ on:
       - aicode
   schedule:
     - cron: "0 17 * * *"
-  
+
 
 jobs:
   e2e:
