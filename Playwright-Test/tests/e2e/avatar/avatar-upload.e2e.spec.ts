@@ -8,10 +8,10 @@ import {
   tcAVATAR06,
   tcAVATAR07,
 } from '../../../src/data/e2e-dataset/avatar/avatar.data';
-import { verifyAvatarInDb } from '../../../src/e2e/helpers/db-avatar.helper';
 import { closePool } from '../../../src/core/config/db';
+import { databaseValidate } from '../../../src/e2e/helpers/db-avatar.helper';
 
-test.describe('E2E: Avatar Upload Feature Suite', { tag: ['@e2e', '@avatar'] }, () => {
+test.describe('E2E: Avatar Upload Feature Suite', { tag: ['@e2e'] }, () => {
   // ── Authenticated User Suite ─────────────────────────────────────
   test.describe('Authenticated User Avatar Uploads', () => {
     test.use({ userRole: 'user' });
@@ -72,16 +72,14 @@ test.describe('E2E: Avatar Upload Feature Suite', { tag: ['@e2e', '@avatar'] }, 
       // Direct Database Consistency Verification (Zero API Calling)
       expect(authInfo).not.toBeNull();
       if (authInfo) {
-        const isConsistent = await verifyAvatarInDb(authInfo.id, data.payload.expectedFolder);
-        expect(isConsistent).toBe(true);
+        await expect(authInfo.id).toBeUploadedAvatar();
       }
     });
 
     test('TC_AVATAR_06: Upload Attempt with Unsupported File Format', { tag: ['@regression', '@negative'] }, async ({ avatarUploadPage }) => {
       const data = tcAVATAR06();
 
-      await avatarUploadPage.setAvatarFile(data.payload.filePath);
-      await avatarUploadPage.clickUpload();
+      await avatarUploadPage.uploadAvatar(data.payload.filePath);
 
       // Assert error toast notification
       await expect(avatarUploadPage.getToast(data.payload.errorToast)).toBeVisible();

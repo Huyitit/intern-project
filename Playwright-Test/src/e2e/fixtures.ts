@@ -1,4 +1,4 @@
-import { test as base, expect, type Page } from '@playwright/test';
+import { test as base, expect as baseExpect, type Page } from '@playwright/test';
 import { LoginPage } from './pages/login.page';
 import { RegisterPage } from './pages/register.page';
 import { DashboardPage } from './pages/dashboad.page';
@@ -11,6 +11,10 @@ import {
   destroyAuthSession,
   type AuthenticatedUserSession,
 } from './helpers/auth.helper';
+
+import { databaseValidate as avatarValidate } from './helpers/db-avatar.helper';
+import { databaseValidate as userCreateValidate, type UserRecord } from './helpers/db-create-user.helper';
+import { databaseValidate as csvValidate } from './helpers/db-csv.helper';
 
 type E2EFixtures = {
   // Option fixture — select user role per describe/test block ('admin' | 'user' | 'none')
@@ -113,4 +117,21 @@ export const test = base.extend<E2EFixtures>({
   },
 });
 
-export { expect };
+
+export const expect = baseExpect.extend({
+  ...avatarValidate,
+  ...userCreateValidate,
+  ...csvValidate,
+});
+
+declare global {
+  namespace PlaywrightTest {
+    interface Matchers<R> {
+      toBeUploadedAvatar(): Promise<R>;
+      toBeCreatedUser(expected: Partial<UserRecord>): Promise<R>;
+      toBeValidCSVHeaders(expectedHeaders: string[]): Promise<R>;
+      toBeConsistentWithApiUsers(expectedUsers: any[]): Promise<R>;
+      toBeConsistentWithDbUsers(): Promise<R>;
+    }
+  }
+}

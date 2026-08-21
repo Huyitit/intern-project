@@ -20,6 +20,11 @@ export class UserBuilder {
     return this;
   }
 
+  // setDupplicatedUser(user: User){
+  //   this.user = user;
+  //   return this;
+  // }
+
   setValidNewAdmin() {
     this.user = {
       full_name: UserDataGenerator.validFullname(),

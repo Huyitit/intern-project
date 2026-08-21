@@ -6,7 +6,6 @@ import {
   tcCREATE04,
   tcCREATE05,
 } from '../../../src/data/e2e-dataset/create-user/create-user.data';
-import { verifyUserCreatedInDb } from '../../../src/e2e/helpers/db-create-user.helper';
 
 test.describe('E2E: Create User Feature Test Suite', { tag: '@e2e' }, () => {
   // ── Access Control / RBAC Scenarios ──────────────────────────────────
@@ -64,14 +63,12 @@ test.describe('E2E: Create User Feature Test Suite', { tag: '@e2e' }, () => {
       await expect(userCreatePage.emailInput).toHaveValue('');
 
       // Direct Database Consistency Verification (Zero API Calling)
-      const dbResult = await verifyUserCreatedInDb(data.payload.user.username, {
+      await expect(data.payload.user.username).toBeCreatedUser({
         full_name: data.payload.user.full_name,
         role: data.payload.user.role,
         phone: data.payload.user.phone,
         email: data.payload.user.email,
       });
-
-      expect(dbResult.success, dbResult.errorReason).toBe(true);
     });
 
     test('TC_CREATE_02: Error Response on Duplicate Username Collision', { tag: '@regression' }, async ({ userCreatePage }) => {

@@ -64,6 +64,14 @@ export class UsersPage extends BasePage {
     await this.exportButton.click();
     return await downloadPromise;
   }
+  async downloadCSV(): Promise<string> {
+    const download = await this.triggerExportCSV();
+    const filePath = await download.path();
+    if (!filePath) {
+      throw new Error('CSV download failed to retrieve file path.');
+    }
+    return filePath;
+  }
   async nextPage(): Promise<void> {
     await this.nextButton.click();
   }

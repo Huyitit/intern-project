@@ -1,6 +1,6 @@
 import { test, expect } from '../../../src/e2e/fixtures';
 
-test.describe('E2E: Dashboard - Admin Role', () => {
+test.describe('E2E: Dashboard - Admin Role', { tag: ['@e2e', '@dashboard'] }, () => {
   test.use({ userRole: 'admin' });
 
   test('admin user lands on dashboard already authenticated', async ({ dashboardPage, authInfo }) => {
