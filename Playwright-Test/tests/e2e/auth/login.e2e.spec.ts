@@ -103,16 +103,16 @@ test.describe('E2E: Login Feature Test Suite', { tag: ['@e2e', '@auth'] }, () =>
   test('TC_LOG_10: User Login - Form Initial Render', { tag: '@regression' }, async ({ loginPage }) => {
     await loginPage.navigate();
 
-    await expect(loginPage.usernameInput).toBeVisible();
-    await expect(loginPage.passwordInput).toBeVisible();
-    await expect(loginPage.submitButton).toBeVisible();
-    await expect(loginPage.registerLink).toBeVisible();
+    await expect(loginPage.loginUsernameInput).toBeVisible();
+    await expect(loginPage.loginPasswordInput).toBeVisible();
+    await expect(loginPage.loginSubmitButton).toBeVisible();
+    await expect(loginPage.loginRegisterLink).toBeVisible();
   });
 
   // TC_LOG_11: User Login - Navigation to Register Page
   test('TC_LOG_11: User Login - Navigation to Register Page', { tag: '@regression' }, async ({ loginPage, page }) => {
     await loginPage.navigate();
-    await loginPage.registerLink.click();
+    await loginPage.loginRegisterLink.click();
 
     await expect(page).toHaveURL(/\/register/);
   });

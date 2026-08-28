@@ -26,8 +26,8 @@ test.describe('E2E: CSV Export Feature Suite', { tag: ['@e2e'] }, () => {
     test('TC_CSV_01: Successful CSV Export Trigger and Download Initiation', { tag: ['@smoke', '@regression', '@hard'] }, async ({ usersPage, page }) => {
       const data = tcCSV01();
  
-      await expect(usersPage.exportButton).toBeVisible();
-      await expect(usersPage.exportButton).toBeEnabled();
+      await expect(usersPage.userListExportButton).toBeVisible();
+      await expect(usersPage.userListExportButton).toBeEnabled();
  
       const filePath = await usersPage.downloadCSV();
       expect(filePath).not.toBeNull();
@@ -72,10 +72,10 @@ test.describe('E2E: CSV Export Feature Suite', { tag: ['@e2e'] }, () => {
 
       const downloadPromise = page.waitForEvent('download');
 
-      await usersPage.exportButton.click();
+      await usersPage.userListExportButton.click();
 
       // Verify button disabled state
-      await expect(usersPage.exportButton).toBeDisabled();
+      await expect(usersPage.userListExportButton).toBeDisabled();
 
       // Verify initial info toast message
       await expect(usersPage.getToast(data.payload.infoToast)).toBeVisible();
@@ -85,7 +85,7 @@ test.describe('E2E: CSV Export Feature Suite', { tag: ['@e2e'] }, () => {
 
       // Verify final success toast message & button state reset
       await expect(usersPage.getToast(data.payload.successToast)).toBeVisible();
-      await expect(usersPage.exportButton).toBeEnabled();
+      await expect(usersPage.userListExportButton).toBeEnabled();
     });
   });
 
@@ -136,7 +136,7 @@ test.describe('E2E: CSV Export Feature Suite', { tag: ['@e2e'] }, () => {
       await usersPage.exportCSV();
 
       await expect(usersPage.getToast(data.payload.errorToast)).toBeVisible();
-      await expect(usersPage.exportButton).toBeEnabled();
+      await expect(usersPage.userListExportButton).toBeEnabled();
     });
   });
 

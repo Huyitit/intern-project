@@ -1,7 +1,10 @@
 import { Page, expect } from '@playwright/test';
+import { SelectorHelper } from '../helpers/selector.helper';
 
-export abstract class BasePage {
-  constructor(public readonly page: Page, protected path: string) { }
+export abstract class BasePage extends SelectorHelper {
+  constructor(page: Page, protected path: string) {
+    super(page);
+  }
 
   async navigate(): Promise<void> {
     await this.page.goto(this.path);

@@ -33,14 +33,14 @@ test.describe('E2E: User Profile Feature Suite (Live Server)', { tag: ['@e2e', '
 
     test('TC_PROF_02: Initial Profile Data Loading and Field Display', { tag: ['@smoke', '@regression'] }, async ({ profilePage, authInfo }) => {
       const data = tcPROF02();
-      await expect(profilePage.heading).toBeVisible();
-      await expect(profilePage.usernameInput).toHaveValue(authInfo?.username || '');
-      await expect(profilePage.updateProfileButton).toBeEnabled();
+      await expect(profilePage.profileHeading).toBeVisible();
+      await expect(profilePage.profileUsernameInput).toHaveValue(authInfo?.username || '');
+      await expect(profilePage.profileUpdateProfileButton).toBeEnabled();
     });
 
     test('TC_PROF_03: Read-Only Username Field Enforcement', { tag: ['@regression', '@validation'] }, async ({ profilePage }) => {
       const data = tcPROF03();
-      await expect(profilePage.usernameInput).toBeDisabled();
+      await expect(profilePage.profileUsernameInput).toBeDisabled();
     });
 
     test('TC_PROF_04: Successful Profile Information Update and Success Toast', { tag: ['@smoke', '@regression', '@toast'] }, async ({ profilePage }) => {
@@ -51,7 +51,7 @@ test.describe('E2E: User Profile Feature Suite (Live Server)', { tag: ['@e2e', '
       await profilePage.clickUpdate();
 
       await expect(profilePage.getToast('Profile updated successfully')).toBeVisible({ timeout: 15000 });
-      await expect(profilePage.fullNameInput).toHaveValue(data.payload.fullName);
+      await expect(profilePage.profileFullNameInput).toHaveValue(data.payload.fullName);
     });
 
     test('TC_PROF_05: Profile Update Persistence Across Navigation and Reload', { tag: ['@regression'] }, async ({ profilePage, page }) => {
@@ -62,7 +62,7 @@ test.describe('E2E: User Profile Feature Suite (Live Server)', { tag: ['@e2e', '
 
       await page.reload();
       await profilePage.expectPageLoaded();
-      await expect(profilePage.fullNameInput).toHaveValue(data.payload.fullName);
+      await expect(profilePage.profileFullNameInput).toHaveValue(data.payload.fullName);
     });
 
     test('TC_PROF_06: Partial Profile Field Update and Success Toast', { tag: ['@regression', '@toast'] }, async ({ profilePage }) => {
@@ -71,7 +71,7 @@ test.describe('E2E: User Profile Feature Suite (Live Server)', { tag: ['@e2e', '
       await profilePage.clickUpdate();
 
       await expect(profilePage.getToast('Profile updated successfully')).toBeVisible({ timeout: 15000 });
-      await expect(profilePage.phoneInput).toHaveValue(data.payload.phone);
+      await expect(profilePage.profilePhoneInput).toHaveValue(data.payload.phone);
     });
 
     test('TC_PROF_07: Empty Required Full Name Form Validation', { tag: ['@regression', '@negative'] }, async ({ profilePage }) => {

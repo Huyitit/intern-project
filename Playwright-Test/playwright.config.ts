@@ -59,7 +59,7 @@ export default defineConfig({
         baseURL: env.uiBaseUrl || 'http://localhost:5173',
         ...devices['Desktop Firefox'] },
       grep: /@hard/,
-      repeatEach: 100,
+      repeatEach: process.env.CI ? 100 : 0,
       ...(process.env.CI ? {} : { workers: 6 }),
       retries: 0,
       timeout: 10000

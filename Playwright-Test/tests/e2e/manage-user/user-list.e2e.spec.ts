@@ -56,11 +56,11 @@ test.describe('E2E: User List Feature Suite', { tag: ['@e2e', '@user-list'] }, (
 
     // ── Page Initialization & Layout ─────────────────────────────
     test('TC_UL_04: Initial Page Layout and Table Structure', { tag: ['@smoke', '@regression'] }, async ({ usersPage }) => {
-      await expect(usersPage.heading).toBeVisible();
-      await expect(usersPage.searchInput).toBeVisible();
-      await expect(usersPage.searchButton).toBeVisible();
-      await expect(usersPage.userTable).toBeVisible();
-      await expect(usersPage.tableBody).toBeVisible();
+      await expect(usersPage.userListHeading).toBeVisible();
+      await expect(usersPage.userListSearchInput).toBeVisible();
+      await expect(usersPage.userListSearchButton).toBeVisible();
+      await expect(usersPage.userListUserTable).toBeVisible();
+      await expect(usersPage.userListTableBody).toBeVisible();
     });
 
     test('TC_UL_05: Loading Indicator Display on Data Fetch', { tag: '@regression' }, async ({ page, usersPage }) => {
@@ -69,7 +69,7 @@ test.describe('E2E: User List Feature Suite', { tag: ['@e2e', '@user-list'] }, (
         await route.continue();
       });
       await usersPage.navigate();
-      await expect(usersPage.loadingIndicator).toBeVisible();
+      await expect(usersPage.userListLoadingIndicator).toBeVisible();
     });
 
     test('TC_UL_06: Error State Handling on Network Failure', { tag: '@regression' }, async ({ page, usersPage }) => {
@@ -84,92 +84,92 @@ test.describe('E2E: User List Feature Suite', { tag: ['@e2e', '@user-list'] }, (
         })
       );
       await usersPage.navigate();
-      await expect(usersPage.errorMessage).toBeVisible();
+      await expect(usersPage.userListErrorMessage).toBeVisible();
     });
 
     test('TC_UL_07: Empty Table Fallback State', { tag: '@regression' }, async ({ usersPage }) => {
       const data = tcUL07();
       await usersPage.search(data.payload.searchKeyword);
-      await expect(usersPage.noUsersFoundRow).toBeVisible();
+      await expect(usersPage.userListNoUsersFoundRow).toBeVisible();
     });
 
     // ── Search & Filter Functionality ────────────────────────────
     test('TC_UL_08: Exact Match Search by Username', { tag: ['@smoke', '@regression', '@search'] }, async ({ usersPage }) => {
       const data = tcUL08();
       await usersPage.search(data.payload.searchKeyword);
-      await expect(usersPage.tableBody).toContainText(data.payload.searchKeyword);
+      await expect(usersPage.userListUserTable).toContainText(data.payload.searchKeyword);
     });
 
     test('TC_UL_09: Partial Keyword Search by Username', { tag: ['@regression', '@search'] }, async ({ usersPage }) => {
       const data = tcUL09();
       await usersPage.search(data.payload.searchKeyword);
-      await expect(usersPage.userTable).toContainText(data.payload.searchKeyword);
+      await expect(usersPage.userListUserTable).toContainText(data.payload.searchKeyword);
     });
 
     test('TC_UL_10: Case-Insensitive Search Handling', { tag: ['@regression', '@search'] }, async ({ usersPage }) => {
       const data = tcUL10();
       await usersPage.search(data.payload.searchKeyword);
-      await expect(usersPage.tableBody).toContainText(data.payload.expectedUsername);
+      await expect(usersPage.userListTableBody).toContainText(data.payload.expectedUsername);
     });
 
     test('TC_UL_11: Non-Matching Search Keyword Handling', { tag: ['@regression', '@search'] }, async ({ usersPage }) => {
       const data = tcUL11();
       await usersPage.search(data.payload.searchKeyword);
-      await expect(usersPage.noUsersFoundRow).toBeVisible();
+      await expect(usersPage.userListNoUsersFoundRow).toBeVisible();
     });
 
     test('TC_UL_12: Reset Search Filter', { tag: ['@regression', '@search'] }, async ({ usersPage }) => {
       const data = tcUL12();
       await usersPage.search(data.payload.initialKeyword);
       await usersPage.search(data.payload.emptyKeyword);
-      await expect(usersPage.tableBody).toBeVisible();
+      await expect(usersPage.userListTableBody).toBeVisible();
     });
 
     // ── Table Column Sorting ─────────────────────────────────────
     test('TC_UL_13: Toggle Sort by ID Column', { tag: ['@regression', '@sort'] }, async ({ usersPage }) => {
-      await expect(usersPage.sortHeaderId).toContainText('ID ↑');
-      await usersPage.sortHeaderId.click();
-      await expect(usersPage.sortHeaderId).toContainText('ID ↓');
+      await expect(usersPage.userListSortHeaderId).toContainText('ID ↑');
+      await usersPage.userListSortHeaderId.click();
+      await expect(usersPage.userListSortHeaderId).toContainText('ID ↓');
     });
 
     test('TC_UL_14: Toggle Sort by Username Column', { tag: ['@regression', '@sort'] }, async ({ usersPage }) => {
-      await usersPage.sortHeaderUsername.click();
-      await expect(usersPage.sortHeaderUsername).toContainText('Username ↑');
-      await usersPage.sortHeaderUsername.click();
-      await expect(usersPage.sortHeaderUsername).toContainText('Username ↓');
+      await usersPage.userListSortHeaderUsername.click();
+      await expect(usersPage.userListSortHeaderUsername).toContainText('Username ↑');
+      await usersPage.userListSortHeaderUsername.click();
+      await expect(usersPage.userListSortHeaderUsername).toContainText('Username ↓');
     });
 
     test('TC_UL_15: Sort Parameter Persistence Across Pagination', { tag: ['@regression', '@sort'] }, async ({ usersPage }) => {
-      await usersPage.sortHeaderUsername.click();
-      if (await usersPage.nextButton.isEnabled()) {
+      await usersPage.userListSortHeaderUsername.click();
+      if (await usersPage.userListNextButton.isEnabled()) {
         await usersPage.nextPage();
-        await expect(usersPage.userTable).toBeVisible();
+        await expect(usersPage.userListUserTable).toBeVisible();
       }
     });
 
     // ── Pagination Controls ──────────────────────────────────────
     test('TC_UL_16: Navigate to Next Page', { tag: ['@smoke', '@regression', '@pagination'] }, async ({ usersPage }) => {
-      if (await usersPage.nextButton.isEnabled()) {
+      if (await usersPage.userListNextButton.isEnabled()) {
         await usersPage.nextPage();
-        await expect(usersPage.userTable).toBeVisible();
+        await expect(usersPage.userListUserTable).toBeVisible();
       }
     });
 
     test('TC_UL_17: Navigate Back to Previous Page', { tag: ['@regression', '@pagination'] }, async ({ usersPage }) => {
-      if (await usersPage.nextButton.isEnabled()) {
+      if (await usersPage.userListNextButton.isEnabled()) {
         await usersPage.nextPage();
         await usersPage.prevPage();
-        await expect(usersPage.prevButton).toBeDisabled();
+        await expect(usersPage.userListPrevButton).toBeDisabled();
       }
     });
 
     test('TC_UL_18: Pagination Boundary Button States', { tag: ['@regression', '@pagination'] }, async ({ usersPage }) => {
-      await expect(usersPage.prevButton).toBeDisabled();
+      await expect(usersPage.userListPrevButton).toBeDisabled();
     });
 
     // handle exception 
     test('TC_UL_19: Reset Page Number on Search Submission', { tag: ['@regression', '@pagination'] }, async ({ usersPage }) => {
-      if (await usersPage.nextButton.isEnabled()) {
+      if (await usersPage.userListNextButton.isEnabled()) {
         await usersPage.nextPage();
       }
 
@@ -179,13 +179,13 @@ test.describe('E2E: User List Feature Suite', { tag: ['@e2e', '@user-list'] }, (
       //   usersPage.loadingIndicator.waitFor({ state: 'visible' })
       // ])
       await usersPage.search(data.payload.searchKeyword)
-      await usersPage.loadingIndicator.waitFor({ state: 'hidden' });
+      await usersPage.userListLoadingIndicator.waitFor({ state: 'hidden' });
       // await expect(usersPage.prevButton).toBeDisabled();
     });
 
     // ── Row Actions & Navigation ────────────────────────────────
     test('TC_UL_20: Navigate to User Detail Profile Page', { tag: ['@smoke', '@regression', '@navigation'] }, async ({ usersPage }) => {
-      await expect(usersPage.loadingIndicator).toBeHidden();
+      await expect(usersPage.userListLoadingIndicator).toBeHidden();
       await usersPage.viewFirstUserProfile();
       await expect(usersPage.page).toHaveURL(/\/admin\/users\/\d+/);
     });

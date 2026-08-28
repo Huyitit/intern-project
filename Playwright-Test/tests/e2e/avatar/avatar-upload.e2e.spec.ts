@@ -26,14 +26,14 @@ test.describe('E2E: Avatar Upload Feature Suite', { tag: ['@e2e'] }, () => {
 
       // 1. Select file and verify preview
       await avatarUploadPage.setAvatarFile(data.payload.filePath);
-      await expect(avatarUploadPage.previewImg).toBeVisible();
-      await expect(avatarUploadPage.uploadButton).toBeEnabled();
+      await expect(avatarUploadPage.avatarUploadPreviewImg).toBeVisible();
+      await expect(avatarUploadPage.avatarUploadButton).toBeEnabled();
 
       // 2. Click upload & assert spinner loading state + info toast notification
       const uploadPromise = avatarUploadPage.clickUpload();
 
       // Verify button is disabled during upload process
-      await expect(avatarUploadPage.uploadButton).toBeDisabled();
+      await expect(avatarUploadPage.avatarUploadButton).toBeDisabled();
 
       // 3. Assert success toast notification & button state reset
       await expect(avatarUploadPage.getToast(data.payload.successToast)).toBeVisible();
@@ -87,7 +87,7 @@ test.describe('E2E: Avatar Upload Feature Suite', { tag: ['@e2e'] }, () => {
 
     test('TC_AVATAR_07: Upload Button Disabled State Without File Selection', { tag: ['@regression', '@negative'] }, async ({ avatarUploadPage }) => {
       // Confirm button is disabled when no file is selected
-      await expect(avatarUploadPage.uploadButton).toBeDisabled();
+      await expect(avatarUploadPage.avatarUploadButton).toBeDisabled();
     });
   });
 

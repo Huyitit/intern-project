@@ -1,34 +1,27 @@
 import { Page, Locator } from '@playwright/test';
 import { BasePage } from './base.page';
 export class DashboardPage extends BasePage {
-  readonly heading: Locator;
-  readonly welcomeText: Locator;
-  readonly container: Locator;
   constructor(page: Page) {
     super(page, '/dashboard');
-    this.heading = page.getByRole('heading', { level: 2 });
-    this.welcomeText = page.getByTestId('dashboard-welcome-text');
-    this.container = page.getByTestId('dashboard-page');
   }
 
-  gotoManageUsers(){
-    this.page.getByRole('link', { name: 'Manage Users' }).click();
+  async gotoManageUsers(): Promise<void> {
+    await this.dashboardManageUsersLink.click();
   }
 
-  gotoCreateUser(){
-    this.page.getByRole('link', { name: 'Create User' }).click();
+  async gotoCreateUser(): Promise<void> {
+    await this.dashboardCreateUserLink.click();
   }
 
-  gotoProfile(){
-    this.page.getByRole('link', { name: 'Profile' }).click();
+  async gotoProfile(): Promise<void> {
+    await this.dashboardProfileLink.click();
   }
 
-  gotoUploadAvatar(){
-    this.page.getByRole('link', { name: 'Upload Avatar' }).click();
+  async gotoUploadAvatar(): Promise<void> {
+    await this.dashboardUploadAvatarLink.click();
   }
 
-  logout(){
-    this.page.getByRole('button', { name: 'Logout' }).click();
+  async logout(): Promise<void> {
+    await this.dashboardLogoutButton.click();
   }
-
 }

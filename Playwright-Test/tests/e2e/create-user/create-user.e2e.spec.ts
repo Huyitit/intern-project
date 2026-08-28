@@ -56,11 +56,11 @@ test.describe('E2E: Create User Feature Test Suite', { tag: '@e2e' }, () => {
       // Assert Toast and empty form state (remains on same page, inputs cleared)
       await expect(userCreatePage.getToast('User created successfully!')).toBeVisible();
       await expect(page).toHaveURL(/\/admin\/users\/create/);
-      await expect(userCreatePage.fullNameInput).toHaveValue('');
-      await expect(userCreatePage.usernameInput).toHaveValue('');
-      await expect(userCreatePage.passwordInput).toHaveValue('');
-      await expect(userCreatePage.phoneInput).toHaveValue('');
-      await expect(userCreatePage.emailInput).toHaveValue('');
+      await expect(userCreatePage.userCreateFullNameInput).toHaveValue('');
+      await expect(userCreatePage.userCreateUsernameInput).toHaveValue('');
+      await expect(userCreatePage.userCreatePasswordInput).toHaveValue('');
+      await expect(userCreatePage.userCreatePhoneInput).toHaveValue('');
+      await expect(userCreatePage.userCreateEmailInput).toHaveValue('');
 
       // Direct Database Consistency Verification (Zero API Calling)
       await expect(data.payload.user.username).toBeCreatedUser({
@@ -71,7 +71,7 @@ test.describe('E2E: Create User Feature Test Suite', { tag: '@e2e' }, () => {
       });
     });
 
-    test('TC_CREATE_02: Error Response on Duplicate Username Collision', { tag: '@regression' }, async ({ userCreatePage }) => {
+    test('TC_CREATE_02: Error Response on Duplicate Username Collision', { tag: '@regression' }, async ({ userCreatePage}) => {
       const data = tcCREATE02();
 
       await userCreatePage.createUser(data.payload.user);

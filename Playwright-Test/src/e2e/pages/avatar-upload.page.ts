@@ -2,32 +2,8 @@ import { Page, Locator, expect } from '@playwright/test';
 import { BasePage } from './base.page';
 
 export class AvatarUploadPage extends BasePage {
-  // Container & Headings
-  readonly pageContainer: Locator;
-  readonly heading: Locator;
-
-  // File Upload Elements
-  readonly fileInputGroup: Locator;
-  readonly fileInput: Locator;
-
-  // Preview Elements
-  readonly previewGroup: Locator;
-  readonly previewImg: Locator;
-
-  // Action Buttons
-  readonly uploadButton: Locator;
-
   constructor(page: Page) {
     super(page, '/avatar');
-
-    // Locators based on data-testid attributes from AvatarUpload.tsx
-    this.pageContainer = page.getByTestId('avatar-upload-page');
-    this.heading = page.getByTestId('avatar-heading');
-    this.fileInputGroup = page.getByTestId('avatar-input-group');
-    this.fileInput = page.getByTestId('avatar-file-input');
-    this.previewGroup = page.getByTestId('avatar-preview-group');
-    this.previewImg = page.getByTestId('avatar-preview-img');
-    this.uploadButton = page.getByTestId('avatar-upload-btn');
   }
 
   // --- Actions ---
@@ -35,11 +11,11 @@ export class AvatarUploadPage extends BasePage {
   async setAvatarFile(
     filePath: string | string[] | { name: string; mimeType: string; buffer: Buffer }
   ): Promise<void> {
-    await this.fileInput.setInputFiles(filePath);
+    await this.avatarUploadFileInput.setInputFiles(filePath);
   }
 
   async clickUpload(): Promise<void> {
-    await this.uploadButton.click();
+    await this.avatarUploadButton.click();
   }
 
   async uploadAvatar(
@@ -57,15 +33,15 @@ export class AvatarUploadPage extends BasePage {
 
   async expectUploadingLoadingState(): Promise<void> {
     // 1. Verify button text changes to "Uploading..."
-    await expect(this.uploadButton).toHaveText('Uploading...');
+    await expect(this.avatarUploadButton).toHaveText('Uploading...');
     // 2. Verify button is disabled during upload process
-    await expect(this.uploadButton).toBeDisabled();
+    await expect(this.avatarUploadButton).toBeDisabled();
     // 3. Verify info toast notification appears
     await expect(this.getToast('Uploading avatar...')).toBeVisible();
   }
 
   async expectUploadCompletedState(): Promise<void> {
     // Verify button text reverts to "Upload" when complete
-    await expect(this.uploadButton).toHaveText('Upload');
+    await expect(this.avatarUploadButton).toHaveText('Upload');
   }
 }

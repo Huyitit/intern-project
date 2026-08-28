@@ -223,19 +223,19 @@ test.describe('E2E: Register Feature Test Suite', { tag: ['@e2e', '@auth'] }, ()
   test('TC_REG_19: User Register - Form Initial Render', { tag: '@regression' }, async ({ registerPage }) => {
     await registerPage.navigate();
 
-    await expect(registerPage.fullNameInput).toBeVisible();
-    await expect(registerPage.usernameInput).toBeVisible();
-    await expect(registerPage.passwordInput).toBeVisible();
-    await expect(registerPage.phoneInput).toBeVisible();
-    await expect(registerPage.emailInput).toBeVisible();
-    await expect(registerPage.submitButton).toBeVisible();
-    await expect(registerPage.loginLink).toBeVisible();
+    await expect(registerPage.registerFullNameInput).toBeVisible();
+    await expect(registerPage.registerUsernameInput).toBeVisible();
+    await expect(registerPage.registerPasswordInput).toBeVisible();
+    await expect(registerPage.registerPhoneInput).toBeVisible();
+    await expect(registerPage.registerEmailInput).toBeVisible();
+    await expect(registerPage.registerSubmitButton).toBeVisible();
+    await expect(registerPage.registerLoginLink).toBeVisible();
   });
 
   // TC_REG_20: Navigation to Login page
   test('TC_REG_20: User Register - Navigation to Login Page', { tag: '@regression' }, async ({ registerPage, page }) => {
     await registerPage.navigate();
-    await registerPage.loginLink.click();
+    await registerPage.registerLoginLink.click();
 
     await expect(page).toHaveURL(/\/login/);
   });

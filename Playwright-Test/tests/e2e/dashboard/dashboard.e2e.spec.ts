@@ -5,7 +5,7 @@ test.describe('E2E: Dashboard - Admin Role', { tag: ['@e2e', '@dashboard'] }, ()
 
   test('admin user lands on dashboard already authenticated', async ({ dashboardPage, authInfo }) => {
     await dashboardPage.navigate();
-    await expect(dashboardPage.container).toBeVisible();
+    await expect(dashboardPage.dashboardContainer).toBeVisible();
     expect(authInfo).not.toBeNull();
     expect(authInfo?.role).toBe('admin');
   });
@@ -52,7 +52,7 @@ test.describe('E2E: Dashboard - Normal User Role', () => {
 
   test('normal user lands on dashboard already authenticated', async ({ dashboardPage, authInfo }) => {
     await dashboardPage.navigate();
-    await expect(dashboardPage.container).toBeVisible();
+    await expect(dashboardPage.dashboardContainer).toBeVisible();
     expect(authInfo).not.toBeNull();
     expect(authInfo?.role).toBe('user');
   });
