@@ -117,7 +117,7 @@ export const Profile = () => {
         <form onSubmit={handleUpdate}>
           <div className={styles.formGroup}>
             <label>Full Name:</label>
-            <input className={styles.inputField} name="full_name" value={profile.full_name || ""} onChange={handleChange} required />
+            <input className={styles.inputField} name="full_name" value={profile.full_name || ""} onChange={handleChange} />
           </div>
           <div className={styles.formGroup}>
             <label>Username:</label>

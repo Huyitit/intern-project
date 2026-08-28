@@ -1,6 +1,9 @@
 .agents/
 .user/
 .playwright-mcp
+skills-lock.json
+
+*.md
 # # Configuration
 # package-lock.json
 # .env

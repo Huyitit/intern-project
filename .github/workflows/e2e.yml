@@ -1,0 +1,287 @@
+name: E2E Tests
+
+on:
+  push: 
+    branches: 
+      - aicode
+  schedule:
+    - cron: "0 17 * * *"
+
+
+jobs:
+  e2e:
+    name: E2E Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── Checkout ────────────────────────────────────────────────────
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      # ── Node.js Setup ──────────────────────────────────────────────
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24.18.0
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+            Playwright-Test/package-lock.json
+
+      - name: Install Dependencies from Cache
+        run: |
+          cd backend && npm ci
+          cd ../frontend && npm ci
+          cd ../Playwright-Test && npm ci
+
+      # ── Database Setup ─────────────────────────────────────────────
+      - name: Cache MySQL Docker Image
+        id: cache-mysql-image
+        uses: actions/cache@v4
+        with:
+          path: ~/.docker-mysql-image
+          key: ${{ runner.os }}-docker-mysql-8
+
+      - name: Load or Pull MySQL Docker Image
+        run: |
+          if [ -f ~/.docker-mysql-image/mysql8.tar ]; then
+            echo "Loading cached MySQL Docker image..."
+            docker load -i ~/.docker-mysql-image/mysql8.tar
+          else
+            echo "Pulling fresh MySQL Docker image..."
+            docker pull mysql:8
+            mkdir -p ~/.docker-mysql-image
+            docker save mysql:8 -o ~/.docker-mysql-image/mysql8.tar
+          fi
+
+      - name: Start MySQL Container Manually
+        run: |
+          docker run -d \
+            --name mysql \
+            -p 3306:3306 \
+            -e MYSQL_ROOT_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+            -e MYSQL_DATABASE="${{ secrets.DB_DATABASE || 'test_db' }}" \
+            mysql:8 \
+            --innodb-flush-log-at-trx-commit=2 \
+            --innodb-doublewrite=0 \
+            --sync-binlog=0
+
+      - name: Wait for MySQL Readiness
+        run: |
+          echo "Waiting for MySQL container readiness..."
+          until docker exec mysql mysqladmin ping -h 127.0.0.1 --silent; do
+            echo "MySQL starting..."
+            sleep 1
+          done
+          echo "MySQL container is ready!"
+
+      # ── Backend Setup ──────────────────────────────────────────────
+      - name: Build Backend
+        run: cd backend && npm run build
+
+      - name: Run Prisma Migration
+        run: cd backend && npx prisma db push
+        env:
+          DATABASE_URL: mysql://${{ secrets.DB_USER || 'test_user' }}:${{ secrets.DB_PASSWORD }}@127.0.0.1:3306/${{ secrets.DB_DATABASE || 'test_db' }}
+
+      - name: Start Backend
+        run: cd backend && npm start &
+        env:
+          DATABASE_URL: mysql://${{ secrets.DB_USER || 'test_user' }}:${{ secrets.DB_PASSWORD }}@127.0.0.1:3306/${{ secrets.DB_DATABASE || 'test_db' }}
+          PORT: 3000
+
+      - name: Wait for API to be ready
+        run: npx wait-on tcp:3000 --timeout 15000
+
+      # ── Frontend Setup ─────────────────────────────────────────────
+      - name: Build Frontend
+        run: cd frontend && npm run build
+
+      - name: Start Frontend (Vite Preview)
+        run: cd frontend && npx vite preview --port 5173 &
+
+      - name: Wait for Frontend to be ready
+        run: npx wait-on tcp:5173 --timeout 15000
+
+      # ── Seed Database ──────────────────────────────────────────────
+      - name: Seed Database
+        run: cd Playwright-Test && npm run seed
+        env:
+          DB_HOST: ${{ vars.DB_HOST || '127.0.0.1' }}
+          DB_PORT: ${{ vars.DB_PORT || 3306 }}
+          DB_USER: ${{ secrets.DB_USER || 'test_user' }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_DATABASE || 'test_db' }}
+
+      # ── Playwright Setup ───────────────────────────────────────────
+      - name: Restore Playwright Browsers Cache
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('Playwright-Test/package-lock.json') }}
+
+      - name: Install Playwright Browsers if Cache Miss
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: cd Playwright-Test && npx playwright install --with-deps
+
+      # ── Run E2E Tests ──────────────────────────────────────────────
+      - name: Run E2E Tests
+        run: cd Playwright-Test && npx playwright test --project="e2e-test" --repeat-each=3
+        env:
+          BASE_URL: ${{ secrets.BASE_URL || 'http://127.0.0.1:3000' }}
+          UI_BASE_URL: ${{ secrets.UI_BASE_URL || 'http://127.0.0.1:5173'}}
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_USER: ${{ secrets.DB_USER || 'test_user' }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_DATABASE || 'test_db' }}
+
+      # ── Upload Report ──────────────────────────────────────────────
+      - name: Upload E2E Playwright HTML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-playwright-html-report
+          path: Playwright-Test/playwright-report/html/
+          retention-days: 30
+
+  hard-e2e:
+    name: E2E Hard Tests
+    needs: e2e
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── Checkout ────────────────────────────────────────────────────
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      # ── Node.js Setup ──────────────────────────────────────────────
+      - name: Setup Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: 24.18.0
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/package-lock.json
+            frontend/package-lock.json
+            Playwright-Test/package-lock.json
+
+      - name: Install Dependencies from Cache
+        run: |
+          cd backend && npm ci
+          cd ../frontend && npm ci
+          cd ../Playwright-Test && npm ci
+
+      # ── Database Setup ─────────────────────────────────────────────
+      - name: Cache MySQL Docker Image
+        id: cache-mysql-image
+        uses: actions/cache@v4
+        with:
+          path: ~/.docker-mysql-image
+          key: ${{ runner.os }}-docker-mysql-8
+
+      - name: Load or Pull MySQL Docker Image
+        run: |
+          if [ -f ~/.docker-mysql-image/mysql8.tar ]; then
+            echo "Loading cached MySQL Docker image..."
+            docker load -i ~/.docker-mysql-image/mysql8.tar
+          else
+            echo "Pulling fresh MySQL Docker image..."
+            docker pull mysql:8
+            mkdir -p ~/.docker-mysql-image
+            docker save mysql:8 -o ~/.docker-mysql-image/mysql8.tar
+          fi
+
+      - name: Start MySQL Container Manually
+        run: |
+          docker run -d \
+            --name mysql \
+            -p 3306:3306 \
+            -e MYSQL_ROOT_PASSWORD="${{ secrets.DB_PASSWORD }}" \
+            -e MYSQL_DATABASE="${{ secrets.DB_DATABASE || 'test_db' }}" \
+            mysql:8 \
+            --innodb-flush-log-at-trx-commit=2 \
+            --innodb-doublewrite=0 \
+            --sync-binlog=0
+
+      - name: Wait for MySQL Readiness
+        run: |
+          echo "Waiting for MySQL container readiness..."
+          until docker exec mysql mysqladmin ping -h 127.0.0.1 --silent; do
+            echo "MySQL starting..."
+            sleep 1
+          done
+          echo "MySQL container is ready!"
+
+      # ── Backend Setup ──────────────────────────────────────────────
+      - name: Build Backend
+        run: cd backend && npm run build
+
+      - name: Run Prisma Migration
+        run: cd backend && npx prisma db push
+        env:
+          DATABASE_URL: mysql://${{ secrets.DB_USER || 'test_user' }}:${{ secrets.DB_PASSWORD }}@127.0.0.1:3306/${{ secrets.DB_DATABASE || 'test_db' }}
+
+      - name: Start Backend
+        run: cd backend && npm start &
+        env:
+          DATABASE_URL: mysql://${{ secrets.DB_USER || 'test_user' }}:${{ secrets.DB_PASSWORD }}@127.0.0.1:3306/${{ secrets.DB_DATABASE || 'test_db' }}
+          PORT: 3000
+
+      - name: Wait for API to be ready
+        run: npx wait-on tcp:3000 --timeout 15000
+
+      # ── Frontend Setup ─────────────────────────────────────────────
+      - name: Build Frontend
+        run: cd frontend && npm run build
+
+      - name: Start Frontend (Vite Preview)
+        run: cd frontend && npx vite preview --port 5173 &
+
+      - name: Wait for Frontend to be ready
+        run: npx wait-on tcp:5173 --timeout 15000
+
+      # ── Seed Database ──────────────────────────────────────────────
+      - name: Seed Database
+        run: cd Playwright-Test && npm run seed
+        env:
+          DB_HOST: ${{ vars.DB_HOST || '127.0.0.1' }}
+          DB_PORT: ${{ vars.DB_PORT || 3306 }}
+          DB_USER: ${{ secrets.DB_USER || 'test_user' }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_DATABASE || 'test_db' }}
+
+      # ── Playwright Setup ───────────────────────────────────────────
+      - name: Restore Playwright Browsers Cache
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('Playwright-Test/package-lock.json') }}
+
+      - name: Install Playwright Browsers if Cache Miss
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: cd Playwright-Test && npx playwright install --with-deps
+
+      # ── Run E2E Tests ──────────────────────────────────────────────
+      - name: Run E2E Tests
+        run: cd Playwright-Test && npx playwright test --project="e2e-hard-test"
+        env:
+          BASE_URL: ${{ secrets.BASE_URL || 'http://127.0.0.1:3000' }}
+          UI_BASE_URL: ${{ secrets.UI_BASE_URL || 'http://127.0.0.1:5173'}}
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_USER: ${{ secrets.DB_USER || 'test_user' }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          DB_NAME: ${{ secrets.DB_DATABASE || 'test_db' }}
+
+      # ── Upload Report ──────────────────────────────────────────────
+      - name: Upload E2E Playwright HTML Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hard-e2e-playwright-html-report
+          path: Playwright-Test/playwright-report/html/
+          retention-days: 30

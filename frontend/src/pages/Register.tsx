@@ -30,7 +30,7 @@ export const Register = () => {
         navigate("/login");
       } else {
         if (response.errors && response.errors.length > 0) {
-          response.errors.forEach(err => toast.error(err.error_message));
+          response.errors.forEach((err: any) => toast.error(err.message || err.error_message || response.message || "Registration failed"));
         } else {
           toast.error(response.message || "Registration failed");
         }
@@ -46,27 +46,34 @@ export const Register = () => {
     <div className={styles.container} data-testid="register-page">
       <div className={styles.glassCard}>
         <h2 data-testid="register-heading">Register</h2>
-        <form data-testid="register-form" onSubmit={handleRegister}>
+        <form data-testid="register-form" onSubmit={handleRegister} noValidate>
           <div className={styles.formGrid}>
             <div className={`${styles.formGroup} ${styles.fullWidth}`} data-testid="register-full_name-group">
               <label data-testid="register-full_name-label">Full Name:</label>
-              <input className={styles.inputField} data-testid="register-full_name-input" name="full_name" type="text" onChange={handleChange} />
+              <input className={styles.inputField} data-testid="register-full_name-input" name="full_name" type="text" value={formData.full_name} onChange={handleChange} />
             </div>
             <div className={styles.formGroup} data-testid="register-username-group">
               <label data-testid="register-username-label">Username:</label>
-              <input className={styles.inputField} data-testid="register-username-input" name="username" type="text" onChange={handleChange} />
+              <input className={styles.inputField} data-testid="register-username-input" name="username" type="text" value={formData.username} onChange={handleChange} />
             </div>
             <div className={styles.formGroup} data-testid="register-password-group">
               <label data-testid="register-password-label">Password:</label>
-              <input className={styles.inputField} data-testid="register-password-input" name="password" type="password" onChange={handleChange} />
+              <input className={styles.inputField} data-testid="register-password-input" name="password" type="password" value={formData.password} onChange={handleChange} />
             </div>
             <div className={styles.formGroup} data-testid="register-phone-group">
               <label data-testid="register-phone-label">Phone:</label>
-              <input className={styles.inputField} data-testid="register-phone-input" name="phone" type="text" onChange={handleChange} />
+              <input className={styles.inputField} data-testid="register-phone-input" name="phone" type="text" value={formData.phone} onChange={handleChange} />
             </div>
             <div className={styles.formGroup} data-testid="register-email-group">
               <label data-testid="register-email-label">Email:</label>
-              <input className={styles.inputField} data-testid="register-email-input" name="email" type="email" onChange={handleChange} />
+              <input className={styles.inputField} data-testid="register-email-input" name="email" type="email" value={formData.email} onChange={handleChange} />
+            </div>
+            <div className={styles.formGroup} data-testid="register-role-group">
+              <label data-testid="register-role-label">Role:</label>
+              <select className={styles.inputField} data-testid="register-role-select" name="role" value={formData.role} onChange={handleChange}>
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+              </select>
             </div>
           </div>
           <button className={styles.submitBtn} data-testid="register-submit-btn" type="submit" disabled={loading}>

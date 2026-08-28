@@ -25,7 +25,7 @@ export const Login = () => {
         navigate("/dashboard");
       } else {
         if (response.errors && response.errors.length > 0) {
-          response.errors.forEach((err: any) => toast.error(err.error_message));
+          response.errors.forEach((err: any) => toast.error(err.message || err.error_message || response.message || "Login failed"));
         } else {
           console.log("TRIGGERING TOAST ERROR", response.message || "Login failed");
           toast.error(response.message || "Login failed");

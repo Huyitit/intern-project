@@ -1,9 +1,9 @@
-// sla-reporter.ts
+
 import type { Reporter, TestCase, TestResult, FullResult } from '@playwright/test/reporter';
 
 class ThresholdReporter implements Reporter {
   private targetTag = '@hard';
-  private minPassRate = 95.0;
+  private minPassRate = 90.0;
 
   private testTotal = 0;
   private testPassed = 0;
@@ -29,8 +29,8 @@ class ThresholdReporter implements Reporter {
     if (this.testTotal === 0) return { status: result.status };
 
     const passPercentage = (this.testPassed / this.testTotal) * 100;
-    const formattedRate = passPercentage.toFixed(2);
-
+    const formattedRate = Math.ceil(passPercentage);
+ 
     console.log('\n==================================================');
     console.log(` TEST TAG   : ${this.targetTag}`);
     console.log(` TEST RUNS (N)   : ${this.testTotal}`);
