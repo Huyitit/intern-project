@@ -12,14 +12,14 @@ test.describe('E2E: Dashboard - Admin Role', { tag: ['@e2e', '@dashboard'] }, ()
 
   test('admin navigate to users page', async ({ dashboardPage, page }) => {
     await dashboardPage.navigate();
-    await dashboardPage.gotoManageUsers();
+    await dashboardPage.clickManageUsersLink();
 
     await expect(page).toHaveURL('/admin/users')
   });
 
   test('admin navigate to create user page', async ({ dashboardPage, page }) => {
     await dashboardPage.navigate();
-    await dashboardPage.gotoCreateUser();
+    await dashboardPage.clickCreateUserLink();
 
     await expect(page).toHaveURL('/admin/users/create');
 
@@ -27,21 +27,21 @@ test.describe('E2E: Dashboard - Admin Role', { tag: ['@e2e', '@dashboard'] }, ()
 
   test('admin navigate to profile page', async ({ dashboardPage, page }) => {
     await dashboardPage.navigate();
-    await dashboardPage.gotoProfile();
+    await dashboardPage.clickProfileLink();
 
     await expect(page).toHaveURL('/profile')
   });
 
   test('admin navigate to upload avatar page', async ({ dashboardPage, page }) => {
     await dashboardPage.navigate();
-    await dashboardPage.gotoUploadAvatar();
+    await dashboardPage.clickUploadAvatarLink();
 
     await expect(page).toHaveURL('/avatar')
   });
 
   test('admin logout', async ({ dashboardPage, page }) => {
     await dashboardPage.navigate();
-    await dashboardPage.logout();
+    await dashboardPage.clickLogoutButton();
 
     await expect(page).toHaveURL('/login');
   });
@@ -61,21 +61,21 @@ test.describe('E2E: Dashboard - Normal User Role', () => {
 
   test('user navigate to profile page', async ({ dashboardPage, page }) => {
     await dashboardPage.navigate();
-    await dashboardPage.gotoProfile();
+    await dashboardPage.clickProfileLink();
 
     await expect(page).toHaveURL('/profile')
   });
 
   test('user navigate to upload avatar page', async ({ dashboardPage, page }) => {
     await dashboardPage.navigate();
-    await dashboardPage.gotoUploadAvatar();
+    await dashboardPage.clickUploadAvatarLink();
 
     await expect(page).toHaveURL('/avatar')
   });
 
   test('user logout', async ({ dashboardPage, page }) => {
     await dashboardPage.navigate();
-    await dashboardPage.logout();
+    await dashboardPage.clickLogoutButton();
 
     await expect(page).toHaveURL('/login');
   });

@@ -50,7 +50,22 @@ test.describe('E2E: Create User Feature Test Suite', { tag: '@e2e' }, () => {
     test('TC_CREATE_01: Successful User Creation and DB Consistency Verification', { tag: ['@smoke', '@regression'] }, async ({ userCreatePage, page }) => {
       const data = tcCREATE01();
 
-      await userCreatePage.createUser(data.payload.user);
+      const user = data.payload.user;
+      if (user.full_name !== undefined) {
+        await userCreatePage.fillFullName(user.full_name);
+      }
+      if (user.username !== undefined) {
+        await userCreatePage.fillUsername(user.username);
+      }
+      if (user.password !== undefined) {
+        await userCreatePage.fillPassword(user.password);
+      }
+      if (user.phone !== undefined) {
+        await userCreatePage.fillPhone(user.phone);
+      }
+      if (user.email !== undefined) {
+        await userCreatePage.fillEmail(user.email);
+      }
       await userCreatePage.clickSubmit();
 
       // Assert Toast and empty form state (remains on same page, inputs cleared)
@@ -71,10 +86,25 @@ test.describe('E2E: Create User Feature Test Suite', { tag: '@e2e' }, () => {
       });
     });
 
-    test('TC_CREATE_02: Error Response on Duplicate Username Collision', { tag: '@regression' }, async ({ userCreatePage}) => {
+    test('TC_CREATE_02: Error Response on Duplicate Username Collision', { tag: '@regression' }, async ({ userCreatePage }) => {
       const data = tcCREATE02();
 
-      await userCreatePage.createUser(data.payload.user);
+      const user = data.payload.user;
+      if (user.full_name !== undefined) {
+        await userCreatePage.fillFullName(user.full_name);
+      }
+      if (user.username !== undefined) {
+        await userCreatePage.fillUsername(user.username);
+      }
+      if (user.password !== undefined) {
+        await userCreatePage.fillPassword(user.password);
+      }
+      if (user.phone !== undefined) {
+        await userCreatePage.fillPhone(user.phone);
+      }
+      if (user.email !== undefined) {
+        await userCreatePage.fillEmail(user.email);
+      }
       await userCreatePage.clickSubmit();
 
       // Assert validation error toast and preservation of current route
@@ -85,7 +115,22 @@ test.describe('E2E: Create User Feature Test Suite', { tag: '@e2e' }, () => {
     test('TC_CREATE_03: Field Length Below Boundary Verification', { tag: '@regression' }, async ({ userCreatePage }) => {
       const data = tcCREATE03();
 
-      await userCreatePage.createUser(data.payload.user);
+      const user = data.payload.user;
+      if (user.full_name !== undefined) {
+        await userCreatePage.fillFullName(user.full_name);
+      }
+      if (user.username !== undefined) {
+        await userCreatePage.fillUsername(user.username);
+      }
+      if (user.password !== undefined) {
+        await userCreatePage.fillPassword(user.password);
+      }
+      if (user.phone !== undefined) {
+        await userCreatePage.fillPhone(user.phone);
+      }
+      if (user.email !== undefined) {
+        await userCreatePage.fillEmail(user.email);
+      }
       await userCreatePage.clickSubmit();
 
       // Assert validation boundary errors triggered by Zod schema constraints
@@ -97,7 +142,22 @@ test.describe('E2E: Create User Feature Test Suite', { tag: '@e2e' }, () => {
     test('TC_CREATE_04: Field Length Above Boundary Verification', { tag: '@regression' }, async ({ userCreatePage }) => {
       const data = tcCREATE04();
 
-      await userCreatePage.createUser(data.payload.user);
+      const user = data.payload.user;
+      if (user.full_name !== undefined) {
+        await userCreatePage.fillFullName(user.full_name);
+      }
+      if (user.username !== undefined) {
+        await userCreatePage.fillUsername(user.username);
+      }
+      if (user.password !== undefined) {
+        await userCreatePage.fillPassword(user.password);
+      }
+      if (user.phone !== undefined) {
+        await userCreatePage.fillPhone(user.phone);
+      }
+      if (user.email !== undefined) {
+        await userCreatePage.fillEmail(user.email);
+      }
       await userCreatePage.clickSubmit();
 
       // Assert validation boundary errors triggered by Zod schema constraints
@@ -109,7 +169,22 @@ test.describe('E2E: Create User Feature Test Suite', { tag: '@e2e' }, () => {
     test('TC_CREATE_05: Input Validation Format Mismatch Handling', { tag: '@regression' }, async ({ userCreatePage }) => {
       const data = tcCREATE05();
 
-      await userCreatePage.createUser(data.payload.user);
+      const user = data.payload.user;
+      if (user.full_name !== undefined) {
+        await userCreatePage.fillFullName(user.full_name);
+      }
+      if (user.username !== undefined) {
+        await userCreatePage.fillUsername(user.username);
+      }
+      if (user.password !== undefined) {
+        await userCreatePage.fillPassword(user.password);
+      }
+      if (user.phone !== undefined) {
+        await userCreatePage.fillPhone(user.phone);
+      }
+      if (user.email !== undefined) {
+        await userCreatePage.fillEmail(user.email);
+      }
       await userCreatePage.clickSubmit();
 
       // Assert format mismatch error messages

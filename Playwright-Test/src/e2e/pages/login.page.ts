@@ -6,9 +6,15 @@ export class LoginPage extends BasePage {
     super(page, '/login');
   }
 
-  async login(username: string, password: string): Promise<void> {
+  async fillUsername(username: string): Promise<void> {
     await this.loginUsernameInput.fill(username);
+  }
+
+  async fillPassword(password: string): Promise<void> {
     await this.loginPasswordInput.fill(password);
+  }
+
+  async clickSubmit(): Promise<void> {
     await this.loginSubmitButton.click();
   }
 

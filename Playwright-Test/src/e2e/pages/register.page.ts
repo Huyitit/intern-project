@@ -6,28 +6,31 @@ export class RegisterPage extends BasePage {
     super(page, '/register');
   }
 
-  async register(data: {
-    fullName?: string;
-    full_name?: string;
-    username?: string;
-    password?: string;
-    phone?: string;
-    email?: string;
-    role?: string;
-  }): Promise<void> {
-    const fullNameVal = data.full_name ?? data.fullName ?? '';
-    const usernameVal = data.username ?? '';
-    const passwordVal = data.password ?? '';
-    const phoneVal = data.phone ?? '';
-    const emailVal = data.email ?? '';
-    const roleVal = data.role ?? 'user';
+  async fillFullName(fullName: string): Promise<void> {
+    await this.registerFullNameInput.fill(fullName);
+  }
 
-    await this.registerFullNameInput.fill(fullNameVal);
-    await this.registerUsernameInput.fill(usernameVal);
-    await this.registerPasswordInput.fill(passwordVal);
-    await this.registerPhoneInput.fill(phoneVal);
-    await this.registerEmailInput.fill(emailVal);
-    await this.registerRoleSelect.selectOption(roleVal);
+  async fillUsername(username: string): Promise<void> {
+    await this.registerUsernameInput.fill(username);
+  }
+
+  async fillPassword(password: string): Promise<void> {
+    await this.registerPasswordInput.fill(password);
+  }
+
+  async fillPhone(phone: string): Promise<void> {
+    await this.registerPhoneInput.fill(phone);
+  }
+
+  async fillEmail(email: string): Promise<void> {
+    await this.registerEmailInput.fill(email);
+  }
+
+  async selectRole(role: string): Promise<void> {
+    await this.registerRoleSelect.selectOption(role);
+  }
+
+  async clickSubmit(): Promise<void> {
     await this.registerSubmitButton.click();
   }
 

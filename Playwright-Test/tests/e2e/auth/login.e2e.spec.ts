@@ -18,7 +18,9 @@ test.describe('E2E: Login Feature Test Suite', { tag: ['@e2e', '@auth'] }, () =>
   test('TC_LOG_01: User Login - Successful', { tag: ['@smoke', '@regression'] }, async ({ loginPage, page }) => {
     const data = tcLOG01();
     await loginPage.navigate();
-    await loginPage.login(data.payload.user.username, data.payload.user.password);
+    await loginPage.fillUsername(data.payload.user.username);
+    await loginPage.fillPassword(data.payload.user.password);
+    await loginPage.clickSubmit();
 
     await expect(loginPage.getToast('Login successful!')).toBeVisible();
     await expect(page).toHaveURL(/\/dashboard/);
@@ -28,7 +30,9 @@ test.describe('E2E: Login Feature Test Suite', { tag: ['@e2e', '@auth'] }, () =>
   test('TC_LOG_02: Admin Login - Successful', { tag: ['@smoke', '@regression'] }, async ({ loginPage, page }) => {
     const data = tcLOG02();
     await loginPage.navigate();
-    await loginPage.login(data.payload.user.username, data.payload.user.password);
+    await loginPage.fillUsername(data.payload.user.username);
+    await loginPage.fillPassword(data.payload.user.password);
+    await loginPage.clickSubmit();
 
     await expect(loginPage.getToast('Login successful!')).toBeVisible();
     await expect(page).toHaveURL(/\/dashboard/);
@@ -38,7 +42,9 @@ test.describe('E2E: Login Feature Test Suite', { tag: ['@e2e', '@auth'] }, () =>
   test('TC_LOG_03: User Login - Incorrect Password', { tag: '@regression' }, async ({ loginPage, page }) => {
     const data = tcLOG03();
     await loginPage.navigate();
-    await loginPage.login(data.payload.user.username, data.payload.user.password);
+    await loginPage.fillUsername(data.payload.user.username);
+    await loginPage.fillPassword(data.payload.user.password);
+    await loginPage.clickSubmit();
 
     await expect(loginPage.getToast('Invalid password')).toBeVisible();
     await expect(page).toHaveURL(/\/login/);
@@ -48,7 +54,9 @@ test.describe('E2E: Login Feature Test Suite', { tag: ['@e2e', '@auth'] }, () =>
   test('TC_LOG_04: User Login - Unregistered Username', { tag: '@regression' }, async ({ loginPage, page }) => {
     const data = tcLOG04();
     await loginPage.navigate();
-    await loginPage.login(data.payload.user.username, data.payload.user.password);
+    await loginPage.fillUsername(data.payload.user.username);
+    await loginPage.fillPassword(data.payload.user.password);
+    await loginPage.clickSubmit();
 
     await expect(loginPage.getToast('Cannot find user')).toBeVisible();
     await expect(page).toHaveURL(/\/login/);
@@ -58,7 +66,9 @@ test.describe('E2E: Login Feature Test Suite', { tag: ['@e2e', '@auth'] }, () =>
   test('TC_LOG_05: User Login - Empty Fields', { tag: '@regression' }, async ({ loginPage }) => {
     const data = tcLOG05();
     await loginPage.navigate();
-    await loginPage.login(data.payload.user.username, data.payload.user.password);
+    await loginPage.fillUsername(data.payload.user.username);
+    await loginPage.fillPassword(data.payload.user.password);
+    await loginPage.clickSubmit();
 
     await expect(loginPage.getToast('username must be at least 6 characters long')).toBeVisible();
   });
@@ -67,7 +77,9 @@ test.describe('E2E: Login Feature Test Suite', { tag: ['@e2e', '@auth'] }, () =>
   test('TC_LOG_06: User Login - Empty Username', { tag: '@regression' }, async ({ loginPage }) => {
     const data = tcLOG06();
     await loginPage.navigate();
-    await loginPage.login(data.payload.user.username, data.payload.user.password);
+    await loginPage.fillUsername(data.payload.user.username);
+    await loginPage.fillPassword(data.payload.user.password);
+    await loginPage.clickSubmit();
 
     await expect(loginPage.getToast('username must be at least 6 characters long')).toBeVisible();
   });
@@ -76,7 +88,9 @@ test.describe('E2E: Login Feature Test Suite', { tag: ['@e2e', '@auth'] }, () =>
   test('TC_LOG_07: User Login - Empty Password', { tag: '@regression' }, async ({ loginPage }) => {
     const data = tcLOG07();
     await loginPage.navigate();
-    await loginPage.login(data.payload.user.username, data.payload.user.password);
+    await loginPage.fillUsername(data.payload.user.username);
+    await loginPage.fillPassword(data.payload.user.password);
+    await loginPage.clickSubmit();
 
     await expect(loginPage.getToast('password must be at least 6 characters long')).toBeVisible();
   });
@@ -85,7 +99,9 @@ test.describe('E2E: Login Feature Test Suite', { tag: ['@e2e', '@auth'] }, () =>
   test('TC_LOG_08: User Login - Short Username', { tag: '@regression' }, async ({ loginPage }) => {
     const data = tcLOG08();
     await loginPage.navigate();
-    await loginPage.login(data.payload.user.username, data.payload.user.password);
+    await loginPage.fillUsername(data.payload.user.username);
+    await loginPage.fillPassword(data.payload.user.password);
+    await loginPage.clickSubmit();
 
     await expect(loginPage.getToast('username must be at least 6 characters long')).toBeVisible();
   });
@@ -94,7 +110,9 @@ test.describe('E2E: Login Feature Test Suite', { tag: ['@e2e', '@auth'] }, () =>
   test('TC_LOG_09: User Login - Short Password', { tag: '@regression' }, async ({ loginPage }) => {
     const data = tcLOG09();
     await loginPage.navigate();
-    await loginPage.login(data.payload.user.username, data.payload.user.password);
+    await loginPage.fillUsername(data.payload.user.username);
+    await loginPage.fillPassword(data.payload.user.password);
+    await loginPage.clickSubmit();
 
     await expect(loginPage.getToast('password must be at least 6 characters long')).toBeVisible();
   });

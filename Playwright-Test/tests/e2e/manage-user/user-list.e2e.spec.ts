@@ -89,39 +89,46 @@ test.describe('E2E: User List Feature Suite', { tag: ['@e2e', '@user-list'] }, (
 
     test('TC_UL_07: Empty Table Fallback State', { tag: '@regression' }, async ({ usersPage }) => {
       const data = tcUL07();
-      await usersPage.search(data.payload.searchKeyword);
+      await usersPage.fillSearchInput(data.payload.searchKeyword);
+      await usersPage.clickSearchButton();
       await expect(usersPage.userListNoUsersFoundRow).toBeVisible();
     });
 
     // ── Search & Filter Functionality ────────────────────────────
     test('TC_UL_08: Exact Match Search by Username', { tag: ['@smoke', '@regression', '@search'] }, async ({ usersPage }) => {
       const data = tcUL08();
-      await usersPage.search(data.payload.searchKeyword);
+      await usersPage.fillSearchInput(data.payload.searchKeyword);
+      await usersPage.clickSearchButton();
       await expect(usersPage.userListUserTable).toContainText(data.payload.searchKeyword);
     });
 
     test('TC_UL_09: Partial Keyword Search by Username', { tag: ['@regression', '@search'] }, async ({ usersPage }) => {
       const data = tcUL09();
-      await usersPage.search(data.payload.searchKeyword);
+      await usersPage.fillSearchInput(data.payload.searchKeyword);
+      await usersPage.clickSearchButton();
       await expect(usersPage.userListUserTable).toContainText(data.payload.searchKeyword);
     });
 
     test('TC_UL_10: Case-Insensitive Search Handling', { tag: ['@regression', '@search'] }, async ({ usersPage }) => {
       const data = tcUL10();
-      await usersPage.search(data.payload.searchKeyword);
+      await usersPage.fillSearchInput(data.payload.searchKeyword);
+      await usersPage.clickSearchButton();
       await expect(usersPage.userListTableBody).toContainText(data.payload.expectedUsername);
     });
 
     test('TC_UL_11: Non-Matching Search Keyword Handling', { tag: ['@regression', '@search'] }, async ({ usersPage }) => {
       const data = tcUL11();
-      await usersPage.search(data.payload.searchKeyword);
+      await usersPage.fillSearchInput(data.payload.searchKeyword);
+      await usersPage.clickSearchButton();
       await expect(usersPage.userListNoUsersFoundRow).toBeVisible();
     });
 
     test('TC_UL_12: Reset Search Filter', { tag: ['@regression', '@search'] }, async ({ usersPage }) => {
       const data = tcUL12();
-      await usersPage.search(data.payload.initialKeyword);
-      await usersPage.search(data.payload.emptyKeyword);
+      await usersPage.fillSearchInput(data.payload.initialKeyword);
+      await usersPage.clickSearchButton();
+      await usersPage.fillSearchInput(data.payload.emptyKeyword);
+      await usersPage.clickSearchButton();
       await expect(usersPage.userListTableBody).toBeVisible();
     });
 
@@ -142,7 +149,7 @@ test.describe('E2E: User List Feature Suite', { tag: ['@e2e', '@user-list'] }, (
     test('TC_UL_15: Sort Parameter Persistence Across Pagination', { tag: ['@regression', '@sort'] }, async ({ usersPage }) => {
       await usersPage.userListSortHeaderUsername.click();
       if (await usersPage.userListNextButton.isEnabled()) {
-        await usersPage.nextPage();
+        await usersPage.clickNextButton();
         await expect(usersPage.userListUserTable).toBeVisible();
       }
     });
@@ -150,15 +157,15 @@ test.describe('E2E: User List Feature Suite', { tag: ['@e2e', '@user-list'] }, (
     // ── Pagination Controls ──────────────────────────────────────
     test('TC_UL_16: Navigate to Next Page', { tag: ['@smoke', '@regression', '@pagination'] }, async ({ usersPage }) => {
       if (await usersPage.userListNextButton.isEnabled()) {
-        await usersPage.nextPage();
+        await usersPage.clickNextButton();
         await expect(usersPage.userListUserTable).toBeVisible();
       }
     });
 
     test('TC_UL_17: Navigate Back to Previous Page', { tag: ['@regression', '@pagination'] }, async ({ usersPage }) => {
       if (await usersPage.userListNextButton.isEnabled()) {
-        await usersPage.nextPage();
-        await usersPage.prevPage();
+        await usersPage.clickNextButton();
+        await usersPage.clickPrevButton();
         await expect(usersPage.userListPrevButton).toBeDisabled();
       }
     });
@@ -170,7 +177,7 @@ test.describe('E2E: User List Feature Suite', { tag: ['@e2e', '@user-list'] }, (
     // handle exception 
     test('TC_UL_19: Reset Page Number on Search Submission', { tag: ['@regression', '@pagination'] }, async ({ usersPage }) => {
       if (await usersPage.userListNextButton.isEnabled()) {
-        await usersPage.nextPage();
+        await usersPage.clickNextButton();
       }
 
       const data = tcUL08();
@@ -178,7 +185,8 @@ test.describe('E2E: User List Feature Suite', { tag: ['@e2e', '@user-list'] }, (
       // await Promise.all([
       //   usersPage.loadingIndicator.waitFor({ state: 'visible' })
       // ])
-      await usersPage.search(data.payload.searchKeyword)
+      await usersPage.fillSearchInput(data.payload.searchKeyword);
+      await usersPage.clickSearchButton();
       await usersPage.userListLoadingIndicator.waitFor({ state: 'hidden' });
       // await expect(usersPage.prevButton).toBeDisabled();
     });
@@ -186,7 +194,7 @@ test.describe('E2E: User List Feature Suite', { tag: ['@e2e', '@user-list'] }, (
     // ── Row Actions & Navigation ────────────────────────────────
     test('TC_UL_20: Navigate to User Detail Profile Page', { tag: ['@smoke', '@regression', '@navigation'] }, async ({ usersPage }) => {
       await expect(usersPage.userListLoadingIndicator).toBeHidden();
-      await usersPage.viewFirstUserProfile();
+      await usersPage.clickFirstUserViewButton();
       await expect(usersPage.page).toHaveURL(/\/admin\/users\/\d+/);
     });
   });

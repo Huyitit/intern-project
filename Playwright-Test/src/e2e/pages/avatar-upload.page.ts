@@ -18,12 +18,7 @@ export class AvatarUploadPage extends BasePage {
     await this.avatarUploadButton.click();
   }
 
-  async uploadAvatar(
-    filePath: string | string[] | { name: string; mimeType: string; buffer: Buffer }
-  ): Promise<void> {
-    await this.setAvatarFile(filePath);
-    await this.clickUpload();
-  }
+
 
   // --- Helpers & Loading Spinner Checks ---
 

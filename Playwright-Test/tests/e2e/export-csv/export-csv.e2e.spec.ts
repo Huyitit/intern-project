@@ -133,7 +133,7 @@ test.describe('E2E: CSV Export Feature Suite', { tag: ['@e2e'] }, () => {
 
       await usersPage.navigate();
       await usersPage.expectPageLoaded();
-      await usersPage.exportCSV();
+      await usersPage.clickExportButton();
 
       await expect(usersPage.getToast(data.payload.errorToast)).toBeVisible();
       await expect(usersPage.userListExportButton).toBeEnabled();

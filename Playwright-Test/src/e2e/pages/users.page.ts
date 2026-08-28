@@ -16,18 +16,19 @@ export class UsersPage extends BasePage {
   userViewButton(id: number | string): Locator {
     return this.page.getByTestId(`user-list-view-btn-${id}`);
   }
-  async search(keyword: string): Promise<void> {
+  async fillSearchInput(keyword: string): Promise<void> {
     await this.userListSearchInput.fill(keyword);
+  }
+  async clickSearchButton(): Promise<void> {
     await this.userListSearchButton.click();
   }
-  async sortBy(column: 'id' | 'username'): Promise<void> {
-    if (column === 'id') {
-      await this.userListSortHeaderId.click();
-    } else {
-      await this.userListSortHeaderUsername.click();
-    }
+  async clickSortHeaderId(): Promise<void> {
+    await this.userListSortHeaderId.click();
   }
-  async exportCSV(): Promise<void> {
+  async clickSortHeaderUsername(): Promise<void> {
+    await this.userListSortHeaderUsername.click();
+  }
+  async clickExportButton(): Promise<void> {
     await this.userListExportButton.click();
   }
   async triggerExportCSV(): Promise<import('@playwright/test').Download> {
@@ -43,16 +44,16 @@ export class UsersPage extends BasePage {
     }
     return filePath;
   }
-  async nextPage(): Promise<void> {
+  async clickNextButton(): Promise<void> {
     await this.userListNextButton.click();
   }
-  async prevPage(): Promise<void> {
+  async clickPrevButton(): Promise<void> {
     await this.userListPrevButton.click();
   }
-  async viewUserProfile(id: number | string): Promise<void> {
+  async clickUserViewButton(id: number | string): Promise<void> {
     await this.userViewButton(id).click();
   }
-  async viewFirstUserProfile(): Promise<void> {
+  async clickFirstUserViewButton(): Promise<void> {
     if (await this.userListFirstUserViewButton.isVisible()) {
       await this.userListFirstUserViewButton.click();
     }

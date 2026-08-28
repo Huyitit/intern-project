@@ -11,28 +11,24 @@ export class UserCreatePage extends BasePage {
     await this.userCreateHeading.waitFor({ state: 'visible' });
   }
 
-  async createUser(payload: {
-    full_name?: string;
-    username?: string;
-    password?: string;
-    phone?: string;
-    email?: string;
-  }): Promise<void> {
-    if (payload.full_name !== undefined) {
-      await this.userCreateFullNameInput.fill(payload.full_name);
-    }
-    if (payload.username !== undefined) {
-      await this.userCreateUsernameInput.fill(payload.username);
-    }
-    if (payload.password !== undefined) {
-      await this.userCreatePasswordInput.fill(payload.password);
-    }
-    if (payload.phone !== undefined) {
-      await this.userCreatePhoneInput.fill(payload.phone);
-    }
-    if (payload.email !== undefined) {
-      await this.userCreateEmailInput.fill(payload.email);
-    }
+  async fillFullName(fullName: string): Promise<void> {
+    await this.userCreateFullNameInput.fill(fullName);
+  }
+
+  async fillUsername(username: string): Promise<void> {
+    await this.userCreateUsernameInput.fill(username);
+  }
+
+  async fillPassword(password: string): Promise<void> {
+    await this.userCreatePasswordInput.fill(password);
+  }
+
+  async fillPhone(phone: string): Promise<void> {
+    await this.userCreatePhoneInput.fill(phone);
+  }
+
+  async fillEmail(email: string): Promise<void> {
+    await this.userCreateEmailInput.fill(email);
   }
 
   async clickSubmit(): Promise<void> {

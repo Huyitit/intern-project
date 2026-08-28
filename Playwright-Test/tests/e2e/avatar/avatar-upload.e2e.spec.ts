@@ -43,7 +43,8 @@ test.describe('E2E: Avatar Upload Feature Suite', { tag: ['@e2e'] }, () => {
     test('TC_AVATAR_02: Avatar Persistence Across Page Reload', { tag: ['@smoke', '@regression'] }, async ({ avatarUploadPage, page }) => {
       const data = tcAVATAR02();
 
-      await avatarUploadPage.uploadAvatar(data.payload.filePath);
+      await avatarUploadPage.setAvatarFile(data.payload.filePath);
+      await avatarUploadPage.clickUpload();
       await expect(avatarUploadPage.getToast(data.payload.successToast)).toBeVisible();
 
       // Reload page and verify page reloads clean
@@ -55,18 +56,21 @@ test.describe('E2E: Avatar Upload Feature Suite', { tag: ['@e2e'] }, () => {
       const data = tcAVATAR03();
 
       // Upload first avatar
-      await avatarUploadPage.uploadAvatar(data.payload.filePathFirst);
+      await avatarUploadPage.setAvatarFile(data.payload.filePathFirst);
+      await avatarUploadPage.clickUpload();
       await expect(avatarUploadPage.getToast(data.payload.successToast)).toBeVisible();
 
       // Upload second avatar to overwrite
-      await avatarUploadPage.uploadAvatar(data.payload.filePathSecond);
+      await avatarUploadPage.setAvatarFile(data.payload.filePathSecond);
+      await avatarUploadPage.clickUpload();
       await expect(avatarUploadPage.getToast(data.payload.successToast)).toBeVisible();
     });
 
     test('TC_AVATAR_05: Direct MySQL Data Consistency Verification', { tag: ['@smoke', '@regression', '@db-consistency'] }, async ({ avatarUploadPage, authInfo }) => {
       const data = tcAVATAR05();
 
-      await avatarUploadPage.uploadAvatar(data.payload.filePath);
+      await avatarUploadPage.setAvatarFile(data.payload.filePath);
+      await avatarUploadPage.clickUpload();
       await expect(avatarUploadPage.getToast('Avatar uploaded successfully!')).toBeVisible();
 
       // Direct Database Consistency Verification (Zero API Calling)
@@ -79,7 +83,8 @@ test.describe('E2E: Avatar Upload Feature Suite', { tag: ['@e2e'] }, () => {
     test('TC_AVATAR_06: Upload Attempt with Unsupported File Format', { tag: ['@regression', '@negative'] }, async ({ avatarUploadPage }) => {
       const data = tcAVATAR06();
 
-      await avatarUploadPage.uploadAvatar(data.payload.filePath);
+      await avatarUploadPage.setAvatarFile(data.payload.filePath);
+      await avatarUploadPage.clickUpload();
 
       // Assert error toast notification
       await expect(avatarUploadPage.getToast(data.payload.errorToast)).toBeVisible();
@@ -100,7 +105,8 @@ test.describe('E2E: Avatar Upload Feature Suite', { tag: ['@e2e'] }, () => {
 
       await avatarUploadPage.navigate();
       await avatarUploadPage.expectPageLoaded();
-      await avatarUploadPage.uploadAvatar(data.payload.filePath);
+      await avatarUploadPage.setAvatarFile(data.payload.filePath);
+      await avatarUploadPage.clickUpload();
 
       await expect(avatarUploadPage.getToast(data.payload.successToast)).toBeVisible();
     });

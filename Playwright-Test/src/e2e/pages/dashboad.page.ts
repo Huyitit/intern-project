@@ -5,23 +5,23 @@ export class DashboardPage extends BasePage {
     super(page, '/dashboard');
   }
 
-  async gotoManageUsers(): Promise<void> {
+  async clickManageUsersLink(): Promise<void> {
     await this.dashboardManageUsersLink.click();
   }
 
-  async gotoCreateUser(): Promise<void> {
+  async clickCreateUserLink(): Promise<void> {
     await this.dashboardCreateUserLink.click();
   }
 
-  async gotoProfile(): Promise<void> {
+  async clickProfileLink(): Promise<void> {
     await this.dashboardProfileLink.click();
   }
 
-  async gotoUploadAvatar(): Promise<void> {
+  async clickUploadAvatarLink(): Promise<void> {
     await this.dashboardUploadAvatarLink.click();
   }
 
-  async logout(): Promise<void> {
+  async clickLogoutButton(): Promise<void> {
     await this.dashboardLogoutButton.click();
   }
 }
