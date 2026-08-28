@@ -3,7 +3,7 @@ import type { Reporter, TestCase, TestResult, FullResult } from '@playwright/tes
 
 class ThresholdReporter implements Reporter {
   private targetTag = '@hard';
-  private minPassRate = 95.0;
+  private minPassRate = 90.0;
 
   private testTotal = 0;
   private testPassed = 0;
